@@ -1,0 +1,3096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heroku PaaS Migration</title>
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: #0a0814; color: #e2d4f0;
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15.2px; line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════════════════════════════════ */
+#page-header {
+  position: fixed; top: 0; left: 0; right: 0; height: 54px;
+  background: linear-gradient(90deg, #12082a 0%, #1a0f35 50%, #0d1520 100%);
+  border-bottom: 2px solid #79589f;
+  display: flex; align-items: center; padding: 0 14px;
+  z-index: 1000; gap: 14px;
+}
+#hdr-brand { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+#hdr-brand .h-box {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: linear-gradient(135deg, #79589f, #6762a6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16.5px; font-weight: 800; color: #fff;
+}
+#hdr-brand .arrow { color: #7b6890; font-size: 19.8px; }
+#hdr-brand .gcp-dots { display: flex; gap: 3px; align-items: center; }
+#hdr-brand .gcp-dots span {
+  width: 9px; height: 9px; border-radius: 50%;
+}
+.d-blue  { background: #4285F4; }
+.d-red   { background: #EA4335; }
+.d-yellow{ background: #FBBC04; }
+.d-green { background: #34A853; }
+#hdr-title { flex: 1; min-width: 0; }
+#hdr-title h1 { font-size: 15.4px; font-weight: 600; color: #c9b8e0; white-space: nowrap; }
+#hdr-title p  { font-size: 12.1px; color: #7b6890; }
+#hdr-stats { display: flex; gap: 18px; font-size: 12.1px; color: #9b8ab0; flex-shrink: 0; }
+#hdr-stats .st { display: flex; align-items: center; gap: 5px; }
+#hdr-stats .st-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+#hdr-stats .st-v { font-weight: 600; color: #c9b8e0; }
+#search-box {
+  background: #1a1030; border: 1px solid #3d2860; border-radius: 6px;
+  color: #e2d4f0; padding: 5px 10px; font-size: 13.2px; width: 190px; outline: none;
+  flex-shrink: 0;
+}
+#search-box:focus { border-color: #79589f; box-shadow: 0 0 0 2px rgba(121,88,159,.3); }
+#search-box::placeholder { color: #5a4870; }
+#zoom-ctrl { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+#zoom-ctrl button {
+  width: 28px; height: 28px; background: #1a1030; border: 1px solid #3d2860;
+  border-radius: 5px; color: #c9b8e0; cursor: pointer; font-size: 16.5px;
+  display: flex; align-items: center; justify-content: center; transition: all .15s;
+}
+#zoom-ctrl button:hover { background: #2d1f46; border-color: #79589f; }
+#zoom-level { font-size: 12.1px; color: #9b8ab0; min-width: 38px; text-align: center; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════════════════════════════════ */
+#sidebar {
+  position: fixed; top: 54px; left: 0; bottom: 0; width: 240px;
+  background: #0d0b18; border-right: 1px solid #2d1f46;
+  overflow-y: auto; z-index: 900; padding: 8px 0;
+}
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: #3d2860; border-radius: 2px; }
+.nav-sec {
+  padding: 8px 16px 2px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em; color: #5a4870; margin-top: 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px; padding: 6px 16px;
+  cursor: pointer; color: #9b8ab0; font-size: 13.2px;
+  border-left: 3px solid transparent; transition: all .15s;
+}
+.nav-item:hover { background: rgba(121,88,159,.1); color: #c9b8e0; border-left-color: #79589f; }
+.nav-item.active { background: rgba(121,88,159,.15); color: #b094d0; border-left-color: #79589f; }
+.nav-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.nav-num { font-size: 11px; color: #5a4870; width: 18px; flex-shrink: 0; font-weight: 600; }
+.nav-kbd {
+  padding: 4px 16px 8px; font-size: 12.1px; color: #5a4870; line-height: 1.9;
+}
+.nav-kbd kbd {
+  background: #1a1030; border: 1px solid #3d2860; border-radius: 3px;
+  padding: 1px 5px; color: #9b8ab0; font-size: 11px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   VIEWPORT & CANVAS
+══════════════════════════════════════════════════════════════════════════ */
+#viewport {
+  position: fixed; top: 54px; left: 240px; right: 0; bottom: 0;
+  overflow: scroll; background: #0a0814; cursor: default;
+}
+#viewport::-webkit-scrollbar { width: 8px; height: 8px; }
+#viewport::-webkit-scrollbar-track { background: #0d0b18; }
+#viewport::-webkit-scrollbar-thumb { background: #3d2860; border-radius: 4px; }
+#viewport::-webkit-scrollbar-corner { background: #0d0b18; }
+#canvas {
+  position: relative; min-width: 4100px; min-height: 11600px;
+  transform-origin: 0 0; will-change: transform;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   REGIONS
+══════════════════════════════════════════════════════════════════════════ */
+.region {
+  position: absolute; border-radius: 12px; border: 1px solid;
+}
+.rh { /* region header */
+  padding: 9px 20px; font-size: 12.1px; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; border-bottom: 1px solid;
+  border-radius: 11px 11px 0 0;
+}
+.rb { /* region body */
+  padding: 18px 20px; overflow: visible;
+}
+
+/* region color families */
+.r-purple  { background:#120820; border-color:#4a2d7c; }
+.r-purple  .rh { background: linear-gradient(90deg,#1e0f38,#2d1f4a); color:#b094d0; border-bottom-color:#4a2d7c; }
+.r-navy    { background:#0e1020; border-color:#1f3060; }
+.r-navy    .rh { background: linear-gradient(90deg,#0e1830,#152040); color:#79c0ff; border-bottom-color:#1f3060; }
+.r-dark    { background:#0f1018; border-color:#2d2040; }
+.r-dark    .rh { background: linear-gradient(90deg,#1a0f28,#201820); color:#c9b8e0; border-bottom-color:#2d2040; }
+.r-teal    { background:#0a1518; border-color:#1a3040; }
+.r-teal    .rh { background: linear-gradient(90deg,#0a1a24,#0d2030); color:#79c0ff; border-bottom-color:#1a3040; }
+.r-green   { background:#0a1818; border-color:#1a3a3a; }
+.r-green   .rh { background: linear-gradient(90deg,#0a1820,#0d2228); color:#34A853; border-bottom-color:#1a3a3a; }
+.r-amber   { background:#160e08; border-color:#3a2810; }
+.r-amber   .rh { background: linear-gradient(90deg,#201008,#2a1e0c); color:#FBBC04; border-bottom-color:#3a2810; }
+.r-violet  { background:#100a18; border-color:#301a40; }
+.r-violet  .rh { background: linear-gradient(90deg,#180e28,#201430); color:#a371f7; border-bottom-color:#301a40; }
+.r-sage    { background:#0a1010; border-color:#1a3030; }
+.r-sage    .rh { background: linear-gradient(90deg,#0a1818,#0e2020); color:#52d68a; border-bottom-color:#1a3030; }
+.r-orange  { background:#100a08; border-color:#382018; }
+.r-orange  .rh { background: linear-gradient(90deg,#201008,#281808); color:#FF9900; border-bottom-color:#382018; }
+.r-blue    { background:#0a0a18; border-color:#1a1a38; }
+.r-blue    .rh { background: linear-gradient(90deg,#0a0e20,#0e1228); color:#58a6ff; border-bottom-color:#1a1a38; }
+.r-cobalt  { background:#0a1018; border-color:#1a2840; }
+.r-cobalt  .rh { background: linear-gradient(90deg,#0a1020,#0f182e); color:#4285F4; border-bottom-color:#1a2840; }
+.r-plum    { background:#100810; border-color:#301030; }
+.r-plum    .rh { background: linear-gradient(90deg,#180e28,#201030); color:#c9a0ff; border-bottom-color:#301030; }
+.r-moss    { background:#0a1810; border-color:#1a3020; }
+.r-moss    .rh { background: linear-gradient(90deg,#0a1818,#0e2218); color:#34A853; border-bottom-color:#1a3020; }
+.r-iris    { background:#100a10; border-color:#301a30; }
+.r-iris    .rh { background: linear-gradient(90deg,#180e20,#200e28); color:#c9b8e0; border-bottom-color:#301a30; }
+.r-slate   { background:#080818; border-color:#181840; }
+.r-slate   .rh { background: linear-gradient(90deg,#0a0820,#0d0c2e); color:#79c0ff; border-bottom-color:#181840; }
+.r-forest  { background:#081808; border-color:#183018; }
+.r-forest  .rh { background: linear-gradient(90deg,#081810,#0d2014); color:#34A853; border-bottom-color:#183018; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CARDS
+══════════════════════════════════════════════════════════════════════════ */
+.card {
+  background: #170f28; border: 1px solid #2d1f46; border-radius: 8px;
+  overflow: hidden; transition: box-shadow .2s;
+}
+.card:hover { box-shadow: 0 6px 24px rgba(121,88,159,.2); }
+.card.rec  { border-color: #2a6840; box-shadow: 0 0 0 1px rgba(52,168,83,.25); }
+.ch { padding: 8px 14px; font-size: 13.2px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.cb { padding: 10px 14px; }
+
+/* card header colours */
+.ch-purple { background: linear-gradient(90deg,#2d1a50,#1e1038); color:#b094d0; }
+.ch-gcp    { background: linear-gradient(90deg,#0f2040,#0a1830); color:#79c0ff; }
+.ch-aws    { background: linear-gradient(90deg,#1e1208,#281808); color:#FF9900; }
+.ch-azure  { background: linear-gradient(90deg,#0a1830,#0e1e3a); color:#5ca8ff; }
+.ch-rail   { background: linear-gradient(90deg,#1a0d38,#140a2e); color:#a371f7; }
+.ch-render { background: linear-gradient(90deg,#081e1a,#0d2820); color:#46E3B7; }
+.ch-fly    { background: linear-gradient(90deg,#0d0820,#140a30); color:#8b5cf6; }
+.ch-do     { background: linear-gradient(90deg,#080e20,#0a1230); color:#0069FF; }
+.ch-green  { background: linear-gradient(90deg,#081808,#0c2010); color:#34A853; }
+.ch-amber  { background: linear-gradient(90deg,#1e1008,#281408); color:#FBBC04; }
+.ch-blue   { background: linear-gradient(90deg,#080820,#0c0c28); color:#79c0ff; }
+.ch-red    { background: linear-gradient(90deg,#200808,#2a0e0e); color:#EA4335; }
+.ch-violet { background: linear-gradient(90deg,#100c28,#180e38); color:#a371f7; }
+.ch-ai     { background: linear-gradient(90deg,#081810,#0e2018); color:#34A853; }
+.ch-step   { background: linear-gradient(90deg,#0a1828,#0d2030); color:#79c0ff; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CODE BLOCKS
+══════════════════════════════════════════════════════════════════════════ */
+.code-block {
+  background: #08060f; border: 1px solid #201838; border-radius: 6px;
+  padding: 10px 12px; font-family: 'Cascadia Code','Fira Code','Consolas',monospace;
+  font-size: 12.7px; line-height: 1.65; overflow-x: auto; white-space: pre;
+  color: #c9d1d9; margin: 6px 0;
+}
+.code-block .cm  { color: #5a4870; font-style: italic; }
+.code-block .kh  { color: #b094d0; font-weight: 600; } /* heroku keyword */
+.code-block .kg  { color: #4285F4; font-weight: 600; } /* gcloud keyword */
+.code-block .fl  { color: #79c0ff; }                   /* flag */
+.code-block .vl  { color: #f0883e; }                   /* value */
+.code-block .st  { color: #a5d6ff; }                   /* string */
+.code-block .ev  { color: #FBBC04; }                   /* env var */
+.code-block .ok  { color: #34A853; }                   /* success */
+.code-block .er  { color: #EA4335; }                   /* error */
+.code-block .br  { color: #c9b8e0; }                   /* bare command */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BADGES
+══════════════════════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-block; padding: 2px 7px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+}
+.b-simple   { background:rgba(52,168,83,.18);   color:#34A853; border:1px solid rgba(52,168,83,.35); }
+.b-moderate { background:rgba(251,188,4,.15);   color:#FBBC04; border:1px solid rgba(251,188,4,.35); }
+.b-complex  { background:rgba(234,67,53,.15);   color:#EA4335; border:1px solid rgba(234,67,53,.35); }
+.b-heroku   { background:rgba(121,88,159,.2);   color:#b094d0; border:1px solid rgba(121,88,159,.35); }
+.b-gcp      { background:rgba(66,133,244,.15);  color:#79c0ff; border:1px solid rgba(66,133,244,.35); }
+.b-aws      { background:rgba(255,153,0,.15);   color:#FF9900; border:1px solid rgba(255,153,0,.35); }
+.b-azure    { background:rgba(0,120,212,.15);   color:#5ca8ff; border:1px solid rgba(0,120,212,.35); }
+.b-rec      { background:rgba(52,168,83,.22);   color:#52d68a; border:1px solid rgba(52,168,83,.4); }
+.b-new      { background:rgba(66,133,244,.15);  color:#79c0ff; border:1px solid rgba(66,133,244,.3); }
+.b-retire   { background:rgba(90,72,112,.2);    color:#7b6890; border:1px solid rgba(90,72,112,.3); }
+.b-warn     { background:rgba(234,67,53,.12);   color:#f08080; border:1px solid rgba(234,67,53,.3); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   INFO / WARN / TIP BOXES
+══════════════════════════════════════════════════════════════════════════ */
+.info-box {
+  background:rgba(66,133,244,.08); border:1px solid rgba(66,133,244,.25);
+  border-radius:6px; padding:9px 12px; font-size:13.2px; color:#a0c4ff; margin:6px 0;
+}
+.info-box strong { color:#79c0ff; }
+.warn-box {
+  background:rgba(251,188,4,.07); border:1px solid rgba(251,188,4,.25);
+  border-left:3px solid #FBBC04; border-radius:6px; padding:9px 12px;
+  font-size:13.2px; color:#f0d060; margin:6px 0;
+}
+.warn-box strong { color:#FBBC04; }
+.tip-box {
+  background:rgba(52,168,83,.07); border:1px solid rgba(52,168,83,.25);
+  border-left:3px solid #34A853; border-radius:6px; padding:9px 12px;
+  font-size:13.2px; color:#a0d4b0; margin:6px 0;
+}
+.tip-box strong { color:#34A853; }
+.note-box {
+  background:rgba(121,88,159,.07); border:1px solid rgba(121,88,159,.25);
+  border-radius:6px; padding:9px 12px; font-size:13.2px; color:#c9b8e0; margin:6px 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   STEP LIST
+══════════════════════════════════════════════════════════════════════════ */
+.steps { list-style:none; }
+.step-item {
+  display:flex; gap:10px; margin-bottom:10px;
+  font-size:13.2px; align-items:flex-start;
+}
+.step-num {
+  width:22px; height:22px; border-radius:50%;
+  background:linear-gradient(135deg,#79589f,#4a2d7c);
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; flex-shrink:0; margin-top:1px;
+}
+.step-num.gcp { background:linear-gradient(135deg,#4285F4,#1a3caa); }
+.step-text { flex:1; color:#c9b8e0; }
+.step-text strong { color:#e2d4f0; }
+.step-text code {
+  font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+  background:rgba(0,0,0,.4); padding:1px 5px; border-radius:3px;
+  font-size:12.1px; color:#FBBC04;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TABLES
+══════════════════════════════════════════════════════════════════════════ */
+.tbl { width:100%; border-collapse:collapse; font-size:13.2px; }
+.tbl th {
+  padding:6px 10px; text-align:left; font-size:12.1px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.05em;
+  border-bottom:1px solid #2d1f46; color:#9b8ab0; background:#120820;
+  position:sticky; top:0;
+}
+.tbl td {
+  padding:5px 10px; border-bottom:1px solid #1d1530;
+  color:#c9b8e0; vertical-align:top;
+}
+.tbl tr:hover td { background:rgba(121,88,159,.05); }
+.tbl .cf { font-weight:600; color:#e2d4f0; }
+#r03 .tbl td:first-child,
+#r03 .tbl th:first-child { padding-left:7px; padding-right:4px; }
+#r03 .tbl td:nth-child(2),
+#r03 .tbl th:nth-child(2) { padding-left:4px; padding-right:7px; }
+#r03 .tbl td.tg, #r03 .tbl th.tg,
+#r03 .tbl td.ta, #r03 .tbl th.ta,
+#r03 .tbl td.tz, #r03 .tbl th.tz,
+#r03 .tbl td.tr, #r03 .tbl th.tr,
+#r03 .tbl td.trn,#r03 .tbl th.trn,
+#r03 .tbl td.tf, #r03 .tbl th.tf { padding-left:6px; padding-right:6px; }
+.tbl .th { color:#b094d0; }
+.tbl .tg { color:#79c0ff; }
+.tbl .ta { color:#FF9900; }
+.tbl .tz { color:#5ca8ff; }
+.tbl .tr { color:#a371f7; }
+.tbl .trn{ color:#46E3B7; }
+.tbl .tf { color:#8b5cf6; }
+
+.score-hi { color:#34A853; font-weight:600; }
+.score-md { color:#FBBC04; font-weight:600; }
+.score-lo { color:#EA4335; font-weight:600; }
+.score-na { color:#5a4870; }
+.ck { color:#34A853; }
+.cx { color:#EA4335; }
+.cp { color:#FBBC04; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PLATFORM GRID
+══════════════════════════════════════════════════════════════════════════ */
+.plat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.plat-card {
+  background:#1a1030; border:1px solid #2d1f46; border-radius:8px;
+  overflow:hidden; transition:all .2s;
+}
+.plat-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.4); }
+.plat-card.rec   { border-color:#2a6840; box-shadow:0 0 0 1px rgba(52,168,83,.3); }
+.plat-hdr {
+  padding:10px 14px; font-size:14.3px; font-weight:700;
+  display:flex; align-items:center; gap:8px;
+}
+.plat-icon {
+  width:26px; height:26px; border-radius:5px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13.2px; font-weight:800;
+}
+.plat-body { padding:10px 14px; font-size:12.7px; }
+.pro::before { content:'✓ '; color:#34A853; } .pro { color:#c9d8b0; margin-bottom:3px; }
+.con::before { content:'✗ '; color:#EA4335; } .con { color:#d4b0b0; margin-bottom:3px; }
+.plat-stat {
+  display:flex; justify-content:space-between; padding:4px 0;
+  border-bottom:1px solid #1d1530; font-size:12.1px; color:#9b8ab0;
+}
+.plat-stat:last-child { border-bottom:none; }
+.plat-stat span:last-child { font-weight:600; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ARCH DIAGRAM
+══════════════════════════════════════════════════════════════════════════ */
+.arch-box {
+  background:#170f28; border:1px solid #2d1f46; border-radius:6px;
+  padding:9px 14px; font-size:13.2px; text-align:center; margin:4px 0;
+}
+.arch-box.internet { background:#0a0814; border-color:#3d2860; color:#7b6890; }
+.arch-box.waf      { background:#200a0a; border-color:#4a1a1a; color:#f08080; }
+.arch-box.lb       { background:#0a1020; border-color:#1a2840; color:#79c0ff; }
+.arch-box.run      { background:#0a1828; border-color:#1a3848; color:#4285F4; }
+.arch-box.vpc      { background:#120820; border-color:#3d2860; color:#b094d0; }
+.arch-box.db       { background:#0a1818; border-color:#1a3a3a; color:#34A853; }
+.arch-box.cache    { background:#160e08; border-color:#3a2810; color:#FBBC04; }
+.arch-box.secrets  { background:#100a08; border-color:#382018; color:#FF9900; }
+.arch-box.storage  { background:#0a1010; border-color:#1a3030; color:#52d68a; }
+.arch-box.logging  { background:#100a18; border-color:#301a40; color:#a371f7; }
+.arch-box.email    { background:#0a0a18; border-color:#1a1a38; color:#58a6ff; }
+.arch-box.sched    { background:#0a1810; border-color:#1a3020; color:#34A853; }
+.arch-row { display:flex; gap:8px; align-items:stretch; }
+.arch-row .arch-box { flex:1; }
+.arch-arrow { text-align:center; color:#4a2d7c; font-size:22px; padding:2px 0; line-height:1; }
+.arch-label { font-size:11px; color:#5a4870; text-align:center; margin-bottom:3px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CLI COMPARE TABLE
+══════════════════════════════════════════════════════════════════════════ */
+.cli-tbl { width:auto; border-collapse:collapse; font-size:13.2px; }
+.cli-tbl th {
+  padding:7px 12px; text-align:left; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em;
+  border-bottom:1px solid #2d1f46;
+}
+.cli-tbl th.h-col { color:#b094d0; background:rgba(121,88,159,.08); }
+.cli-tbl th.g-col { color:#79c0ff; background:rgba(66,133,244,.08); }
+.cli-tbl th.d-col { color:#9b8ab0; background:#120820; }
+.cli-tbl td {
+  padding:6px 12px; border-bottom:1px solid #1d1530; vertical-align:top;
+}
+.cli-tbl td.heroku-cmd { background:rgba(121,88,159,.04); }
+.cli-tbl td.gcloud-cmd { background:rgba(66,133,244,.04); }
+.cli-tbl .cli-code {
+  font-family:'Cascadia Code','Fira Code','Consolas',monospace;
+  font-size:12.1px; color:#c9d1d9;
+}
+.cli-tbl .kh { color:#b094d0; font-weight:600; }
+.cli-tbl .kg { color:#4285F4; font-weight:600; }
+.cli-tbl .fl { color:#79c0ff; }
+.cli-tbl .vl { color:#f0883e; }
+.cli-tbl .cm { color:#5a4870; font-style:italic; font-family:inherit; font-size:12.1px; }
+.cli-tbl .cat-row td {
+  background:#0d0920; font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; color:#7b6890; padding:5px 12px;
+  border-bottom:1px solid #2d1f46;
+}
+.cli-tbl tr:hover td { background:rgba(121,88,159,.05); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   AI BOX
+══════════════════════════════════════════════════════════════════════════ */
+.ai-dialog {
+  background:#0a1010; border:1px solid rgba(52,168,83,.3);
+  border-radius:8px; overflow:hidden; margin:6px 0;
+}
+.ai-prompt-bar {
+  background:rgba(52,168,83,.08); padding:8px 12px;
+  font-size:12.1px; color:#9b8ab0; border-bottom:1px solid rgba(52,168,83,.15);
+  display:flex; align-items:flex-start; gap:8px;
+}
+.ai-prompt-bar .ai-who {
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; color:#34A853; flex-shrink:0; padding-top:1px;
+}
+.ai-prompt-bar .ai-text { font-style:italic; color:#7b9070; }
+.ai-resp { padding:10px 12px; }
+.ai-resp .ai-who { font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.08em; color:#34A853; margin-bottom:5px; }
+.ai-resp .ai-body { font-size:13.2px; color:#b0c8a8; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════════════════════════════ */
+.flex     { display:flex; }
+.flex-col { flex-direction:column; }
+.gap-8  { gap:8px; }  .gap-10 { gap:10px; } .gap-12 { gap:12px; } .gap-16 { gap:16px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr;     gap:12px; }
+#r16 .grid-2 { display:flex; gap:40px; align-items:flex-start; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.mt-6{margin-top:6px;} .mt-8{margin-top:8px;} .mt-10{margin-top:10px;} .mt-12{margin-top:12px;} .mt-16{margin-top:16px;}
+.mb-6{margin-bottom:6px;} .mb-8{margin-bottom:8px;} .mb-12{margin-bottom:12px;}
+.text-muted  { color:#7b6890; }
+.text-sm     { font-size:13.2px; }
+.text-xs     { font-size:12.1px; }
+.text-h      { color:#b094d0; }
+.text-gcp    { color:#79c0ff; }
+.text-green  { color:#34A853; }
+.text-yellow { color:#FBBC04; }
+.text-red    { color:#EA4335; }
+.text-orange { color:#FF9900; }
+.bold        { font-weight:600; }
+.mono        { font-family:'Cascadia Code','Fira Code','Consolas',monospace; font-size:12.1px; color:#FBBC04; }
+.search-dim  { opacity:.1; transition:opacity .2s; }
+.divider     { border:none; border-top:1px solid #2d1f46; margin:10px 0; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MINIMAP
+══════════════════════════════════════════════════════════════════════════ */
+#minimap-toggle {
+  position:fixed; bottom:218px; right:16px; width:32px; height:32px;
+  background:#1a1030; border:1px solid #3d2860; border-radius:6px;
+  color:#9b8ab0; cursor:pointer; font-size:15.4px; z-index:1000;
+  display:flex; align-items:center; justify-content:center; transition:all .15s;
+}
+#minimap-toggle:hover { background:#2d1f46; color:#b094d0; border-color:#79589f; }
+#minimap {
+  position:fixed; bottom:16px; right:16px; width:290px; height:200px;
+  background:#0a0814; border:1px solid #3d2860; border-radius:8px;
+  overflow:hidden; z-index:1000; cursor:crosshair;
+}
+#minimap canvas { display:block; width:100%; height:100%; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LEGEND
+══════════════════════════════════════════════════════════════════════════ */
+#legend {
+  position:fixed; bottom:16px; left:256px; background:#0d0b18;
+  border:1px solid #2d1f46; border-radius:8px; padding:8px 12px;
+  z-index:1000; display:flex; flex-wrap:wrap; gap:10px; max-width:560px;
+  font-size:12.1px;
+}
+.leg-item { display:flex; align-items:center; gap:5px; color:#9b8ab0; }
+.leg-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="page-header">
+  <div id="hdr-brand">
+    <div class="h-box">H</div>
+    <div class="arrow">→</div>
+    <div class="gcp-dots">
+      <span class="d-blue"></span><span class="d-red"></span>
+      <span class="d-yellow"></span><span class="d-green"></span>
+    </div>
+  </div>
+  <div id="hdr-title">
+    <h1>Heroku PaaS Migration</h1>
+    <p>Last Modified 2026-MAR-25</p>
+  </div>
+  <div id="hdr-stats">
+    <div class="st"><div class="st-dot" style="background:#79589f"></div><span class="st-v">7</span>&nbsp;Platforms</div>
+    <div class="st"><div class="st-dot" style="background:#4285F4"></div><span class="st-v">10</span>&nbsp;GCP Phases</div>
+    <div class="st"><div class="st-dot" style="background:#34A853"></div><span class="st-v">5</span>&nbsp;Add-ons</div>
+    <div class="st"><div class="st-dot" style="background:#FBBC04"></div><span class="st-v">32</span>&nbsp;CLI pairs</div>
+    <div class="st"><div class="st-dot" style="background:#EA4335"></div><span class="st-v">5</span>&nbsp;AI workflows</div>
+  </div>
+  <input type="text" id="search-box" placeholder="/ Search…" autocomplete="off">
+  <div id="zoom-ctrl">
+    <button onclick="adjustZoom(-10)" title="Zoom out">−</button>
+    <span id="zoom-level">100%</span>
+    <button onclick="adjustZoom(10)"  title="Zoom in">+</button>
+    <button onclick="resetZoom()"     title="Reset">R</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+  <div class="nav-sec">Context</div>
+  <div class="nav-item" onclick="navTo('r01')"><div class="nav-dot" style="background:#79589f"></div><span class="nav-num">01</span>Why Migrate from Heroku?</div>
+
+  <div class="nav-sec">Platform Analysis</div>
+  <div class="nav-item" onclick="navTo('r02')"><div class="nav-dot" style="background:#4285F4"></div><span class="nav-num">02</span>PaaS Comparisons</div>
+  <div class="nav-item" onclick="navTo('r03')"><div class="nav-dot" style="background:#a371f7"></div><span class="nav-num">03</span>Mapping Heroku Add-Ons</div>
+
+  <div class="nav-sec">Migrating to Google Cloud Platform (GCP)</div>
+  <div class="nav-item" onclick="navTo('r04')"><div class="nav-dot" style="background:#4285F4"></div><span class="nav-num">04</span>GCP Architecture</div>
+  <div class="nav-item" onclick="navTo('r05')"><div class="nav-dot" style="background:#79c0ff"></div><span class="nav-num">05</span>Phase 0: Prerequisites</div>
+  <div class="nav-item" onclick="navTo('r06')"><div class="nav-dot" style="background:#34A853"></div><span class="nav-num">06</span>Phase 1: Database</div>
+  <div class="nav-item" onclick="navTo('r07')"><div class="nav-dot" style="background:#FBBC04"></div><span class="nav-num">07</span>Phase 2: Cache (Redis)</div>
+  <div class="nav-item" onclick="navTo('r08')"><div class="nav-dot" style="background:#a371f7"></div><span class="nav-num">08</span>Phase 3: Logging</div>
+  <div class="nav-item" onclick="navTo('r09')"><div class="nav-dot" style="background:#52d68a"></div><span class="nav-num">09</span>Phase 4: Storage</div>
+  <div class="nav-item" onclick="navTo('r10')"><div class="nav-dot" style="background:#FF9900"></div><span class="nav-num">10</span>Phase 5: Secrets</div>
+  <div class="nav-item" onclick="navTo('r11')"><div class="nav-dot" style="background:#58a6ff"></div><span class="nav-num">11</span>Phase 6: Email</div>
+  <div class="nav-item" onclick="navTo('r12')"><div class="nav-dot" style="background:#4285F4"></div><span class="nav-num">12</span>Phase 7: Containers</div>
+  <div class="nav-item" onclick="navTo('r13')"><div class="nav-dot" style="background:#c9a0ff"></div><span class="nav-num">13</span>Phase 8: Networking</div>
+  <div class="nav-item" onclick="navTo('r14')"><div class="nav-dot" style="background:#34A853"></div><span class="nav-num">14</span>Phase 9: Scheduler</div>
+  <div class="nav-item" onclick="navTo('r15')"><div class="nav-dot" style="background:#c9b8e0"></div><span class="nav-num">15</span>Phase 10: DNS Cutover</div>
+
+  <div class="nav-sec">Reference</div>
+  <div class="nav-item" onclick="navTo('r16')"><div class="nav-dot" style="background:#79c0ff"></div><span class="nav-num">16</span>CLI Equivalents</div>
+  <div class="nav-item" onclick="navTo('r17')"><div class="nav-dot" style="background:#34A853"></div><span class="nav-num">17</span>AI-Assisted Config</div>
+
+  <div class="nav-sec">Keyboard</div>
+  <div class="nav-kbd">
+    <div><kbd>+</kbd>/<kbd>-</kbd> Zoom</div>
+    <div><kbd>0</kbd> Reset zoom</div>
+    <div><kbd>/</kbd> Focus search</div>
+    <div><kbd>Esc</kbd> Clear search</div>
+    <div><kbd>drag</kbd> Pan canvas</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     CANVAS
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="viewport">
+<div id="canvas">
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 01 — WHY MIGRATE FROM HEROKU  (40,40  1640×1020)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r01" class="region r-purple" style="left:40px;top:40px;width:1640px;height:1262px;">
+<div class="rh">01 — Why Migrate from Heroku</div>
+<div class="rb">
+  <div class="grid-2">
+
+    <!-- Card: The Platform Situation -->
+    <div class="card" data-search="heroku platform situation 2022 2025 maintenance">
+      <div class="ch ch-purple">📉 The Heroku Platform Situation (2022–2025)</div>
+      <div class="cb">
+        <div class="text-sm" style="color:#c9b8e0;margin-bottom:10px;">
+          Several years after its Salesforce acquisition, Heroku entered a <strong>maintenance-only posture</strong> —
+          ceasing active development on its core platform. Key events that signal migration urgency:
+        </div>
+        <table class="tbl">
+          <tr><th>Year</th><th>Event</th><th>Impact</th></tr>
+          <tr><td class="bold" style="color:#FBBC04">2022</td><td>Free tier eliminated for all dynos, Postgres, Redis</td><td class="score-hi">High — Forced all hobby apps to pay</td></tr>
+          <tr><td class="bold" style="color:#FBBC04">2023</td><td>Heroku Data partners (third-party Postgres/Redis)</td><td class="score-md">Medium — SLA/pricing uncertainty</td></tr>
+          <tr><td class="bold" style="color:#FBBC04">2024</td><td>Eco dyno replaces free; no new platform features</td><td class="score-md">Medium — No container-native roadmap</td></tr>
+          <tr><td class="bold" style="color:#EA4335">2025</td><td>Pricing increases across Shield/Enterprise tiers; CI in maintenance</td><td class="score-hi">High — Cost at scale doubles</td></tr>
+        </table>
+        <div class="warn-box mt-8">
+          <strong>Bottom line:</strong> Heroku is stable for existing workloads but has no strategic investment path.
+          Teams building for scale should plan an exit window within 12–18 months.
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Decision Framework -->
+    <div class="card" data-search="decision stay migrate heroku when">
+      <div class="ch ch-purple">🎯 When to Stay vs. When to Move</div>
+      <div class="cb">
+        <div class="grid-2">
+          <div>
+            <div class="mb-8" style="font-size:12.1px;font-weight:700;color:#34A853;text-transform:uppercase;letter-spacing:.08em;">✓ STAY on Heroku if…</div>
+            <div class="pro mb-6 text-sm">App traffic is predictable and low</div>
+            <div class="pro mb-6 text-sm">Team has no cloud/K8s ops expertise</div>
+            <div class="pro mb-6 text-sm">Add-ons (Postgres, Redis) meet SLA needs</div>
+            <div class="pro mb-6 text-sm">Monthly bill &lt; $300 and not growing</div>
+            <div class="pro mb-6 text-sm">Startup runway is short (&lt; 6 months)</div>
+          </div>
+          <div>
+            <div class="mb-8" style="font-size:12.1px;font-weight:700;color:#EA4335;text-transform:uppercase;letter-spacing:.08em;">✗ MIGRATE if…</div>
+            <div class="con mb-6 text-sm">Heroku Postgres plan limits hit (storage/connections)</div>
+            <div class="con mb-6 text-sm">Need multi-region deployment or custom VPC</div>
+            <div class="con mb-6 text-sm">Bill exceeds $500/month (GCP is 40–60% cheaper)</div>
+            <div class="con mb-6 text-sm">Container-native CI/CD is a team requirement</div>
+            <div class="con mb-6 text-sm">Compliance requires private networking for DB/cache</div>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="tip-box">
+          <strong>Migration Trigger Checklist:</strong> If you tick 2+ of the "migrate" boxes, begin your
+          evaluation. A typical migration window for a mid-sized Node.js app takes 2–4 weeks with the
+          right tooling (and significantly less with AI assistance — see Section 17).
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Typical Heroku Stack -->
+    <div class="card" data-search="heroku stack typical architecture add-ons">
+      <div class="ch ch-purple">🏗 The Typical Heroku Stack You're Moving</div>
+      <div class="cb">
+        <div class="text-sm text-muted mb-10">Most mid-sized Heroku apps share this five-service add-on profile:</div>
+        <div class="arch-box internet mb-6">🌐 Public Internet → HTTPS :443 → Heroku Router</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-row">
+          <div class="arch-box run">⚙️ Web Dyno<br><span class="text-xs text-muted">Standard-2X / Performance-M</span><br><span class="text-xs text-muted">Binds $PORT — serves HTTP</span></div>
+          <div class="arch-box" style="background:rgba(251,188,4,.07);border:1px solid #3a2810;border-radius:6px;padding:6px 10px;font-size:13.2px;">⚙️ Worker Dyno(s)<br><span class="text-xs text-muted">Standard-1X / Standard-2X</span><br><span class="text-xs text-muted">No HTTP — consumes Redis queue</span></div>
+          <div class="arch-box db">🗄 Heroku Postgres<br><span class="text-xs text-muted">Essential-0 → Standard-3</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-row">
+          <div class="arch-box cache">🔴 Heroku Redis<br><span class="text-xs text-muted">Mini → Premium-3 · shared by web + workers</span></div>
+          <div class="arch-box logging">📋 Papertrail<br><span class="text-xs text-muted">Log drain add-on</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-row">
+          <div class="arch-box storage">🪣 Bucketeer<br><span class="text-xs text-muted">S3 proxy add-on</span></div>
+          <div class="arch-box email">📧 SendGrid<br><span class="text-xs text-muted">Transactional email</span></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-box sched">⏰ Heroku Scheduler → enqueues jobs into Redis → Worker Dyno(s) pick up &amp; execute</div>
+        <hr class="divider" style="margin:10px 0 8px;">
+        <div style="font-size:12.1px;font-weight:700;color:#9b8ab0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Dyno Types in Your Procfile → GCP Equivalents</div>
+        <table class="tbl" style="font-size:12.1px;">
+          <thead>
+            <tr>
+              <th style="width:80px;">Dyno Type</th>
+              <th style="width:190px;">Procfile Entry</th>
+              <th style="width:200px;">Purpose</th>
+              <th class="tg">GCP Equivalent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cf">🌐 web</td>
+              <td><code class="mono">web: node server.js</code></td>
+              <td>Serves HTTP — must bind <code class="mono">$PORT</code>. Scaled by Heroku router.</td>
+              <td class="tg">Cloud Run <strong>service</strong> — HTTP autoscaled, 0→N instances</td>
+            </tr>
+            <tr>
+              <td class="cf">⚙️ worker</td>
+              <td><code class="mono">worker: node queue.js</code></td>
+              <td>Background jobs — no HTTP, consumes queue or polls Redis/DB.</td>
+              <td class="tg">Cloud Run <strong>service</strong> (workers) with <code class="mono">--min-instances=1</code></td>
+            </tr>
+            <tr>
+              <td class="cf">🔧 one-off</td>
+              <td><code class="mono">heroku run node migrate.js</code></td>
+              <td>Ephemeral tasks — DB migrations, console sessions, ad-hoc scripts.</td>
+              <td class="tg">Cloud Run <strong>job</strong> → <code class="mono">gcloud run jobs execute one-off</code></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tip-box mt-8">
+          <strong>Good news:</strong> Each of these services has a 1:1 GCP equivalent —
+          and SendGrid doesn't change at all. The hardest migrations are Postgres and VPC networking.
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Cost Reality Check -->
+    <div class="card" data-search="cost pricing heroku gcp comparison">
+      <div class="ch ch-amber">💰 Cost Reality at Scale</div>
+      <div class="cb">
+        <div class="text-sm text-muted mb-8">Approximate monthly cost for a production-grade app: 2 web dynos, 1 worker dyno, Postgres Standard-2, Redis Premium-0, Papertrail Fixa, Bucketeer Hobbyist</div>
+        <table class="tbl">
+          <tr><th>Component</th><th class="th">Heroku</th><th class="tg">GCP Equiv.</th></tr>
+          <tr><td class="cf">Web runtime (2 units)</td><td class="th score-lo">~$100/mo (2× Standard-2X)</td><td class="tg score-hi">~$18–40/mo (Cloud Run)</td></tr>
+          <tr><td class="cf">Worker dyno (1 unit)</td><td class="th score-lo">~$50/mo (1× Standard-2X)</td><td class="tg score-hi">~$10–20/mo (Cloud Run min=1, 0.5 vCPU)</td></tr>
+          <tr><td class="cf">Postgres (Standard-2)</td><td class="th score-lo">~$50/mo</td><td class="tg score-hi">~$25–35/mo (Cloud SQL db-g1-small)</td></tr>
+          <tr><td class="cf">Redis (Premium-0)</td><td class="th score-lo">~$30/mo</td><td class="tg score-hi">~$16/mo (Memorystore Basic 1GB)</td></tr>
+          <tr><td class="cf">Logging (Papertrail)</td><td class="th score-md">~$10/mo (Fixa)</td><td class="tg score-hi">~$0–5/mo (Cloud Logging free tier)</td></tr>
+          <tr><td class="cf">Object storage</td><td class="th score-md">~$5/mo (Bucketeer)</td><td class="tg score-hi">~$2/mo (GCS standard)</td></tr>
+          <tr><td class="cf">Email (SendGrid)</td><td class="th">$15/mo (Essentials)</td><td class="tg">$15/mo (unchanged)</td></tr>
+          <tr><td class="cf bold">Total</td><td class="th score-lo bold">~$260/mo</td><td class="tg score-hi bold">~$86–133/mo</td></tr>
+        </table>
+        <div class="info-box mt-8">
+          <strong>Savings potential: 45–65%</strong> at this scale. Cloud Run's scale-to-zero means dev/staging
+          environments cost near zero during off-hours — a feature Heroku's Eco dynos only partially address.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /grid-2 -->
+</div>
+</div><!-- /r01 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 02 — PLATFORM COMPARISON  (1780,40  2280×920)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r02" class="region r-navy" style="left:1780px;top:40px;width:2280px;height:967px;">
+<div class="rh">02 — PaaS Platform Comparison: Heroku Alternatives</div>
+<div class="rb">
+
+  <div class="mb-10 text-sm" style="color:#9b8ab0;">
+    All platforms below can host a typical Node.js / Express app with Postgres + Redis.
+    <span class="badge b-rec">★ Recommended</span> marks the best Heroku-to-GCP fit based on managed services, private networking, and total cost.
+  </div>
+
+  <div class="plat-grid" style="grid-template-columns:repeat(4,1fr);gap:14px;">
+
+    <!-- GCP Cloud Run -->
+    <div class="plat-card rec">
+      <div class="plat-hdr ch-gcp">
+        <div class="plat-icon" style="background:linear-gradient(135deg,#4285F4,#1a3caa);color:#fff;">G</div>
+        GCP Cloud Run <span class="badge b-rec" style="margin-left:auto;font-size:9.9px;">★ BEST FIT</span>
+      </div>
+      <div class="plat-body">
+        <div class="pro">Serverless containers, scale-to-zero</div>
+        <div class="pro">Managed Cloud SQL (Postgres), Memorystore (Redis)</div>
+        <div class="pro">Native VPC peering, private IPs for all data services</div>
+        <div class="pro">Secret Manager — first-class env var replacement</div>
+        <div class="pro">Cloud Logging structured JSON, alerting built-in</div>
+        <div class="con">More setup steps than Railway/Render</div>
+        <div class="con">VPC configuration has a learning curve</div>
+        <hr class="divider">
+        <div class="plat-stat"><span>Postgres</span><span class="score-hi">Cloud SQL ✓</span></div>
+        <div class="plat-stat"><span>Redis</span><span class="score-hi">Memorystore ✓</span></div>
+        <div class="plat-stat"><span>Object storage</span><span class="score-hi">GCS ✓</span></div>
+        <div class="plat-stat"><span>Private networking</span><span class="score-hi">Full VPC ✓</span></div>
+        <div class="plat-stat"><span>Cron / Scheduler</span><span class="score-hi">Cloud Scheduler ✓</span></div>
+        <div class="plat-stat"><span>Migration complexity</span><span class="score-md"><span class="badge b-moderate">Moderate</span></span></div>
+      </div>
+    </div>
+
+    <!-- AWS -->
+    <div class="plat-card">
+      <div class="plat-hdr ch-aws">
+        <div class="plat-icon" style="background:linear-gradient(135deg,#FF9900,#c45f00);color:#fff;">A</div>
+        AWS (Fargate / ECS)
+      </div>
+      <div class="plat-body">
+        <div class="pro">Deepest managed service catalog (RDS, ElastiCache, SES)</div>
+        <div class="pro">Mature VPC and security group tooling</div>
+        <div class="pro">Global CDN and edge services (CloudFront)</div>
+        <div class="con">Complex IAM model — steep learning curve</div>
+        <div class="con">No simple equivalent to Heroku pipeline promotion</div>
+        <div class="con">Cost can exceed Heroku without careful tuning</div>
+        <hr class="divider">
+        <div class="plat-stat"><span>Postgres</span><span class="score-hi">RDS ✓</span></div>
+        <div class="plat-stat"><span>Redis</span><span class="score-hi">ElastiCache ✓</span></div>
+        <div class="plat-stat"><span>Object storage</span><span class="score-hi">S3 native ✓</span></div>
+        <div class="plat-stat"><span>Private networking</span><span class="score-hi">Full VPC ✓</span></div>
+        <div class="plat-stat"><span>Cron / Scheduler</span><span class="score-md">EventBridge ✓</span></div>
+        <div class="plat-stat"><span>Migration complexity</span><span><span class="badge b-complex">Complex</span></span></div>
+      </div>
+    </div>
+
+    <!-- Azure -->
+    <div class="plat-card">
+      <div class="plat-hdr ch-azure">
+        <div class="plat-icon" style="background:linear-gradient(135deg,#0078D4,#004a8f);color:#fff;">Az</div>
+        Azure Container Apps
+      </div>
+      <div class="plat-body">
+        <div class="pro">KEDA-based autoscaling built in</div>
+        <div class="pro">Azure Database for PostgreSQL Flexible Server</div>
+        <div class="pro">Strong enterprise compliance tooling</div>
+        <div class="con">Azure Cache for Redis is expensive at low tiers</div>
+        <div class="con">Log Analytics workspace adds complexity</div>
+        <div class="con">Good fit only if already in Microsoft ecosystem</div>
+        <hr class="divider">
+        <div class="plat-stat"><span>Postgres</span><span class="score-hi">Azure DB ✓</span></div>
+        <div class="plat-stat"><span>Redis</span><span class="score-md">Azure Cache ⚠</span></div>
+        <div class="plat-stat"><span>Object storage</span><span class="score-hi">Blob Storage ✓</span></div>
+        <div class="plat-stat"><span>Private networking</span><span class="score-hi">VNet ✓</span></div>
+        <div class="plat-stat"><span>Cron / Scheduler</span><span class="score-md">Logic Apps ⚠</span></div>
+        <div class="plat-stat"><span>Migration complexity</span><span><span class="badge b-complex">Complex</span></span></div>
+      </div>
+    </div>
+
+    <!-- Railway -->
+    <div class="plat-card">
+      <div class="plat-hdr ch-rail">
+        <div class="plat-icon" style="background:linear-gradient(135deg,#7B2BF9,#4a0baa);color:#fff;">Ry</div>
+        Railway
+      </div>
+      <div class="plat-body">
+        <div class="pro">Closest UX to Heroku — near-instant onboarding</div>
+        <div class="pro">Native Postgres + Redis in same project</div>
+        <div class="pro">Git-push deploy with zero config</div>
+        <div class="con">No dedicated VPC — public IPs only</div>
+        <div class="con">Object storage requires third-party (S3, Cloudflare R2)</div>
+        <div class="con">Not suitable for compliance/regulated workloads</div>
+        <hr class="divider">
+        <div class="plat-stat"><span>Postgres</span><span class="score-hi">Railway Postgres ✓</span></div>
+        <div class="plat-stat"><span>Redis</span><span class="score-hi">Railway Redis ✓</span></div>
+        <div class="plat-stat"><span>Object storage</span><span class="score-lo">External only ✗</span></div>
+        <div class="plat-stat"><span>Private networking</span><span class="score-lo">None ✗</span></div>
+        <div class="plat-stat"><span>Cron / Scheduler</span><span class="score-md">Cron Jobs (beta)</span></div>
+        <div class="plat-stat"><span>Migration complexity</span><span><span class="badge b-simple">Simple</span></span></div>
+      </div>
+    </div>
+
+    <!-- Render -->
+    <div class="plat-card">
+      <div class="plat-hdr ch-render">
+        <div class="plat-icon" style="background:linear-gradient(135deg,#46E3B7,#1a8060);color:#0a1a14;">Re</div>
+        Render
+      </div>
+      <div class="plat-body">
+        <div class="pro">Native Postgres and Redis services</div>
+        <div class="pro">Auto-deploy from GitHub, PR previews</div>
+        <div class="pro">Simple pricing — no dyno type decisions</div>
+        <div class="con">No managed object storage (S3/GCS external required)</div>
+        <div class="con">No private networking on free/starter plans</div>
+        <div class="con">Limited cron (5 minute minimum interval)</div>
+        <hr class="divider">
+        <div class="plat-stat"><span>Postgres</span><span class="score-hi">Render Postgres ✓</span></div>
+        <div class="plat-stat"><span>Redis</span><span class="score-hi">Render Redis ✓</span></div>
+        <div class="plat-stat"><span>Object storage</span><span class="score-lo">External only ✗</span></div>
+        <div class="plat-stat"><span>Private networking</span><span class="score-md">Paid plans only ⚠</span></div>
+        <div class="plat-stat"><span>Cron / Scheduler</span><span class="score-md">Cron Jobs (limited)</span></div>
+        <div class="plat-stat"><span>Migration complexity</span><span><span class="badge b-simple">Simple</span></span></div>
+      </div>
+    </div>
+
+    <!-- Fly.io -->
+    <div class="plat-card">
+      <div class="plat-hdr ch-fly">
+        <div class="plat-icon" style="background:linear-gradient(135deg,#6B46C1,#3b1f80);color:#fff;">Fly</div>
+        Fly.io
+      </div>
+      <div class="plat-body">
+        <div class="pro">True container deployment with fly.toml config</div>
+        <div class="pro">Edge-native — 35+ regions, very low latency</div>
+        <div class="pro">Fly Postgres (managed) included</div>
+        <div class="con">Redis is community Upstash add-on, not native</div>
+        <div class="con">No native managed object storage</div>
+        <div class="con">Persistent volumes have scaling limits</div>
+        <hr class="divider">
+        <div class="plat-stat"><span>Postgres</span><span class="score-hi">Fly Postgres ✓</span></div>
+        <div class="plat-stat"><span>Redis</span><span class="score-md">Upstash (add-on) ⚠</span></div>
+        <div class="plat-stat"><span>Object storage</span><span class="score-lo">External only ✗</span></div>
+        <div class="plat-stat"><span>Private networking</span><span class="score-md">6PN private nets</span></div>
+        <div class="plat-stat"><span>Cron / Scheduler</span><span class="score-lo">Custom only ✗</span></div>
+        <div class="plat-stat"><span>Migration complexity</span><span><span class="badge b-moderate">Moderate</span></span></div>
+      </div>
+    </div>
+
+    <!-- DigitalOcean -->
+    <div class="plat-card">
+      <div class="plat-hdr ch-do">
+        <div class="plat-icon" style="background:linear-gradient(135deg,#0069FF,#003fa3);color:#fff;">DO</div>
+        DigitalOcean App Platform
+      </div>
+      <div class="plat-body">
+        <div class="pro">Managed Postgres (DO Databases) and Redis</div>
+        <div class="pro">GitHub integration, simple deploy pipeline</div>
+        <div class="pro">Predictable pricing, clear tier labels</div>
+        <div class="con">App Platform containers have cold-start issues</div>
+        <div class="con">No native secret manager — use DO Spaces + env vars</div>
+        <div class="con">Limited autoscaling compared to Cloud Run/ECS</div>
+        <hr class="divider">
+        <div class="plat-stat"><span>Postgres</span><span class="score-hi">DO Databases ✓</span></div>
+        <div class="plat-stat"><span>Redis</span><span class="score-hi">DO Redis ✓</span></div>
+        <div class="plat-stat"><span>Object storage</span><span class="score-md">DO Spaces ⚠</span></div>
+        <div class="plat-stat"><span>Private networking</span><span class="score-md">VPC (basic) ⚠</span></div>
+        <div class="plat-stat"><span>Cron / Scheduler</span><span class="score-md">App Platform jobs</span></div>
+        <div class="plat-stat"><span>Migration complexity</span><span><span class="badge b-moderate">Moderate</span></span></div>
+      </div>
+    </div>
+
+    <!-- Summary card -->
+    <div class="card" style="background:#120820;border-color:#4a2d7c;">
+      <div class="ch ch-purple">📊 Quick Decision Matrix</div>
+      <div class="cb text-sm">
+        <div class="mb-8"><span class="badge b-simple">Simple Migration</span> <span style="color:#9b8ab0;"> → Railway, Render</span></div>
+        <div class="text-xs text-muted mb-12">Best for: small apps, no compliance needs, team wants Heroku-like UX. Trade-off: no private networking, no native object storage.</div>
+
+        <div class="mb-8"><span class="badge b-moderate">Moderate Migration</span> <span style="color:#9b8ab0;"> → <strong class="text-gcp">GCP</strong>, Fly.io, DO</span></div>
+        <div class="text-xs text-muted mb-12">Best for: production apps needing private networking, compliance, cost savings. GCP wins on managed services breadth.</div>
+
+        <div class="mb-8"><span class="badge b-complex">Complex Migration</span> <span style="color:#9b8ab0;"> → AWS, Azure</span></div>
+        <div class="text-xs text-muted mb-12">Best for: enterprise teams with existing AWS/Azure contracts, multi-cloud strategy, or K8s requirements.</div>
+
+        <hr class="divider">
+        <div class="tip-box" style="margin-top:10px;">
+          <strong>GCP is the sweet spot</strong> for teams leaving Heroku: it has a 1:1 managed service for every Heroku add-on,
+          native VPC private networking, and AI tooling built in — at 40–65% lower cost.
+        </div>
+        <div class="info-box mt-8">
+          <strong>SendGrid note:</strong> On every platform, SendGrid is used as-is via SMTP/API. Only the <code class="mono">SENDGRID_API_KEY</code> env var storage location changes.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /plat-grid -->
+</div>
+</div><!-- /r02 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 03 — ADD-ON SERVICE MAPPING  (40,1160  4020×920)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r03" class="region r-dark" style="left:40px;top:1377px;width:4020px;height:927px;">
+<div class="rh">03 — Add-on Service Mapping: Heroku → All Platforms</div>
+<div class="rb">
+
+  <div class="mb-10 text-sm" style="color:#9b8ab0;">
+    Every Heroku add-on has equivalents across all major platforms. Cells show the managed service name, complexity badge, and any important caveats.
+    <span class="badge b-simple">Simple</span> = drop-in swap with env var change only.
+    <span class="badge b-moderate">Moderate</span> = code/config change needed.
+    <span class="badge b-complex">Complex</span> = SDK swap or architectural change required.
+  </div>
+
+  <table class="tbl" style="font-size:13.2px;">
+    <thead>
+      <tr>
+        <th style="width:90px;">Heroku Add-on</th>
+        <th class="th" style="width:60px;">Heroku Plan</th>
+        <th class="tg" style="width:101px;">GCP ★</th>
+        <th class="ta" style="width:86px;">AWS</th>
+        <th class="tz" style="width:78px;">Azure</th>
+        <th class="tr" style="width:70px;">Railway</th>
+        <th class="trn" style="width:70px;">Render</th>
+        <th class="tf" style="width:70px;">Fly.io</th>
+        <th style="width:132px;">Migration Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Postgres -->
+      <tr>
+        <td class="cf">🗄 Heroku Postgres</td>
+        <td class="th">Essential-0 → Standard-3</td>
+        <td class="tg">
+          <strong>Cloud SQL for PostgreSQL</strong><br>
+          <span class="badge b-simple">Simple</span> connection string swap<br>
+          <span class="text-xs text-muted">Private IP via VPC; HA replica available</span>
+        </td>
+        <td class="ta">
+          <strong>RDS for PostgreSQL</strong><br>
+          <span class="badge b-moderate">Moderate</span> IAM auth change<br>
+          <span class="text-xs text-muted">db.t3.micro–r5.2xlarge</span>
+        </td>
+        <td class="tz">
+          <strong>Azure DB for PostgreSQL</strong><br>
+          <span class="badge b-moderate">Moderate</span><br>
+          <span class="text-xs text-muted">Flexible Server; VNet injection</span>
+        </td>
+        <td class="tr">
+          <strong>Railway Postgres</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Automated DATABASE_URL</span>
+        </td>
+        <td class="trn">
+          <strong>Render PostgreSQL</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Managed, internal URLs</span>
+        </td>
+        <td class="tf">
+          <strong>Fly Postgres</strong><br>
+          <span class="badge b-moderate">Moderate</span><br>
+          <span class="text-xs text-muted">Self-managed cluster via fly pg</span>
+        </td>
+        <td><span class="badge b-moderate">Moderate</span> — export via <code class="mono">pg_dump</code>, import via <code class="mono">pg_restore</code>. Zero data loss with dual-write window.</td>
+      </tr>
+
+      <!-- Redis -->
+      <tr>
+        <td class="cf">🔴 Heroku Redis</td>
+        <td class="th">Mini → Premium-3</td>
+        <td class="tg">
+          <strong>Memorystore for Redis</strong><br>
+          <span class="badge b-simple">Simple</span> REDIS_URL swap<br>
+          <span class="text-xs text-muted">Private VPC IP only (no public)</span>
+        </td>
+        <td class="ta">
+          <strong>ElastiCache for Redis</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">VPC subnet group required</span>
+        </td>
+        <td class="tz">
+          <strong>Azure Cache for Redis</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">C0-C6 tiers; VNet injection</span>
+        </td>
+        <td class="tr">
+          <strong>Railway Redis</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">REDIS_URL auto-provisioned</span>
+        </td>
+        <td class="trn">
+          <strong>Render Redis</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Internal Redis URL</span>
+        </td>
+        <td class="tf">
+          <strong>Upstash (add-on)</strong><br>
+          <span class="badge b-moderate">Moderate</span><br>
+          <span class="text-xs text-muted">HTTP-based Redis; not socket</span>
+        </td>
+        <td><span class="badge b-simple">Simple</span> — Redis is ephemeral cache; no data export needed. Just swap REDIS_URL. <span class="text-xs text-muted">Caveat: GCP Memorystore requires VPC — see Phase 8.</span></td>
+      </tr>
+
+      <!-- Papertrail -->
+      <tr>
+        <td class="cf">📋 Papertrail</td>
+        <td class="th">Fixa → Strum (log drain)</td>
+        <td class="tg">
+          <strong>Cloud Logging</strong><br>
+          <span class="badge b-simple">Simple</span> Pino/Winston JSON<br>
+          <span class="text-xs text-muted">Structured logs auto-parsed; free 1GB/day</span>
+        </td>
+        <td class="ta">
+          <strong>CloudWatch Logs</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Log groups per service</span>
+        </td>
+        <td class="tz">
+          <strong>Azure Monitor / Log Analytics</strong><br>
+          <span class="badge b-moderate">Moderate</span><br>
+          <span class="text-xs text-muted">Workspace setup required</span>
+        </td>
+        <td class="tr">
+          <strong>Built-in logs</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Railway dashboard tail</span>
+        </td>
+        <td class="trn">
+          <strong>Built-in logs</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Render log stream</span>
+        </td>
+        <td class="tf">
+          <strong>Fly Logs</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">fly logs or log shipper</span>
+        </td>
+        <td><span class="badge b-simple">Simple</span> — Switch to JSON structured logging (Pino / Winston). Cloud Logging auto-parses <code class="mono">severity</code>, <code class="mono">message</code>, <code class="mono">timestamp</code> fields.</td>
+      </tr>
+
+      <!-- Bucketeer / S3 -->
+      <tr>
+        <td class="cf">🪣 Bucketeer (S3 proxy)</td>
+        <td class="th">Hobbyist → Business</td>
+        <td class="tg">
+          <strong>Cloud Storage (GCS)</strong><br>
+          <span class="badge b-moderate">Moderate</span> SDK swap<br>
+          <span class="text-xs text-muted">IAM-native; no access keys needed</span>
+        </td>
+        <td class="ta">
+          <strong>Amazon S3 (native)</strong><br>
+          <span class="badge b-simple">Simple</span> — same SDK<br>
+          <span class="text-xs text-muted">Just change endpoint/bucket</span>
+        </td>
+        <td class="tz">
+          <strong>Azure Blob Storage</strong><br>
+          <span class="badge b-complex">Complex</span> SDK change<br>
+          <span class="text-xs text-muted">@azure/storage-blob SDK</span>
+        </td>
+        <td class="tr">
+          <strong>External S3 or R2</strong><br>
+          <span class="badge b-moderate">Moderate</span><br>
+          <span class="text-xs text-muted">Cloudflare R2 S3-compat</span>
+        </td>
+        <td class="trn">
+          <strong>External S3 or R2</strong><br>
+          <span class="badge b-moderate">Moderate</span><br>
+          <span class="text-xs text-muted">No native storage</span>
+        </td>
+        <td class="tf">
+          <strong>Tigris / R2 (add-on)</strong><br>
+          <span class="badge b-moderate">Moderate</span><br>
+          <span class="text-xs text-muted">S3-compatible Tigris</span>
+        </td>
+        <td><span class="badge b-moderate">Moderate</span> — GCS requires replacing AWS SDK with <code class="mono">@google-cloud/storage</code>. Object key paths are preserved. Signed URL API is similar.</td>
+      </tr>
+
+      <!-- SendGrid -->
+      <tr>
+        <td class="cf">📧 SendGrid</td>
+        <td class="th">Essentials 50k → Pro 100k</td>
+        <td class="tg">
+          <strong>SendGrid (unchanged)</strong><br>
+          <span class="badge b-simple">Simple</span> — no change<br>
+          <span class="text-xs text-muted">Only store key in Secret Manager</span>
+        </td>
+        <td class="ta">
+          <strong>SendGrid or Amazon SES</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">SES at $0.10/1000 emails</span>
+        </td>
+        <td class="tz">
+          <strong>SendGrid or Azure Comm.</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Azure Comm. Services email</span>
+        </td>
+        <td class="tr">
+          <strong>SendGrid (env var)</strong><br>
+          <span class="badge b-simple">Simple</span>
+        </td>
+        <td class="trn">
+          <strong>SendGrid (env var)</strong><br>
+          <span class="badge b-simple">Simple</span>
+        </td>
+        <td class="tf">
+          <strong>SendGrid (env var)</strong><br>
+          <span class="badge b-simple">Simple</span>
+        </td>
+        <td><span class="badge b-simple">Simple</span> — SendGrid works on every platform. Only change is where <code class="mono">SENDGRID_API_KEY</code> is stored (Secret Manager, Parameter Store, etc.).</td>
+      </tr>
+
+      <!-- Heroku Scheduler -->
+      <tr>
+        <td class="cf">⏰ Heroku Scheduler</td>
+        <td class="th">Free (bundled)</td>
+        <td class="tg">
+          <strong>Cloud Scheduler + Cloud Run</strong><br>
+          <span class="badge b-moderate">Moderate</span> OIDC auth<br>
+          <span class="text-xs text-muted">HTTP trigger with OIDC token</span>
+        </td>
+        <td class="ta">
+          <strong>EventBridge + Lambda / ECS</strong><br>
+          <span class="badge b-complex">Complex</span><br>
+          <span class="text-xs text-muted">Lambda or ECS task per job</span>
+        </td>
+        <td class="tz">
+          <strong>Azure Logic Apps / Functions</strong><br>
+          <span class="badge b-complex">Complex</span><br>
+          <span class="text-xs text-muted">Timer trigger Functions</span>
+        </td>
+        <td class="tr">
+          <strong>Railway Cron Jobs (beta)</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">railway.toml cron entry</span>
+        </td>
+        <td class="trn">
+          <strong>Render Cron Jobs</strong><br>
+          <span class="badge b-simple">Simple</span><br>
+          <span class="text-xs text-muted">Cron job service type</span>
+        </td>
+        <td class="tf">
+          <strong>Custom (no native)</strong><br>
+          <span class="badge b-complex">Complex</span><br>
+          <span class="text-xs text-muted">node-cron inside app</span>
+        </td>
+        <td><span class="badge b-moderate">Moderate</span> — GCP pattern: one Cloud Run <em>workers</em> service + one Cloud Scheduler job per worker. OIDC auth prevents unauthorized triggers. See Phase 9.</td>
+      </tr>
+
+      <!-- TLS / ACM -->
+      <tr>
+        <td class="cf">🔒 Heroku ACM (TLS)</td>
+        <td class="th">Included</td>
+        <td class="tg"><strong>Google-managed SSL cert</strong><br><span class="badge b-simple">Simple</span> on Global HTTPS LB<br><span class="text-xs text-muted">Auto-renew; no config needed</span></td>
+        <td class="ta"><strong>ACM (AWS Cert Mgr)</strong><br><span class="badge b-simple">Simple</span></td>
+        <td class="tz"><strong>Azure-managed cert</strong><br><span class="badge b-simple">Simple</span></td>
+        <td class="tr"><strong>Auto TLS</strong><br><span class="badge b-simple">Simple</span></td>
+        <td class="trn"><strong>Auto TLS</strong><br><span class="badge b-simple">Simple</span></td>
+        <td class="tf"><strong>Auto TLS</strong><br><span class="badge b-simple">Simple</span></td>
+        <td><span class="badge b-simple">Simple</span> — All platforms auto-provision TLS for custom domains. DNS validation only. FIDO2/WebAuthn domain bindings are preserved if custom domain is unchanged.</td>
+      </tr>
+
+      <!-- Config Vars -->
+      <tr>
+        <td class="cf">⚙️ Config Vars</td>
+        <td class="th">Built-in (heroku config)</td>
+        <td class="tg"><strong>Secret Manager</strong><br><span class="badge b-moderate">Moderate</span> bulk import<br><span class="text-xs text-muted">Injected via --set-secrets at deploy</span></td>
+        <td class="ta"><strong>Secrets Manager / SSM</strong><br><span class="badge b-moderate">Moderate</span></td>
+        <td class="tz"><strong>Azure Key Vault</strong><br><span class="badge b-moderate">Moderate</span></td>
+        <td class="tr"><strong>Railway Variables</strong><br><span class="badge b-simple">Simple</span></td>
+        <td class="trn"><strong>Render Env Vars</strong><br><span class="badge b-simple">Simple</span></td>
+        <td class="tf"><strong>fly secrets</strong><br><span class="badge b-simple">Simple</span></td>
+        <td><span class="badge b-moderate">Moderate</span> — Export with <code class="mono">heroku config -s</code>, bulk-import to Secret Manager. AI can automate this — see Section 17.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid-2 mt-16" style="grid-template-columns:1fr 1fr 1fr;gap:14px;">
+    <div class="note-box">
+      <strong>🗄 Postgres Migration Key Fact:</strong> The hardest part is not the data export — it's the <em>dual-write window</em>.
+      Run old and new DB in parallel for 15–30 minutes during cutover, with your app writing to both.
+      Zero data loss is achievable with this pattern.
+    </div>
+    <div class="note-box">
+      <strong>🔴 Redis Migration Key Fact:</strong> Do <em>not</em> export Redis data. Redis is a cache.
+      Your app will re-warm it naturally within minutes of startup. The only migration task is
+      updating the <code class="mono">REDIS_URL</code> to the new private IP.
+    </div>
+    <div class="note-box">
+      <strong>🪣 Storage Migration Key Fact:</strong> Copy objects with <code class="mono">gsutil rsync</code>
+      (from S3 to GCS) before DNS cutover. Update your SDK from <code class="mono">aws-sdk/S3</code>
+      to <code class="mono">@google-cloud/storage</code>. The bucket naming convention can stay the same.
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:12px;">
+    <strong>🔒 Heroku ACM vs GCP Google-Managed SSL — How TLS Handling Differs</strong>
+    <div class="grid-2" style="grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;">
+      <div style="font-size:13.2px;line-height:1.7;">
+        <span style="color:#b094d0;font-weight:600;">Heroku ACM:</span>
+        Provisions a <strong>Let's Encrypt</strong> cert automatically on <code class="mono">heroku domains:add</code>.
+        TLS terminates at <strong>Heroku's edge routers</strong> — your dyno only sees HTTP internally.
+        CNAME your domain to a Heroku DNS target (e.g. <code class="mono">tokyo-1234.herokudns.com</code>).
+        Cert is <em>per-app</em>; auto-renewed at ~60 days. Custom upload: <code class="mono">heroku certs:add cert.pem key.pem</code>.
+      </div>
+      <div style="font-size:13.2px;line-height:1.7;">
+        <span style="color:#79c0ff;font-weight:600;">GCP Google-Managed SSL:</span>
+        Provisions a <strong>Google Trust Services</strong> cert automatically on the Global HTTPS LB.
+        TLS terminates at <strong>GCP's Load Balancer</strong> — Cloud Run receives HTTP/2 internally.
+        Point your DNS <strong>A record</strong> to the LB IP (<code class="mono">gcp static load balancer ip assigned to your apps</code>).<br/>
+        The cert is <em>per-LB-frontend</em>, attached to the target HTTPS proxy — not the Cloud Run service directly.
+        Custom upload: <code class="mono">gcloud compute ssl-certificates create --certificate=cert.pem --private-key=key.pem</code>.
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:12.1px;color:#a0c4ff;">
+      <strong>✅ Similarity:</strong> Both platforms fully automate cert provisioning and renewal — zero manual cert management.
+      DNS propagation (5–30 min) is the only wait time on both platforms.
+      &nbsp;|&nbsp;
+      <strong>⚠️ Key difference:</strong> Heroku cert = one cert per app.
+      GCP cert = one cert per LB frontend, shareable across all backend services (dev/staging/prod can use separate forwarding rules with their own certs, or a multi-domain cert).
+    </div>
+  </div>
+
+</div>
+</div><!-- /r03 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 04 — GCP TARGET ARCHITECTURE  (40,2180  1900×950)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r04" class="region r-teal" style="left:40px;top:2360px;width:1900px;height:794px;">
+<div class="rh">04 — GCP Target Architecture: Heroku Stack → Cloud-Native Services</div>
+<div class="rb">
+  <div class="grid-2 gap-16">
+
+    <div>
+      <div class="card mb-12" data-search="gcp architecture overview">
+        <div class="ch ch-gcp">🏛 Service-for-Service Mapping</div>
+        <div class="cb">
+          <table class="tbl" style="font-size:13.2px;">
+            <tr><th class="th">Heroku Component</th><th class="tg">GCP Replacement</th><th>Why</th></tr>
+            <tr><td class="th">Web Dyno (Node.js)</td><td class="tg"><strong>Cloud Run</strong></td><td>Stateless containers; scale-to-zero; pay-per-request</td></tr>
+            <tr><td class="th">Worker Dynos</td><td class="tg"><strong>Cloud Run (workers svc)</strong></td><td>Separate service; OIDC-authenticated HTTP triggers</td></tr>
+            <tr><td class="th">Heroku Postgres</td><td class="tg"><strong>Cloud SQL PostgreSQL 15</strong></td><td>Private IP; HA replica; same Postgres wire protocol</td></tr>
+            <tr><td class="th">Heroku Redis</td><td class="tg"><strong>Memorystore for Redis 7</strong></td><td>Private IP via VPC egress; Standard HA tier</td></tr>
+            <tr><td class="th">Heroku Scheduler</td><td class="tg"><strong>Cloud Scheduler</strong></td><td>Native GCP cron; OIDC auth to Cloud Run</td></tr>
+            <tr><td class="th">Bucketeer (S3)</td><td class="tg"><strong>Cloud Storage (GCS)</strong></td><td>IAM-native; signed URLs; same object-key pattern</td></tr>
+            <tr><td class="th">Papertrail</td><td class="tg"><strong>Cloud Logging</strong></td><td>Pino JSON auto-parsed; structured queries; alerting</td></tr>
+            <tr><td class="th">Heroku ACM (TLS)</td><td class="tg"><strong>Google-managed SSL cert</strong></td><td>Auto-renewed on Global HTTPS Load Balancer</td></tr>
+            <tr><td class="th">Heroku CI</td><td class="tg"><strong>Cloud Build + Artifact Registry</strong></td><td>Build once; promote image digest to staging/prod</td></tr>
+            <tr><td class="th">Config Vars</td><td class="tg"><strong>Secret Manager</strong></td><td><code class="mono">--set-secrets</code> injection at Cloud Run revision</td></tr>
+            <tr><td class="th">SendGrid</td><td class="tg"><strong>SendGrid (unchanged)</strong></td><td>No change; only key storage location changes</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" data-search="service accounts iam roles">
+        <div class="ch ch-gcp">🔑 Minimum Required Service Accounts</div>
+        <div class="cb text-sm">
+          <table class="tbl" style="font-size:12.7px;">
+            <tr><th>Account</th><th>Roles Required</th></tr>
+            <tr><td><code class="mono">app-run@project.iam…</code></td><td><span style="color:#9b8ab0;">cloudsql.client · secretmanager.secretAccessor · storage.objectAdmin · redis.viewer</span></td></tr>
+            <tr><td><code class="mono">scheduler@project.iam…</code></td><td><span style="color:#9b8ab0;">run.invoker (on workers service only)</span></td></tr>
+            <tr><td><code class="mono">build@project.iam…</code></td><td><span style="color:#9b8ab0;">run.developer · artifactregistry.writer · storage.objectViewer</span></td></tr>
+          </table>
+          <div class="tip-box mt-8">
+            <strong>Workload Identity Federation</strong> eliminates service account key files (<code class="mono">SA_KEY_B64</code>).
+            Cloud Run uses ADC (Application Default Credentials) automatically — no key JSON in your app.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" data-search="gcp architecture diagram cloud run vpc load balancer">
+        <div class="ch ch-gcp">🗺 Architecture Diagram</div>
+        <div class="cb">
+          <div class="arch-label">Public Internet</div>
+          <div class="arch-box internet">🌐 Internet (HTTPS :443)</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-box waf">🛡 Cloud Armor WAF — OWASP rules · Rate limiting · Geo-block</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-box lb">⚖️ Global HTTPS Load Balancer — Google-managed TLS cert · URL routing · NEG backend</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-row">
+            <div class="arch-box run">⚙️ Cloud Run: api-service<br><span class="text-xs text-muted">--allow-unauthenticated</span></div>
+            <div class="arch-box run" style="border-color:#1a3860;">⚙️ Cloud Run: workers-service<br><span class="text-xs text-muted">--no-allow-unauthenticated</span></div>
+          </div>
+          <div class="arch-arrow">↓ Direct VPC Egress (10.0.0.0/24)</div>
+          <div class="arch-box vpc">🔒 VPC (us-central1) — Private networking — no public internet routing for data services</div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-row">
+            <div class="arch-box db">🗄 Cloud SQL<br>PostgreSQL 15<br><span class="text-xs text-muted">10.100.x.x private IP</span></div>
+            <div class="arch-box cache">🔴 Memorystore<br>Redis 7<br><span class="text-xs text-muted">10.0.1.x private IP</span></div>
+          </div>
+          <div class="arch-arrow">↓ IAM-authenticated</div>
+          <div class="arch-row">
+            <div class="arch-box secrets">⚙️ Secret Manager<br><span class="text-xs text-muted">All env vars</span></div>
+            <div class="arch-box storage">🪣 Cloud Storage<br><span class="text-xs text-muted">Object files</span></div>
+            <div class="arch-box logging">📋 Cloud Logging<br><span class="text-xs text-muted">JSON structured</span></div>
+          </div>
+          <div class="arch-arrow">↑ OIDC trigger</div>
+          <div class="arch-box sched">⏰ Cloud Scheduler → POST /workers/{jobName} (OIDC)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /r04 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 05 — PHASE 0: PREREQUISITES  (2040,2180  1980×500)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r05" class="region r-navy" style="left:2040px;top:2360px;width:1980px;height:604px;">
+<div class="rh">05 — Phase 0: Prerequisites &amp; GCP Project Setup</div>
+<div class="rb">
+  <div class="grid-3 gap-12">
+
+    <div class="card" data-search="gcloud setup enable apis project">
+      <div class="ch ch-step">Step 0.1 — Enable Required APIs</div>
+      <div class="cb">
+        <div class="text-xs text-muted mb-8">Run once per GCP project. Takes ~2 minutes.</div>
+        <pre class="code-block"><span class="cm"># Authenticate and set project</span>
+<span class="kg">gcloud</span> auth login
+<span class="kg">gcloud</span> config set project <span class="vl">YOUR_PROJECT_ID</span>
+
+<span class="cm"># Enable all required APIs in one command</span>
+<span class="kg">gcloud</span> services enable <span class="fl">\</span>
+  run.googleapis.com <span class="fl">\</span>
+  sqladmin.googleapis.com <span class="fl">\</span>
+  redis.googleapis.com <span class="fl">\</span>
+  secretmanager.googleapis.com <span class="fl">\</span>
+  storage.googleapis.com <span class="fl">\</span>
+  cloudbuild.googleapis.com <span class="fl">\</span>
+  artifactregistry.googleapis.com <span class="fl">\</span>
+  cloudscheduler.googleapis.com <span class="fl">\</span>
+  servicenetworking.googleapis.com <span class="fl">\</span>
+  logging.googleapis.com <span class="fl">\</span>
+  monitoring.googleapis.com</pre>
+        <div class="info-box">
+          <strong>vs. Heroku:</strong> <code class="mono">heroku create myapp</code> — one command.
+          GCP setup is more verbose but each API is independently billable and auditable.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-search="service accounts iam create">
+      <div class="ch ch-step">Step 0.2 — Create Service Accounts</div>
+      <div class="cb">
+        <pre class="code-block"><span class="cm"># Cloud Run runtime identity</span>
+<span class="kg">gcloud</span> iam service-accounts create <span class="vl">app-run</span> <span class="fl">\</span>
+  <span class="fl">--display-name</span>=<span class="st">"App Cloud Run SA"</span>
+
+<span class="cm"># Grant roles to Cloud Run SA</span>
+<span class="kg">gcloud</span> projects add-iam-policy-binding <span class="vl">YOUR_PROJECT_ID</span> <span class="fl">\</span>
+  <span class="fl">--member</span>=<span class="st">"serviceAccount:app-run@YOUR_PROJECT_ID.iam.gserviceaccount.com"</span> <span class="fl">\</span>
+  <span class="fl">--role</span>=<span class="st">"roles/cloudsql.client"</span>
+
+<span class="kg">gcloud</span> projects add-iam-policy-binding <span class="vl">YOUR_PROJECT_ID</span> <span class="fl">\</span>
+  <span class="fl">--member</span>=<span class="st">"serviceAccount:app-run@YOUR_PROJECT_ID.iam.gserviceaccount.com"</span> <span class="fl">\</span>
+  <span class="fl">--role</span>=<span class="st">"roles/secretmanager.secretAccessor"</span>
+
+<span class="cm"># Cloud Scheduler identity (invoker only)</span>
+<span class="kg">gcloud</span> iam service-accounts create <span class="vl">app-scheduler</span> <span class="fl">\</span>
+  <span class="fl">--display-name</span>=<span class="st">"App Scheduler SA"</span></pre>
+        <div class="tip-box">
+          <strong>Heroku has no equivalent.</strong> Heroku manages service identity internally.
+          GCP separates identity from config — a security advantage.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-search="artifact registry docker images">
+      <div class="ch ch-step">Step 0.3 — Container Registry Setup</div>
+      <div class="cb">
+        <pre class="code-block"><span class="cm"># Create Artifact Registry repo for Docker images</span>
+<span class="kg">gcloud</span> artifacts repositories create <span class="vl">app-images</span> <span class="fl">\</span>
+  <span class="fl">--repository-format</span>=docker <span class="fl">\</span>
+  <span class="fl">--location</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--description</span>=<span class="st">"App container images"</span>
+
+<span class="cm"># Configure Docker auth for the registry</span>
+<span class="kg">gcloud</span> auth configure-docker us-central1-docker.pkg.dev
+
+<span class="cm"># Heroku equivalent: git push heroku main (buildpack auto-builds)
+# GCP: build is decoupled — you control the image</span></pre>
+        <div class="warn-box mt-8">
+          <strong>Key difference:</strong> Heroku buildpacks auto-detect your language and
+          build a slug. GCP requires a <code class="mono">Dockerfile</code> (see Phase 7).
+          This gives you full control but requires a one-time conversion effort.
+        </div>
+        <div class="info-box mt-8">
+          GCP best practice: <strong>build once, promote the same image digest</strong> through dev → staging → prod.
+          Never rebuild for promotion — same image hash guarantees identical behavior.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /grid-3 -->
+</div>
+</div><!-- /r05 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 06 — PHASE 1: DATABASE MIGRATION  (40,3230  1270×1440)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r06" class="region r-green" style="left:40px;top:3238px;width:1270px;height:1600px;">
+<div class="rh">06 — Phase 1: Heroku Postgres → Cloud SQL</div>
+<div class="rb flex flex-col gap-12">
+
+  <div class="card" data-search="postgres migration cloud sql export import pg_dump">
+    <div class="ch ch-green">🗄 Migration Overview <span class="badge b-moderate" style="margin-left:auto;">Moderate Complexity</span></div>
+    <div class="cb">
+      <div class="grid-2 gap-12">
+        <div>
+          <div class="text-xs" style="color:#34A853;font-weight:700;text-transform:uppercase;margin-bottom:6px;">What changes</div>
+          <ul style="list-style:none;font-size:13.2px;color:#c9b8e0;">
+            <li class="mb-6">✓ <code class="mono">DATABASE_URL</code> value (new Cloud SQL private IP)</li>
+            <li class="mb-6">✓ Connection must go through VPC (private IP only)</li>
+            <li class="mb-6">✓ <code class="mono">ssl: {rejectUnauthorized: false}</code> may need update</li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-xs" style="color:#7b6890;font-weight:700;text-transform:uppercase;margin-bottom:6px;">What stays the same</div>
+          <ul style="list-style:none;font-size:13.2px;color:#9b8ab0;">
+            <li class="mb-6">✓ Full Postgres 15 compatibility</li>
+            <li class="mb-6">✓ All schemas, tables, indexes, RLS policies</li>
+            <li class="mb-6">✓ Same <code class="mono">pg</code> / <code class="mono">postgres</code> npm drivers</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="heroku postgres export pg_dump backup">
+    <div class="ch ch-step">Step 1.1 — Export from Heroku Postgres</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Capture a fresh backup on Heroku</span>
+<span class="kh">heroku</span> pg:backups:capture <span class="fl">--app</span> <span class="vl">myapp-prod</span>
+
+<span class="cm"># Download the backup as a .dump file</span>
+<span class="kh">heroku</span> pg:backups:download <span class="fl">-o</span> <span class="st">db-export.dump</span> <span class="fl">--app</span> <span class="vl">myapp-prod</span>
+
+<span class="cm"># Or: export via pg_dump directly (requires DATABASE_URL)</span>
+<span class="br">pg_dump</span> <span class="fl">-Fc</span> <span class="fl">-v</span> <span class="ev">$DATABASE_URL</span> <span class="fl">-f</span> <span class="st">db-export.dump</span>
+
+<span class="cm"># Verify the dump is not empty</span>
+<span class="br">ls -lh</span> db-export.dump   <span class="cm"># Should be > 0 bytes</span></pre>
+    </div>
+  </div>
+
+  <div class="card" data-search="cloud sql create instance postgres">
+    <div class="ch ch-step">Step 1.2 — Create Cloud SQL Instance</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Create Cloud SQL PostgreSQL 15 instance (production)</span>
+<span class="kg">gcloud</span> sql instances create <span class="vl">myapp-db-prod</span> <span class="fl">\</span>
+  <span class="fl">--database-version</span>=POSTGRES_15 <span class="fl">\</span>
+  <span class="fl">--tier</span>=db-g1-small <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--no-assign-ip</span> <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span> <span class="fl">\</span>
+  <span class="fl">--availability-type</span>=REGIONAL
+
+<span class="cm"># Create the app database</span>
+<span class="kg">gcloud</span> sql databases create <span class="vl">myapp</span> <span class="fl">--instance</span>=<span class="vl">myapp-db-prod</span>
+
+<span class="cm"># Set the postgres user password</span>
+<span class="kg">gcloud</span> sql users set-password postgres <span class="fl">\</span>
+  <span class="fl">--instance</span>=<span class="vl">myapp-db-prod</span> <span class="fl">--password</span>=<span class="vl">STRONG_PASSWORD</span>
+
+<span class="cm"># Get the private IP address (store for DATABASE_URL)</span>
+<span class="kg">gcloud</span> sql instances describe <span class="vl">myapp-db-prod</span> <span class="fl">\</span>
+  <span class="fl">--format</span>=<span class="st">"get(ipAddresses[0].ipAddress)"</span></pre>
+    </div>
+  </div>
+
+  <div class="card" data-search="pg_restore import cloud sql data">
+    <div class="ch ch-step">Step 1.3 — Import Data &amp; Update Connection String</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Upload dump to GCS (Cloud SQL needs GCS source)</span>
+<span class="kg">gsutil</span> cp db-export.dump <span class="vl">gs://myapp-backups/db-export.dump</span>
+
+<span class="cm"># Import via Cloud SQL (handles pg_restore internally)</span>
+<span class="kg">gcloud</span> sql import sql <span class="vl">myapp-db-prod</span> <span class="fl">\</span>
+  gs://myapp-backups/db-export.dump <span class="fl">\</span>
+  <span class="fl">--database</span>=<span class="vl">myapp</span>
+
+<span class="cm"># OR: use pg_restore directly via Cloud SQL Auth Proxy
+# Start proxy locally: cloud-sql-proxy PROJECT:REGION:INSTANCE
+pg_restore</span> <span class="fl">-h</span> 127.0.0.1 <span class="fl">-U</span> postgres <span class="fl">-d</span> myapp db-export.dump
+
+<span class="cm"># New DATABASE_URL format for Cloud SQL (private IP)</span>
+<span class="ev">DATABASE_URL</span>=<span class="st">postgresql://postgres:PASSWORD@10.100.x.x/myapp?sslmode=disable</span>
+
+<span class="cm"># Store in Secret Manager</span>
+<span class="br">echo</span> <span class="st">"postgresql://postgres:PASSWORD@10.100.x.x/myapp"</span> | <span class="fl">\</span>
+  <span class="kg">gcloud</span> secrets create <span class="vl">myapp-prod-DATABASE_URL</span> <span class="fl">--data-file</span>=-</pre>
+      <div class="warn-box mt-8">
+        <strong>Private IP only:</strong> Memorystore and Cloud SQL are only accessible from within the VPC.
+        Your Cloud Run service must have Direct VPC Egress enabled. See Phase 8.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r06 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 07 — PHASE 2: CACHE MIGRATION  (1410,3230  1270×1400)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r07" class="region r-amber" style="left:1410px;top:3238px;width:1270px;height:1499px;">
+<div class="rh">07 — Phase 2: Heroku Redis → Memorystore</div>
+<div class="rb flex flex-col gap-12">
+
+  <div class="card" data-search="redis memorystore migration cache">
+    <div class="ch ch-amber">🔴 Migration Overview <span class="badge b-simple" style="margin-left:auto;">Simple — No Data Export</span></div>
+    <div class="cb">
+      <div class="tip-box">
+        <strong>Redis is a cache, not a database.</strong> You do NOT export or migrate Redis data.
+        Your application will re-warm the cache naturally within minutes of connecting to the new instance.
+        The only task is provisioning Memorystore and updating <code class="mono">REDIS_URL</code>.
+      </div>
+      <div class="grid-2 gap-12 mt-10">
+        <div>
+          <div class="text-xs" style="color:#FBBC04;font-weight:700;text-transform:uppercase;margin-bottom:6px;">What changes</div>
+          <ul style="list-style:none;font-size:13.2px;color:#c9b8e0;">
+            <li class="mb-6">✓ <code class="mono">REDIS_URL</code> → private IP (no <code class="mono">redis://user:pass@host</code>)</li>
+            <li class="mb-6">✓ Must use VPC — no public endpoint</li>
+            <li class="mb-6">✓ AUTH disabled by default (VPC-only security)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-xs" style="color:#7b6890;font-weight:700;text-transform:uppercase;margin-bottom:6px;">What stays the same</div>
+          <ul style="list-style:none;font-size:13.2px;color:#9b8ab0;">
+            <li class="mb-6">✓ Full Redis 7 compatibility</li>
+            <li class="mb-6">✓ Same <code class="mono">ioredis</code> / <code class="mono">redis</code> npm clients</li>
+            <li class="mb-6">✓ All Redis commands, pub/sub, streams</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="memorystore create redis instance gcloud">
+    <div class="ch ch-step">Step 2.1 — Create Memorystore Redis Instance</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Create Memorystore for Redis (Standard HA tier)</span>
+<span class="kg">gcloud</span> redis instances create <span class="vl">myapp-cache-prod</span> <span class="fl">\</span>
+  <span class="fl">--size</span>=1 <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--redis-version</span>=redis_7_0 <span class="fl">\</span>
+  <span class="fl">--tier</span>=STANDARD_HA <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span>
+
+<span class="cm"># Wait for provisioning (~5 minutes), then get private IP</span>
+<span class="kg">gcloud</span> redis instances describe <span class="vl">myapp-cache-prod</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--format</span>=<span class="st">"get(host)"</span>
+<span class="cm"># Returns: 10.0.1.34 (example private IP)</span>
+
+<span class="cm"># Heroku equivalent:
+# heroku addons:create heroku-redis:mini -a myapp-prod</span></pre>
+    </div>
+  </div>
+
+  <div class="card" data-search="redis url update secret manager">
+    <div class="ch ch-step">Step 2.2 — Update REDIS_URL Secret</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Store the new Redis private IP in Secret Manager</span>
+<span class="br">echo</span> <span class="st">"redis://10.0.1.34:6379"</span> | <span class="fl">\</span>
+  <span class="kg">gcloud</span> secrets create <span class="vl">myapp-prod-REDIS_URL</span> <span class="fl">--data-file</span>=-
+
+<span class="cm"># Verify: read back the secret value</span>
+<span class="kg">gcloud</span> secrets versions access latest <span class="fl">\</span>
+  <span class="fl">--secret</span>=<span class="vl">myapp-prod-REDIS_URL</span>
+
+<span class="cm"># Heroku equivalent:
+# heroku config:get REDIS_URL -a myapp-prod</span></pre>
+      <div class="info-box mt-8">
+        <strong>No AUTH password in the URL.</strong> Memorystore on a private VPC doesn't need
+        Redis AUTH by default — the VPC firewall is your security boundary.
+        If your app connects with <code class="mono">redis://user:pass@host</code>, remove the credentials.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="ioredis redis connection test">
+    <div class="ch ch-step">Step 2.3 — Verify Connectivity from Cloud Run</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm">// Node.js: test Redis connection (ioredis)</span>
+<span class="br">import</span> Redis <span class="br">from</span> <span class="st">'ioredis'</span>;
+
+<span class="br">const</span> redis = <span class="br">new</span> Redis(<span class="ev">process.env.REDIS_URL</span>);
+
+redis.ping().then(<span class="br">r</span> => {
+  console.log(<span class="st">'Redis ping:'</span>, r); <span class="cm">// PONG</span>
+  redis.quit();
+});</pre>
+      <div class="warn-box mt-8">
+        <strong>VPC required:</strong> This test only works when the code runs
+        <em>inside</em> a Cloud Run service with Direct VPC Egress enabled.
+        You cannot connect to Memorystore from your local machine without a VPN or Cloud SQL Auth Proxy.
+        See Phase 8 for VPC setup.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r07 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 08 — PHASE 3: LOGGING  (2780,3230  1280×1260)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r08" class="region r-violet" style="left:2780px;top:3238px;width:1280px;height:1285px;">
+<div class="rh">08 — Phase 3: Papertrail → Cloud Logging</div>
+<div class="rb flex flex-col gap-12">
+
+  <div class="card" data-search="papertrail cloud logging migration structured">
+    <div class="ch ch-violet">📋 Migration Overview <span class="badge b-simple" style="margin-left:auto;">Simple</span></div>
+    <div class="cb">
+      <div class="info-box">
+        <strong>No log drain setup needed.</strong> Cloud Run automatically captures all
+        <code class="mono">stdout</code> / <code class="mono">stderr</code> output to Cloud Logging.
+        JSON-structured logs are auto-parsed — no agent or sidecar required.
+      </div>
+      <div class="grid-2 gap-12 mt-10">
+        <div>
+          <div class="text-xs" style="color:#a371f7;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Papertrail</div>
+          <ul style="list-style:none;font-size:13.2px;color:#c9b8e0;">
+            <li class="mb-5">✓ Log drain (HTTPS or syslog)</li>
+            <li class="mb-5">✓ 1-day search on free plan</li>
+            <li class="mb-5">✓ Simple text log search</li>
+            <li class="mb-5">✗ No structured query support</li>
+            <li class="mb-5">✗ No alerting policies</li>
+            <li class="mb-5">✗ Extra add-on billing</li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-xs" style="color:#34A853;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Cloud Logging</div>
+          <ul style="list-style:none;font-size:13.2px;color:#c9b8e0;">
+            <li class="mb-5">✓ Automatic — zero config on Cloud Run</li>
+            <li class="mb-5">✓ 30-day retention (free tier: 1GB/day)</li>
+            <li class="mb-5">✓ Structured log queries (Logging Query Language)</li>
+            <li class="mb-5">✓ Log-based alerting policies</li>
+            <li class="mb-5">✓ Export to BigQuery or GCS for analytics</li>
+            <li class="mb-5">✓ Integrated with Cloud Trace and Monitoring</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="pino winston structured logging json">
+    <div class="ch ch-step">Step 3.1 — Switch to Structured JSON Logging</div>
+    <div class="cb">
+      <div class="text-xs text-muted mb-8">Cloud Logging automatically parses JSON with these reserved field names:</div>
+      <pre class="code-block"><span class="cm">// Node.js: Pino logger setup (recommended)</span>
+<span class="br">import</span> pino <span class="br">from</span> <span class="st">'pino'</span>;
+
+<span class="br">export const</span> logger = pino({
+  level: <span class="ev">process.env.LOG_LEVEL</span> || <span class="st">'info'</span>,
+  <span class="cm">// GCP Cloud Logging field mappings</span>
+  messageKey: <span class="st">'message'</span>,      <span class="cm">// → jsonPayload.message</span>
+  timestamp: pino.stdTimeFunctions.isoTime,
+  formatters: {
+    level: (label) => ({ severity: label.toUpperCase() })
+    <span class="cm">// Maps pino levels → GCP severity: INFO, WARNING, ERROR</span>
+  }
+});
+
+<span class="cm">// Usage (identical to before — no app code changes)</span>
+logger.info({ userId: <span class="st">'u123'</span>, action: <span class="st">'login'</span> }, <span class="st">'User logged in'</span>);
+logger.error({ err, requestId }, <span class="st">'Database connection failed'</span>);</pre>
+    </div>
+  </div>
+
+  <div class="card" data-search="cloud logging query search filter logs">
+    <div class="ch ch-step">Step 3.2 — Querying Logs in Cloud Logging</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Tail live logs (equivalent to: heroku logs --tail -a myapp)</span>
+<span class="kg">gcloud</span> logging tail <span class="fl">\</span>
+  <span class="st">'resource.type="cloud_run_revision" AND resource.labels.service_name="myapp-api-prod"'</span>
+
+<span class="cm"># Query last hour of ERROR logs</span>
+<span class="kg">gcloud</span> logging read <span class="fl">\</span>
+  <span class="st">'resource.type="cloud_run_revision"
+   AND severity=ERROR
+   AND timestamp>="2025-01-01T10:00:00Z"'</span> <span class="fl">\</span>
+  <span class="fl">--limit</span>=50 <span class="fl">--format</span>=json
+
+<span class="cm"># Heroku equivalent:
+# heroku logs -n 200 --app myapp-prod
+# heroku logs --source app --dyno worker -a myapp-prod</span></pre>
+      <div class="info-box mt-8">
+        <strong>Cloud Logging Query Language (LQL)</strong> supports boolean operators, field matching,
+        regex, and timestamp ranges. Use the Cloud Console Log Explorer UI for interactive search
+        — it auto-suggests field names from your actual logs.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r08 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 09 — PHASE 4: STORAGE (GCS)  (40,4770  1270×780)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r09" class="region r-sage" style="left:40px;top:4938px;width:1270px;height:1015px;">
+<div class="rh">09 — Phase 4: Bucketeer (S3) → Cloud Storage (GCS)</div>
+<div class="rb flex flex-col gap-12">
+
+  <div class="card" data-search="bucketeer s3 gcs cloud storage migration sdk">
+    <div class="ch ch-green">🪣 Migration Overview <span class="badge b-moderate" style="margin-left:auto;">Moderate — SDK Swap</span></div>
+    <div class="cb">
+      <div class="warn-box">
+        <strong>SDK change required.</strong> Bucketeer is a Heroku add-on that wraps AWS S3.
+        GCS uses a different client library. Object keys / paths can stay identical — only the SDK calls change.
+      </div>
+      <div class="grid-2 gap-12 mt-10 text-sm">
+        <div>
+          <div class="text-xs" style="color:#FF9900;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Bucketeer (AWS S3)</div>
+          <pre class="code-block" style="font-size:11.6px;"><span class="kh">import</span> { S3Client, PutObjectCommand }
+  <span class="kh">from</span> <span class="st">'@aws-sdk/client-s3'</span>;
+
+<span class="br">const</span> s3 = <span class="br">new</span> S3Client({
+  region: <span class="ev">process.env.BUCKETEER_AWS_REGION</span>,
+  credentials: {
+    accessKeyId: <span class="ev">process.env.BUCKETEER_AWS_ACCESS_KEY_ID</span>,
+    secretAccessKey: <span class="ev">process.env.BUCKETEER_AWS_SECRET_ACCESS_KEY</span>
+  }
+});
+<span class="br">await</span> s3.send(<span class="br">new</span> PutObjectCommand({
+  Bucket: <span class="ev">process.env.BUCKETEER_BUCKET_NAME</span>,
+  Key: <span class="st">'uploads/file.pdf'</span>,
+  Body: buffer
+}));</pre>
+        </div>
+        <div>
+          <div class="text-xs" style="color:#34A853;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Cloud Storage (GCS)</div>
+          <pre class="code-block" style="font-size:11.6px;"><span class="kg">import</span> { Storage } <span class="kg">from</span> <span class="st">'@google-cloud/storage'</span>;
+
+<span class="cm">// No credentials needed — uses ADC (Workload Identity)</span>
+<span class="br">const</span> storage = <span class="br">new</span> Storage();
+<span class="br">const</span> bucket = storage.bucket(<span class="ev">process.env.GCS_BUCKET_NAME</span>);
+
+<span class="br">await</span> bucket.file(<span class="st">'uploads/file.pdf'</span>).save(buffer, {
+  metadata: { contentType: <span class="st">'application/pdf'</span> }
+});
+
+<span class="cm">// Signed URLs (60-minute expiry)</span>
+<span class="br">const</span> [url] = <span class="br">await</span> bucket.file(<span class="st">'uploads/file.pdf'</span>)
+  .getSignedUrl({ action: <span class="st">'read'</span>, expires: Date.now() + 3600000 });</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="gcs bucket create gsutil setup">
+    <div class="ch ch-step">Step 4.1 — Create GCS Bucket &amp; Migrate Objects</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Create the GCS bucket (match your old bucket naming if possible)</span>
+<span class="kg">gsutil</span> mb <span class="fl">-l</span> us-central1 <span class="fl">-c</span> STANDARD <span class="st">gs://myapp-prod-storage</span>
+
+<span class="cm"># Set uniform bucket-level access (IAM, not ACLs)</span>
+<span class="kg">gsutil</span> uniformbucketlevelaccess set on <span class="st">gs://myapp-prod-storage</span>
+
+<span class="cm"># Grant Cloud Run SA access to the bucket</span>
+<span class="kg">gsutil</span> iam ch <span class="fl">\</span>
+  serviceAccount:app-run@YOUR_PROJECT.iam.gserviceaccount.com:objectAdmin <span class="fl">\</span>
+  gs://myapp-prod-storage
+
+<span class="cm"># Migrate existing objects from S3 to GCS (cross-cloud copy)</span>
+<span class="kg">gsutil</span> <span class="fl">-m</span> rsync <span class="fl">-r</span> <span class="st">s3://old-bucketeer-bucket</span> <span class="st">gs://myapp-prod-storage</span>
+
+<span class="cm"># Verify object count matches</span>
+<span class="kg">gsutil</span> du <span class="fl">-s</span> <span class="st">gs://myapp-prod-storage</span></pre>
+      <div class="tip-box mt-8">
+        <strong>AI tip:</strong> <code class="mono">gsutil rsync</code> is idempotent — run it multiple times safely.
+        Run a final sync right before DNS cutover to catch any files uploaded during migration.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r09 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 10 — PHASE 5: SECRETS  (1410,4770  1270×1360)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r10" class="region r-orange" style="left:1410px;top:4938px;width:1270px;height:1261px;">
+<div class="rh">10 — Phase 5: Heroku Config Vars → Secret Manager</div>
+<div class="rb flex flex-col gap-12">
+
+  <div class="card" data-search="config vars secrets migration environment variables bulk">
+    <div class="ch ch-amber">⚙️ Migration Overview <span class="badge b-moderate" style="margin-left:auto;">Moderate — Bulk Import</span></div>
+    <div class="cb">
+      <div class="info-box">
+        <strong>Heroku Config Vars</strong> are plain-text key=value pairs visible to anyone with app access.
+        <strong>GCP Secret Manager</strong> encrypts at rest, provides version history, audit logs,
+        per-secret IAM, and automatic rotation hooks — a significant security upgrade.
+      </div>
+      <table class="tbl mt-10" style="font-size:13.2px;">
+        <tr><th>Feature</th><th class="th">Heroku Config Vars</th><th class="tg">Secret Manager</th></tr>
+        <tr><td>Encryption at rest</td><td class="score-lo cx">✗ Plain text</td><td class="score-hi ck">✓ AES-256</td></tr>
+        <tr><td>Audit log</td><td class="score-lo cx">✗ None</td><td class="score-hi ck">✓ Cloud Audit Logs</td></tr>
+        <tr><td>Version history</td><td class="score-lo cx">✗ None</td><td class="score-hi ck">✓ Up to 10 versions</td></tr>
+        <tr><td>Per-secret IAM</td><td class="score-lo cx">✗ None</td><td class="score-hi ck">✓ Fine-grained</td></tr>
+        <tr><td>Rotation webhooks</td><td class="score-lo cx">✗ None</td><td class="score-hi ck">✓ Pub/Sub triggers</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" data-search="heroku config export secret manager bulk import script">
+    <div class="ch ch-step">Step 5.1 — Bulk Export &amp; Import</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># 1. Export all Heroku config vars to a .env file</span>
+<span class="kh">heroku</span> config <span class="fl">-s</span> <span class="fl">--app</span> <span class="vl">myapp-prod</span> > prod.env
+<span class="cm"># prod.env contains: KEY=VALUE lines (one per var)</span>
+
+<span class="cm"># 2. Bulk import to Secret Manager (bash loop)</span>
+<span class="br">while</span> IFS=<span class="st">'='</span> <span class="br">read</span> -r key value; <span class="br">do</span>
+  [[ <span class="st">"$key"</span> == <span class="st">"#"</span>* ]] && <span class="br">continue</span>  <span class="cm"># skip comments</span>
+  <span class="br">echo</span> <span class="fl">-n</span> <span class="st">"$value"</span> | <span class="kg">gcloud</span> secrets create <span class="vl">myapp-prod-</span><span class="ev">${key}</span> <span class="fl">\</span>
+    <span class="fl">--data-file</span>=- <span class="fl">--replication-policy</span>=automatic 2>/dev/null || <span class="fl">\</span>
+    <span class="br">echo</span> <span class="fl">-n</span> <span class="st">"$value"</span> | <span class="kg">gcloud</span> secrets versions add <span class="vl">myapp-prod-</span><span class="ev">${key}</span> <span class="fl">--data-file</span>=-
+<span class="br">done</span> < prod.env
+
+<span class="cm"># 3. Read back a secret to verify</span>
+<span class="kg">gcloud</span> secrets versions access latest <span class="fl">\</span>
+  <span class="fl">--secret</span>=<span class="vl">myapp-prod-JWT_SECRET</span></pre>
+      <div class="warn-box mt-8">
+        <strong>Security:</strong> Delete <code class="mono">prod.env</code> immediately after import.
+        Never commit it to git. Use <code class="mono">shred -u prod.env</code> for secure deletion.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="cloud run set-secrets inject environment">
+    <div class="ch ch-step">Step 5.2 — Inject Secrets into Cloud Run</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm"># Deploy Cloud Run service with secrets injected as env vars</span>
+<span class="kg">gcloud</span> run deploy <span class="vl">myapp-api-prod</span> <span class="fl">\</span>
+  <span class="fl">--image</span>=us-central1-docker.pkg.dev/PROJECT/app-images/myapp:latest <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--set-secrets</span>=<span class="fl">\</span>
+    <span class="ev">DATABASE_URL</span>=myapp-prod-DATABASE_URL:latest,<span class="fl">\</span>
+    <span class="ev">REDIS_URL</span>=myapp-prod-REDIS_URL:latest,<span class="fl">\</span>
+    <span class="ev">JWT_SECRET</span>=myapp-prod-JWT_SECRET:latest,<span class="fl">\</span>
+    <span class="ev">SENDGRID_API_KEY</span>=myapp-prod-SENDGRID_API_KEY:latest
+
+<span class="cm"># Heroku equivalent:
+# heroku config:set DATABASE_URL=... -a myapp-prod</span></pre>
+      <div class="tip-box mt-8">
+        Secrets are injected as <strong>environment variables</strong> at container startup —
+        your Node.js code reads them via <code class="mono">process.env.KEY</code> unchanged.
+        No SDK changes required in application code.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r10 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 11 — PHASE 6: EMAIL  (2780,4770  1280×880)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r11" class="region r-blue" style="left:2780px;top:4938px;width:1280px;height:889px;">
+<div class="rh">11 — Phase 6: Email (SendGrid) — No Change Required</div>
+<div class="rb flex flex-col gap-12">
+
+  <div class="card" data-search="sendgrid email migration no change">
+    <div class="ch ch-blue">📧 Good News: SendGrid Works on Every Platform <span class="badge b-simple" style="margin-left:auto;">Simple</span></div>
+    <div class="cb">
+      <div class="tip-box">
+        <strong>SendGrid is a third-party SaaS — it has nothing to do with Heroku.</strong>
+        Your Heroku add-on subscription is just a billing wrapper around a real SendGrid account.
+        To migrate: create a native SendGrid account (or claim your existing one), copy your API key,
+        and store it in Secret Manager. Zero application code changes.
+      </div>
+      <div class="grid-2 gap-12 mt-10">
+        <div>
+          <ol class="steps">
+            <li class="step-item"><div class="step-num gcp">1</div><div class="step-text"><strong>Claim your SendGrid account:</strong> Log in at sendgrid.com with the email linked to your Heroku account</div></li>
+            <li class="step-item"><div class="step-num gcp">2</div><div class="step-text"><strong>Generate a new API key:</strong> Settings → API Keys → Create API Key (Full Access or restricted)</div></li>
+            <li class="step-item"><div class="step-num gcp">3</div><div class="step-text"><strong>Store in Secret Manager:</strong> <pre class="code-block" style="font-size:11.6px;margin-top:4px;"><span class="br">echo</span> <span class="fl">-n</span> <span class="st">"SG.xxxx"</span> | <span class="kg">gcloud</span> secrets create <span class="fl">\</span>
+  <span class="vl">myapp-prod-SENDGRID_API_KEY</span> <span class="fl">--data-file</span>=-</pre></div></li>
+            <li class="step-item"><div class="step-num gcp">4</div><div class="step-text"><strong>Update domain authentication:</strong> Re-verify your sending domain in SendGrid's Domain Authentication if your domain changed</div></li>
+          </ol>
+        </div>
+        <div>
+          <div class="card" style="background:#0a0a18;border-color:#1a1a38;">
+            <div class="ch ch-blue">Alternatives to Consider</div>
+            <div class="cb text-sm">
+              <div class="mb-10">
+                <strong style="color:#FF9900;">Amazon SES</strong> — if moving to AWS<br>
+                <span class="text-xs text-muted">$0.10 per 1,000 emails. Requires domain verification. Limited template features.</span>
+              </div>
+              <div class="mb-10">
+                <strong style="color:#5ca8ff;">Postmark</strong> — high deliverability<br>
+                <span class="text-xs text-muted">Transactional focus. Better deliverability SLAs. More expensive at scale.</span>
+              </div>
+              <div class="mb-10">
+                <strong style="color:#a371f7;">Resend</strong> — developer-first<br>
+                <span class="text-xs text-muted">React Email templates. Excellent DX. Newer service.</span>
+              </div>
+              <div class="info-box mt-10">
+                <strong>Recommendation:</strong> Keep SendGrid. It already works.
+                Switch only if you need better deliverability, cost savings at very high volumes (&gt;100k/month), or template system changes.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-search="sendgrid test email verify cloud run">
+    <div class="ch ch-step">Step 6.1 — Verify Email After Migration</div>
+    <div class="cb">
+      <pre class="code-block"><span class="cm">// Node.js: SendGrid test (code unchanged from Heroku)</span>
+<span class="br">import</span> sgMail <span class="br">from</span> <span class="st">'@sendgrid/mail'</span>;
+sgMail.setApiKey(<span class="ev">process.env.SENDGRID_API_KEY</span>);
+
+<span class="br">await</span> sgMail.send({
+  to: <span class="st">'test@yourdomain.com'</span>,
+  from: <span class="st">'noreply@yourdomain.com'</span>,
+  subject: <span class="st">'GCP migration test'</span>,
+  text: <span class="st">'If you receive this, email works on GCP!'</span>
+});</pre>
+      <div class="warn-box mt-8">
+        <strong>Check SPF / DKIM / DMARC records</strong> if your sending domain changed.
+        SendGrid domain authentication uses DNS TXT records that may need re-verification
+        if you switched DNS providers during the migration.
+      </div>
+      <div class="tip-box mt-8">
+        <strong>Outbound SMTP from Cloud Run:</strong> Cloud Run can send SMTP to port 587 (TLS) without restriction.
+        Port 25 is blocked (GCP policy). SendGrid API (HTTPS) is always preferred over SMTP.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r11 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 12 — PHASE 7: CONTAINERS  (40,6230  1900×1180)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r12" class="region r-cobalt" style="left:40px;top:6299px;width:1900px;height:1430px;">
+<div class="rh">12 — Phase 7: Procfile &amp; Buildpacks → Dockerfile &amp; Cloud Build</div>
+<div class="rb">
+
+  <div class="grid-2 gap-12 mb-12">
+
+    <div class="card" data-search="procfile dockerfile conversion heroku buildpack">
+      <div class="ch ch-gcp">📦 Heroku Procfile → Dockerfile Conversion</div>
+      <div class="cb">
+        <div class="mb-8 text-xs text-muted">Heroku Procfile (the source):</div>
+        <pre class="code-block"><span class="cm"># Procfile</span>
+<span class="kh">web</span>: node server.js
+<span class="kh">worker</span>: node workers/emailWorker.js
+<span class="kh">sync</span>:   node workers/syncWorker.js</pre>
+        <div class="mt-10 mb-8 text-xs text-muted">Equivalent Dockerfile (multi-stage, production-grade):</div>
+        <pre class="code-block"><span class="cm"># ── Stage 1: Dependencies ────────────────────────────</span>
+<span class="kg">FROM</span> node:20-alpine <span class="kg">AS</span> deps
+<span class="kg">WORKDIR</span> /app
+<span class="kg">COPY</span> package*.json ./
+<span class="kg">RUN</span> npm ci <span class="fl">--omit=dev</span>
+
+<span class="cm"># ── Stage 2: Production image ────────────────────────</span>
+<span class="kg">FROM</span> node:20-alpine <span class="kg">AS</span> runtime
+<span class="kg">WORKDIR</span> /app
+
+<span class="cm"># Security: run as non-root user</span>
+<span class="kg">RUN</span> addgroup -S appgroup && adduser -S appuser -G appgroup
+<span class="kg">USER</span> appuser
+
+<span class="kg">COPY</span> --from=deps /app/node_modules ./node_modules
+<span class="kg">COPY</span> . .
+
+<span class="cm"># Cloud Run listens on PORT env var (default 8080)</span>
+<span class="kg">ENV</span> <span class="ev">PORT</span>=8080
+<span class="kg">EXPOSE</span> 8080
+
+<span class="cm"># Equivalent to Procfile "web:" line</span>
+<span class="kg">CMD</span> [<span class="st">"node"</span>, <span class="st">"server.js"</span>]
+
+<span class="cm"># Workers run as separate Cloud Run service
+# using the same image with different CMD override</span></pre>
+        <div class="info-box mt-8">
+          <strong>Workers pattern:</strong> You deploy the same Docker image twice — once as the API service
+          (<code class="mono">CMD ["node","server.js"]</code>) and once as the workers service
+          (<code class="mono">CMD ["node","workers/index.js"]</code>).
+          Cloud Scheduler triggers individual worker routes via HTTP POST.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-search="cloudbuild yaml ci cd cloud build triggers">
+      <div class="ch ch-gcp">🔧 cloudbuild.yaml (replaces heroku.sh + Procfile)</div>
+      <div class="cb">
+        <div class="mb-8 text-xs text-muted">Heroku used <code class="mono">heroku.sh</code> monorepo script + Procfile. GCP uses <code class="mono">cloudbuild.yaml</code>:</div>
+        <pre class="code-block"><span class="cm"># cloudbuild.yaml — triggered on push to 'dev' branch</span>
+steps:
+  <span class="cm"># Step 1: Run tests</span>
+  - name: <span class="st">'node:20-alpine'</span>
+    entrypoint: sh
+    args: [<span class="st">'-c'</span>, <span class="st">'npm ci && npm test'</span>]
+
+  <span class="cm"># Step 2: Build Docker image</span>
+  - name: <span class="st">'gcr.io/cloud-builders/docker'</span>
+    args:
+      - build
+      - <span class="fl">-t</span>
+      - us-central1-docker.pkg.dev/<span class="ev">$PROJECT_ID</span>/app-images/myapp:<span class="ev">$COMMIT_SHA</span>
+      - .
+
+  <span class="cm"># Step 3: Push to Artifact Registry</span>
+  - name: <span class="st">'gcr.io/cloud-builders/docker'</span>
+    args: [<span class="st">'push'</span>, <span class="st">'us-central1-docker.pkg.dev/$PROJECT_ID/app-images/myapp:$COMMIT_SHA'</span>]
+
+  <span class="cm"># Step 4: Deploy to Cloud Run (dev environment)</span>
+  - name: <span class="st">'gcr.io/cloud-builders/gcloud'</span>
+    args:
+      - run
+      - deploy
+      - myapp-api-dev
+      - <span class="fl">--image</span>=us-central1-docker.pkg.dev/<span class="ev">$PROJECT_ID</span>/app-images/myapp:<span class="ev">$COMMIT_SHA</span>
+      - <span class="fl">--region</span>=us-central1
+      - <span class="fl">--platform</span>=managed
+
+images:
+  - us-central1-docker.pkg.dev/<span class="ev">$PROJECT_ID</span>/app-images/myapp:<span class="ev">$COMMIT_SHA</span></pre>
+        <div class="tip-box mt-8">
+          <strong>Pipeline promotion:</strong> Unlike Heroku's <code class="mono">heroku pipelines:promote</code>,
+          GCP promotion uses the <em>same image digest</em> — you update the Cloud Run service to point to the same
+          <code class="mono">@sha256:...</code> that was tested in dev/staging.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-2 gap-12">
+    <div class="card" data-search="cloud run deploy update flags">
+      <div class="ch ch-step">Key Cloud Run Deploy Flags</div>
+      <div class="cb">
+        <pre class="code-block"><span class="cm"># Full production deploy with all relevant flags</span>
+<span class="kg">gcloud</span> run deploy <span class="vl">myapp-api-prod</span> <span class="fl">\</span>
+  <span class="fl">--image</span>=us-central1-docker.pkg.dev/PROJECT/app-images/myapp@sha256:<span class="vl">DIGEST</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--platform</span>=managed <span class="fl">\</span>
+  <span class="fl">--allow-unauthenticated</span> <span class="fl">\</span>          <span class="cm"># LB handles auth</span>
+  <span class="fl">--service-account</span>=app-run@PROJECT.iam.gserviceaccount.com <span class="fl">\</span>
+  <span class="fl">--vpc-connector</span>=<span class="vl">myapp-vpc-connector</span> <span class="fl">\</span>  <span class="cm"># or --vpc-egress=all-traffic</span>
+  <span class="fl">--min-instances</span>=1 <span class="fl">\</span>                 <span class="cm"># avoid cold starts in prod</span>
+  <span class="fl">--max-instances</span>=20 <span class="fl">\</span>
+  <span class="fl">--concurrency</span>=80 <span class="fl">\</span>
+  <span class="fl">--cpu</span>=2 <span class="fl">--memory</span>=1Gi <span class="fl">\</span>
+  <span class="fl">--set-secrets</span>=<span class="vl">DATABASE_URL</span>=myapp-prod-DATABASE_URL:latest,<span class="vl">REDIS_URL</span>=myapp-prod-REDIS_URL:latest
+
+<span class="cm"># Heroku equivalent (vastly simpler, but less control):
+# git push heroku main
+# heroku ps:scale web=2:performance-m -a myapp-prod</span></pre>
+      </div>
+    </div>
+
+    <div class="card" data-search="pipeline promotion staging prod image digest">
+      <div class="ch ch-step">Pipeline Promotion: Dev → Staging → Prod</div>
+      <div class="cb">
+        <pre class="code-block"><span class="cm"># Get the image digest from dev deployment</span>
+<span class="ev">DIGEST</span>=$(<span class="kg">gcloud</span> run services describe <span class="vl">myapp-api-dev</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--format</span>=<span class="st">"get(spec.template.spec.containers[0].image)"</span>)
+
+<span class="cm"># Promote same image to staging (no rebuild)</span>
+<span class="kg">gcloud</span> run deploy <span class="vl">myapp-api-staging</span> <span class="fl">\</span>
+  <span class="fl">--image</span>=<span class="ev">$DIGEST</span> <span class="fl">--region</span>=us-central1
+
+<span class="cm"># After QA, promote same image to prod</span>
+<span class="kg">gcloud</span> run deploy <span class="vl">myapp-api-prod</span> <span class="fl">\</span>
+  <span class="fl">--image</span>=<span class="ev">$DIGEST</span> <span class="fl">--region</span>=us-central1
+
+<span class="cm"># Heroku equivalent:
+# heroku pipelines:promote -a myapp-staging</span></pre>
+        <div class="info-box mt-8">
+          <strong>Same digest = same binary.</strong> What you test in staging is
+          byte-for-byte identical to what runs in production. Heroku's pipeline
+          promotion copies slugs but the build environment can differ.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r12 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 13 — PHASE 8: VPC NETWORKING  (2040,6230  1980×940)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r13" class="region r-plum" style="left:2040px;top:6299px;width:1980px;height:1148px;">
+<div class="rh">13 — Phase 8: VPC &amp; Private Networking (The Complex Part)</div>
+<div class="rb">
+
+  <div class="info-box mb-12">
+    <strong>Why VPC?</strong> Cloud SQL and Memorystore have <em>no public IP</em> — by design.
+    Your Cloud Run service must route traffic through a VPC to reach them.
+    This is the most complex phase but also the biggest security upgrade over Heroku.
+    <strong>AI assistance (Section 17) makes this dramatically easier.</strong>
+  </div>
+
+  <div class="grid-2 gap-12">
+
+    <div class="flex flex-col gap-12">
+      <div class="card" data-search="vpc create subnet network">
+        <div class="ch ch-violet">Step 8.1 — Create VPC &amp; Subnets</div>
+        <div class="cb">
+          <pre class="code-block"><span class="cm"># Create the VPC network</span>
+<span class="kg">gcloud</span> compute networks create <span class="vl">myapp-vpc</span> <span class="fl">\</span>
+  <span class="fl">--subnet-mode</span>=custom
+
+<span class="cm"># Subnet for Cloud Run egress traffic</span>
+<span class="kg">gcloud</span> compute networks subnets create <span class="vl">subnet-run</span> <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--range</span>=10.0.0.0/24
+
+<span class="cm"># Subnet for Cloud SQL (via Private Service Access)</span>
+<span class="kg">gcloud</span> compute networks subnets create <span class="vl">subnet-db</span> <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--range</span>=10.0.1.0/24</pre>
+        </div>
+      </div>
+
+      <div class="card" data-search="private service access cloud sql vpc peering">
+        <div class="ch ch-violet">Step 8.2 — Private Service Access (for Cloud SQL)</div>
+        <div class="cb">
+          <pre class="code-block"><span class="cm"># Allocate IP range for Google managed services</span>
+<span class="kg">gcloud</span> compute addresses create <span class="vl">psa-range</span> <span class="fl">\</span>
+  <span class="fl">--global</span> <span class="fl">\</span>
+  <span class="fl">--purpose</span>=VPC_PEERING <span class="fl">\</span>
+  <span class="fl">--prefix-length</span>=16 <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span>
+
+<span class="cm"># Create VPC peering connection to Google APIs</span>
+<span class="kg">gcloud</span> services vpc-peerings connect <span class="fl">\</span>
+  <span class="fl">--service</span>=servicenetworking.googleapis.com <span class="fl">\</span>
+  <span class="fl">--ranges</span>=<span class="vl">psa-range</span> <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span>
+
+<span class="cm"># Cloud SQL will now get a private IP in the peered range</span>
+<span class="cm"># Heroku: no equivalent — Postgres was always on public internet with SSL</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-12">
+      <div class="card" data-search="direct vpc egress cloud run serverless connector">
+        <div class="ch ch-violet">Step 8.3 — Direct VPC Egress (Cloud Run → VPC)</div>
+        <div class="cb">
+          <pre class="code-block"><span class="cm"># Option A: Direct VPC Egress (recommended, no extra cost)</span>
+<span class="cm"># Add --vpc-egress flag when deploying Cloud Run</span>
+<span class="kg">gcloud</span> run deploy <span class="vl">myapp-api-prod</span> <span class="fl">\</span>
+  <span class="fl">--vpc-egress</span>=all-traffic <span class="fl">\</span>
+  <span class="fl">--subnet</span>=<span class="vl">subnet-run</span> <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 ...
+
+<span class="cm"># Option B: Serverless VPC Connector (legacy, still supported)</span>
+<span class="kg">gcloud</span> compute networks vpc-access connectors create <span class="vl">myapp-connector</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--subnet</span>=<span class="vl">subnet-run</span> <span class="fl">\</span>
+  <span class="fl">--min-instances</span>=2 <span class="fl">--max-instances</span>=3
+
+<span class="kg">gcloud</span> run deploy <span class="vl">myapp-api-prod</span> <span class="fl">\</span>
+  <span class="fl">--vpc-connector</span>=<span class="vl">myapp-connector</span> ...</pre>
+          <div class="tip-box mt-8">
+            <strong>Direct VPC Egress</strong> is the modern approach (2024+).
+            It routes traffic natively through Cloud Run's network interface —
+            no VPC connector billing, lower latency.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-search="cloud nat internet outbound traffic static ip">
+        <div class="ch ch-violet">Step 8.4 — Cloud NAT (Outbound Internet from VPC)</div>
+        <div class="cb">
+          <pre class="code-block"><span class="cm"># Cloud Run with VPC egress loses direct internet access
+# Cloud NAT restores outbound internet (e.g. for SendGrid HTTPS)</span>
+
+<span class="cm"># Create a Cloud Router</span>
+<span class="kg">gcloud</span> compute routers create <span class="vl">myapp-router</span> <span class="fl">\</span>
+  <span class="fl">--network</span>=<span class="vl">myapp-vpc</span> <span class="fl">--region</span>=us-central1
+
+<span class="cm"># Create Cloud NAT on that router</span>
+<span class="kg">gcloud</span> compute routers nats create <span class="vl">myapp-nat</span> <span class="fl">\</span>
+  <span class="fl">--router</span>=<span class="vl">myapp-router</span> <span class="fl">--region</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--auto-allocate-nat-external-ips</span> <span class="fl">\</span>
+  <span class="fl">--nat-all-subnet-ip-ranges</span>
+
+<span class="cm"># Optional: static NAT IP (for third-party IP allowlisting)</span>
+<span class="kg">gcloud</span> compute addresses create <span class="vl">myapp-nat-ip</span> <span class="fl">--region</span>=us-central1
+<span class="kg">gcloud</span> compute routers nats create <span class="vl">myapp-nat</span> <span class="fl">\</span>
+  <span class="fl">--nat-external-ip-pool</span>=<span class="vl">myapp-nat-ip</span> ...</pre>
+          <div class="info-box mt-8">
+            <strong>Static NAT IP</strong> is useful when third-party APIs (payment processors, KYC services)
+            require IP allowlisting. One IP covers all Cloud Run instances — no per-dyno IP management.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /r13 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 14 — PHASE 9: SCHEDULER  (40,7510  1900×860)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r14" class="region r-moss" style="left:40px;top:7829px;width:1900px;height:860px;">
+<div class="rh">14 — Phase 9: Heroku Scheduler → Cloud Scheduler + Cloud Run Workers</div>
+<div class="rb">
+
+  <div class="grid-2 gap-12">
+
+    <div class="card" data-search="heroku scheduler cloud scheduler cron jobs workers">
+      <div class="ch ch-green">⏰ Architecture: Workers Pattern</div>
+      <div class="cb">
+        <div class="info-box mb-10">
+          <strong>Heroku Scheduler</strong> runs <code class="mono">node workers/emailWorker.js</code> directly on a one-off dyno.
+          <strong>Cloud Scheduler</strong> sends an authenticated HTTP POST to a Cloud Run <em>workers service</em>.
+          Each worker becomes a route handler instead of a standalone process.
+        </div>
+        <pre class="code-block"><span class="cm">// workers/index.js — HTTP router for all workers
+// Handles POST /workers/{jobName} from Cloud Scheduler</span>
+<span class="br">import</span> express <span class="br">from</span> <span class="st">'express'</span>;
+<span class="br">import</span> { runEmailWorker }  <span class="br">from</span> <span class="st">'./emailWorker.js'</span>;
+<span class="br">import</span> { runSyncWorker }   <span class="br">from</span> <span class="st">'./syncWorker.js'</span>;
+
+<span class="br">const</span> app = express();
+app.use(express.json());
+
+app.post(<span class="st">'/workers/emailWorker'</span>, async (req, res) => {
+  <span class="br">try</span> {
+    <span class="br">await</span> runEmailWorker();
+    res.json({ ok: <span class="br">true</span> });
+  } <span class="br">catch</span> (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post(<span class="st">'/workers/syncWorker'</span>, async (req, res) => {
+  <span class="br">await</span> runSyncWorker();
+  res.json({ ok: <span class="br">true</span> });
+});
+
+app.listen(<span class="ev">process.env.PORT</span> || 8080);</pre>
+        <div class="tip-box mt-8">
+          <strong>Deploy as separate Cloud Run service</strong> with
+          <code class="mono">--no-allow-unauthenticated</code>. Only Cloud Scheduler (via OIDC token) can invoke it.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-search="cloud scheduler create job OIDC authentication">
+      <div class="ch ch-step">Creating Cloud Scheduler Jobs</div>
+      <div class="cb">
+        <pre class="code-block"><span class="cm"># Get the workers service URL</span>
+<span class="ev">WORKERS_URL</span>=$(<span class="kg">gcloud</span> run services describe <span class="vl">myapp-workers-prod</span> <span class="fl">\</span>
+  <span class="fl">--region</span>=us-central1 <span class="fl">--format</span>=<span class="st">"get(status.url)"</span>)
+
+<span class="cm"># Create a scheduler job (runs daily at 8am UTC)</span>
+<span class="kg">gcloud</span> scheduler jobs create http <span class="vl">myapp-prod-emailWorker</span> <span class="fl">\</span>
+  <span class="fl">--location</span>=us-central1 <span class="fl">\</span>
+  <span class="fl">--schedule</span>=<span class="st">"0 8 * * *"</span> <span class="fl">\</span>
+  <span class="fl">--uri</span>=<span class="st">"${WORKERS_URL}/workers/emailWorker"</span> <span class="fl">\</span>
+  <span class="fl">--http-method</span>=POST <span class="fl">\</span>
+  <span class="fl">--oidc-service-account-email</span>=app-scheduler@PROJECT.iam.gserviceaccount.com <span class="fl">\</span>
+  <span class="fl">--oidc-token-audience</span>=<span class="st">"${WORKERS_URL}"</span>
+
+<span class="cm"># Manually trigger a job to test</span>
+<span class="kg">gcloud</span> scheduler jobs run <span class="vl">myapp-prod-emailWorker</span> <span class="fl">--location</span>=us-central1
+
+<span class="cm"># Heroku equivalent:
+# heroku run node workers/emailWorker.js -a myapp-prod  (one-off)
+# heroku scheduler -- adds via dashboard UI only</span></pre>
+        <div class="warn-box mt-8">
+          <strong>OIDC is mandatory</strong> for Cloud Scheduler → Cloud Run workers.
+          Without it, any HTTP client could trigger your workers.
+          The <code class="mono">--no-allow-unauthenticated</code> flag on the workers service
+          + OIDC token creates a cryptographically-verified auth chain.
+        </div>
+        <table class="tbl mt-10" style="font-size:12.7px;">
+          <tr><th>Heroku Scheduler</th><th class="tg">Cloud Scheduler</th></tr>
+          <tr><td>Dashboard UI only (no CLI)</td><td class="tg"><code class="mono">gcloud scheduler jobs create http</code></td></tr>
+          <tr><td>10-min minimum interval</td><td class="tg">1-minute minimum interval</td></tr>
+          <tr><td>No auth / no security</td><td class="tg">OIDC token authentication</td></tr>
+          <tr><td>Free (bundled with Heroku)</td><td class="tg">$0.10/job/month (first 3 free)</td></tr>
+          <tr><td>No retry logic</td><td class="tg">Configurable retry count/deadline</td></tr>
+          <tr><td>No execution history</td><td class="tg">Full execution history in Cloud Logging</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /r14 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 15 — PHASE 10: DNS CUTOVER  (2040,7510  1980×660)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r15" class="region r-iris" style="left:2040px;top:7829px;width:1980px;height:835px;">
+<div class="rh">15 — Phase 10: DNS Cutover — Zero-Downtime Domain Transfer</div>
+<div class="rb">
+  <div class="grid-2 gap-12">
+
+    <div class="card" data-search="dns cutover domain custom heroku gcp load balancer">
+      <div class="ch ch-violet">Pre-Cutover Checklist &amp; Strategy</div>
+      <div class="cb">
+        <ol class="steps">
+          <li class="step-item"><div class="step-num gcp">1</div><div class="step-text"><strong>Lower TTL 48h before:</strong> Change DNS TTL to 60 seconds. This ensures fast propagation when you make the actual switch.</div></li>
+          <li class="step-item"><div class="step-num gcp">2</div><div class="step-text"><strong>Provision GCP HTTPS LB:</strong> Create the Global HTTPS Load Balancer with your custom domain and Google-managed SSL cert before cutover.</div></li>
+          <li class="step-item"><div class="step-num gcp">3</div><div class="step-text"><strong>Test via /etc/hosts:</strong> Add <code>GCP_LB_IP yourdomain.com</code> to your local hosts file and verify the app works end-to-end on GCP.</div></li>
+          <li class="step-item"><div class="step-num gcp">4</div><div class="step-text"><strong>Dual-write database:</strong> During cutover window (15–30 min), configure the app to write to both Heroku Postgres and Cloud SQL. Ensures zero data loss.</div></li>
+          <li class="step-item"><div class="step-num gcp">5</div><div class="step-text"><strong>Switch DNS A record:</strong> Change domain's A record from Heroku IP to GCP LB IP. With 60s TTL, propagation is near-instant.</div></li>
+          <li class="step-item"><div class="step-num gcp">6</div><div class="step-text"><strong>Monitor for 30 minutes:</strong> Watch Cloud Logging for errors. Keep Heroku app running for 24h rollback window.</div></li>
+          <li class="step-item"><div class="step-num gcp">7</div><div class="step-text"><strong>Remove Heroku custom domain:</strong> Only after confirming GCP is healthy and stable.</div></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card" data-search="heroku domains gcloud load balancer certificate ssl">
+      <div class="ch ch-step">DNS Cutover Commands</div>
+      <div class="cb">
+        <pre class="code-block"><span class="cm"># ── HEROKU SIDE: Remove custom domain ──────────────</span>
+<span class="cm"># Get Heroku's IP for your domain (for reference)</span>
+<span class="kh">heroku</span> domains <span class="fl">--app</span> <span class="vl">myapp-prod</span>
+
+<span class="cm"># ── GCP SIDE: Set up HTTPS Load Balancer ───────────</span>
+<span class="cm"># Reserve a global static IP</span>
+<span class="kg">gcloud</span> compute addresses create <span class="vl">myapp-lb-ip</span> <span class="fl">--global</span>
+<span class="kg">gcloud</span> compute addresses describe <span class="vl">myapp-lb-ip</span> <span class="fl">--global</span> <span class="fl">--format</span>=<span class="st">"get(address)"</span>
+<span class="cm"># → e.g. 34.111.x.x  (set this as your DNS A record)</span>
+
+<span class="cm"># Create Google-managed SSL cert (auto-renews)</span>
+<span class="kg">gcloud</span> compute ssl-certificates create <span class="vl">myapp-ssl-cert</span> <span class="fl">\</span>
+  <span class="fl">--domains</span>=<span class="st">"api.yourdomain.com,www.yourdomain.com"</span> <span class="fl">\</span>
+  <span class="fl">--global</span>
+
+<span class="cm"># ── DNS: Change A record at your DNS provider ───────
+# Before: api.yourdomain.com  A  54.x.x.x  (Heroku router IP)
+# After:  api.yourdomain.com  A  34.111.x.x  (GCP LB IP)
+# TTL: 60 (set 48h before cutover)</span>
+
+<span class="cm"># ── VERIFY: cert provisioning (takes 10–60 min) ─────</span>
+<span class="kg">gcloud</span> compute ssl-certificates describe <span class="vl">myapp-ssl-cert</span> <span class="fl">\</span>
+  <span class="fl">--global</span> <span class="fl">--format</span>=<span class="st">"get(managed.status)"</span>
+<span class="cm"># ACTIVE = cert issued, TLS working</span>
+
+<span class="cm"># ── ROLLBACK: point DNS back to Heroku if needed ────
+# Restore old DNS A record (old Heroku IP)
+# heroku domains:add api.yourdomain.com -a myapp-prod</span></pre>
+        <div class="warn-box mt-8">
+          <strong>FIDO2 / WebAuthn continuity:</strong> If your app uses FIDO2 passkeys or WebAuthn,
+          the Relying Party ID (rpId) is bound to the domain. As long as your custom domain
+          doesn't change, all enrolled credentials continue to work without re-registration.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /r15 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 16 — CLI EQUIVALENTS  (40,8470  4020×950)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r16" class="region r-slate" style="left:40px;top:8789px;width:1970px;height:930px;">
+<div class="rh">16 — CLI Equivalents: heroku CLI ↔ gcloud CLI — 32 Command Pairs</div>
+<div class="rb">
+
+  <div class="mb-10 text-sm" style="color:#9b8ab0;">
+    Side-by-side comparison of the most commonly used Heroku CLI commands and their GCP equivalents.
+    <span style="color:#b094d0;">Purple</span> = heroku CLI. <span style="color:#79c0ff;">Blue</span> = gcloud CLI.
+  </div>
+
+  <div class="grid-2 gap-16">
+
+    <div>
+      <table class="cli-tbl">
+        <thead>
+          <tr>
+            <th class="d-col" style="width:140px;">Operation</th>
+            <th class="h-col">heroku CLI</th>
+            <th class="g-col">gcloud CLI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat-row"><td colspan="3">── Authentication &amp; Setup ──</td></tr>
+          <tr>
+            <td>Login</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> login</span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> auth login</span></td>
+          </tr>
+          <tr>
+            <td>Set project/app</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> <span class="fl">git:remote</span> <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> config set project <span class="vl">my-project-id</span></span></td>
+          </tr>
+          <tr>
+            <td>List apps/services</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> apps</span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run services list <span class="fl">--region</span>=us-central1</span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Logs ──</td></tr>
+          <tr>
+            <td>Tail live logs</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> logs <span class="fl">--tail</span> <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> logging tail <span class="st">'resource.type="cloud_run_revision"'</span></span></td>
+          </tr>
+          <tr>
+            <td>Recent logs</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> logs <span class="fl">-n</span> 200 <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> logging read <span class="st">'...'</span> <span class="fl">--limit</span>=200</span></td>
+          </tr>
+          <tr>
+            <td>Filter by process</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> logs <span class="fl">--dyno</span> worker <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> logging tail <span class="st">'labels.service_name="myapp-workers"'</span></span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Deployment ──</td></tr>
+          <tr>
+            <td>Deploy app</td>
+            <td class="heroku-cmd"><span class="cli-code">git push <span class="kh">heroku</span> main</span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> builds submit &amp;&amp; <span class="kg">gcloud</span> run deploy <span class="vl">myapp-api</span> <span class="fl">--image</span>=...</span></td>
+          </tr>
+          <tr>
+            <td>List revisions</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> releases <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run revisions list <span class="fl">--service</span>=<span class="vl">myapp-api</span></span></td>
+          </tr>
+          <tr>
+            <td>Rollback</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> rollback v42 <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run services update-traffic <span class="vl">myapp-api</span> <span class="fl">--to-revisions</span>=<span class="vl">REV-NAME</span>=100</span></td>
+          </tr>
+          <tr>
+            <td>Promote to prod</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> pipelines:promote <span class="fl">-a</span> <span class="vl">myapp-staging</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run deploy <span class="vl">myapp-api-prod</span> <span class="fl">--image</span>=<span class="vl">$DIGEST_FROM_STAGING</span></span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Scaling ──</td></tr>
+          <tr>
+            <td>Scale up</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> ps:scale web=3 <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run services update <span class="vl">myapp-api</span> <span class="fl">--min-instances</span>=3</span></td>
+          </tr>
+          <tr>
+            <td>Scale to zero</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> ps:scale web=0 <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run services update <span class="vl">myapp-api</span> <span class="fl">--min-instances</span>=0</span></td>
+          </tr>
+          <tr>
+            <td>Dyno type / CPU</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> ps:type performance-m <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run services update <span class="vl">myapp-api</span> <span class="fl">--cpu</span>=2 <span class="fl">--memory</span>=2Gi</span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Restart &amp; Run ──</td></tr>
+          <tr>
+            <td>Restart all dynos</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> dyno:restart <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="cm"># Force new revision by updating an env var</span><br><span class="kg">gcloud</span> run services update <span class="vl">myapp-api</span> <span class="fl">--set-env-vars</span> <span class="vl">RESTART_TS</span>=$(date +%s)</span></td>
+          </tr>
+          <tr>
+            <td>Run one-off command</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> run node <span class="fl">-e</span> <span class="st">"..."</span> <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run jobs create <span class="vl">one-off</span> <span class="fl">--image</span>=... <span class="fl">--command</span>=node <span class="fl">--args</span>=script.js<br><span class="kg">gcloud</span> run jobs execute <span class="vl">one-off</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <table class="cli-tbl">
+        <thead>
+          <tr>
+            <th class="d-col" style="width:140px;">Operation</th>
+            <th class="h-col">heroku CLI</th>
+            <th class="g-col">gcloud CLI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="cat-row"><td colspan="3">── Config / Secrets ──</td></tr>
+          <tr>
+            <td>Set env var</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> config:set <span class="ev">KEY</span>=value <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code">echo <span class="fl">-n</span> <span class="st">"value"</span> | <span class="kg">gcloud</span> secrets create <span class="vl">myapp-prod-KEY</span> <span class="fl">--data-file</span>=-</span></td>
+          </tr>
+          <tr>
+            <td>Get env var</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> config:get <span class="ev">KEY</span> <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> secrets versions access latest <span class="fl">--secret</span>=<span class="vl">myapp-prod-KEY</span></span></td>
+          </tr>
+          <tr>
+            <td>List all env vars</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> config <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> secrets list <span class="fl">--filter</span>=<span class="st">"name:myapp-prod-"</span></span></td>
+          </tr>
+          <tr>
+            <td>Delete env var</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> config:unset <span class="ev">KEY</span> <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> secrets delete <span class="vl">myapp-prod-KEY</span></span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Database ──</td></tr>
+          <tr>
+            <td>Open DB shell</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> pg:psql <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> sql connect <span class="vl">myapp-db-prod</span> <span class="fl">--user</span>=postgres</span></td>
+          </tr>
+          <tr>
+            <td>DB backup</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> pg:backups:capture <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> sql export sql <span class="vl">myapp-db-prod</span> gs://bucket/backup.sql <span class="fl">--database</span>=myapp</span></td>
+          </tr>
+          <tr>
+            <td>DB info</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> pg:info <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> sql instances describe <span class="vl">myapp-db-prod</span></span></td>
+          </tr>
+          <tr>
+            <td>Copy DB prod→dev</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> pg:copy myapp::DATABASE <span class="vl">myapp-dev</span>::DATABASE <span class="fl">-a</span> myapp-dev</span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="cm"># Export from prod, import to dev Cloud SQL instance</span><br><span class="kg">gcloud</span> sql export sql <span class="vl">myapp-db-prod</span> gs://tmp/copy.sql<br><span class="kg">gcloud</span> sql import sql <span class="vl">myapp-db-dev</span> gs://tmp/copy.sql</span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Domains &amp; TLS ──</td></tr>
+          <tr>
+            <td>Add custom domain</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> domains:add api.yourdomain.com <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> compute ssl-certificates create <span class="vl">cert</span> <span class="fl">--domains</span>=api.yourdomain.com</span></td>
+          </tr>
+          <tr>
+            <td>List domains</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> domains <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> compute ssl-certificates list</span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Add-ons / Resources ──</td></tr>
+          <tr>
+            <td>List add-ons</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> addons <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> services list <span class="fl">--enabled</span> <span class="fl">--filter</span>=<span class="st">"name:googleapis.com"</span></span></td>
+          </tr>
+          <tr>
+            <td>View app status</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> ps <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run services describe <span class="vl">myapp-api-prod</span> <span class="fl">--region</span>=us-central1</span></td>
+          </tr>
+          <tr>
+            <td>View metrics</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> metrics <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> monitoring dashboards list <span class="cm"># or use Cloud Console UI</span></span></td>
+          </tr>
+          <tr class="cat-row"><td colspan="3">── Maintenance &amp; Open ──</td></tr>
+          <tr>
+            <td>Enable maintenance</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> maintenance:on <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="cm"># Route traffic to a maintenance Cloud Run revision</span><br><span class="kg">gcloud</span> run services update-traffic <span class="vl">myapp-api</span> <span class="fl">--to-revisions</span>=maintenance=100</span></td>
+          </tr>
+          <tr>
+            <td>Open app in browser</td>
+            <td class="heroku-cmd"><span class="cli-code"><span class="kh">heroku</span> open <span class="fl">-a</span> <span class="vl">myapp</span></span></td>
+            <td class="gcloud-cmd"><span class="cli-code"><span class="kg">gcloud</span> run services describe <span class="vl">myapp-api</span> <span class="fl">--format</span>=<span class="st">"get(status.url)"</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+</div><!-- /r16 -->
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     REGION 17 — AI-ASSISTED CONFIGURATION  (40,9520  4020×1020)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="r17" class="region r-forest" style="left:40px;top:9819px;width:4020px;height:1627px;">
+<div class="rh">17 — AI-Assisted Configuration: How Claude Code Transforms the Migration</div>
+<div class="rb">
+
+  <div class="info-box mb-14" style="font-size:14.3px;">
+    <strong>🤖 AI changes the migration equation.</strong> The most intimidating parts of a Heroku → GCP migration
+    — VPC setup, bulk secret migration, Dockerfile conversion, cloudbuild.yaml generation — are exactly the tasks
+    where an AI coding assistant like <strong>Claude Code</strong> provides dramatic acceleration.
+    Instead of hours of documentation reading, you describe what you want and the AI generates production-ready
+    config, explains every flag, and catches security pitfalls in real time.
+  </div>
+
+  <div class="plat-grid" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;">
+
+    <!-- AI Workflow 1: VPC Setup -->
+    <div class="card" data-search="ai claude vpc networking setup automation">
+      <div class="ch ch-ai">🤖 AI Workflow 1: Complete VPC Setup</div>
+      <div class="cb">
+        <div class="ai-dialog">
+          <div class="ai-prompt-bar">
+            <div class="ai-who">You</div>
+            <div class="ai-text">"I need to set up a GCP VPC for a Node.js app on Cloud Run that needs private access to Cloud SQL Postgres and Memorystore Redis. The app also needs to call external APIs (SendGrid, Stripe). Generate all the gcloud commands."</div>
+          </div>
+          <div class="ai-resp">
+            <div class="ai-who">Claude Code</div>
+            <div class="ai-body">
+              <div class="text-xs text-muted mb-6">Claude generates a complete, ordered script:</div>
+              <pre class="code-block" style="font-size:11.6px;"><span class="cm"># Claude output: full VPC setup script (~40 commands)
+# Includes: VPC, subnets, PSA peering, Cloud NAT,
+# Direct VPC Egress config, firewall rules, and
+# verification checks with expected output values.</span>
+
+<span class="ok"># Claude also explains:</span>
+<span class="cm"># - Why PSA is needed for Cloud SQL vs. direct VPC for Redis
+# - Why Cloud NAT is required for outbound internet with VPC egress
+# - Security: why no public IPs on Cloud SQL / Memorystore
+# - How to verify connectivity from Cloud Run before DNS cutover</span></pre>
+              <div class="tip-box mt-6">
+                <strong>Time saved:</strong> Manual approach = 4–8 hours reading GCP docs.
+                With Claude Code = 15–30 minutes to generate, review, and execute.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Workflow 2: Bulk Secrets Migration -->
+    <div class="card" data-search="ai claude secret manager bulk migrate env vars">
+      <div class="ch ch-ai">🤖 AI Workflow 2: Bulk Secret Migration</div>
+      <div class="cb">
+        <div class="ai-dialog">
+          <div class="ai-prompt-bar">
+            <div class="ai-who">You</div>
+            <div class="ai-text">"I have 45 Heroku config vars in prod.env. Write a bash script to bulk-import all of them to GCP Secret Manager using the naming convention 'myapp-prod-KEY'. Handle existing secrets gracefully (add a new version instead of failing)."</div>
+          </div>
+          <div class="ai-resp">
+            <div class="ai-who">Claude Code</div>
+            <div class="ai-body">
+              <pre class="code-block" style="font-size:11.6px;"><span class="cm">#!/usr/bin/env bash
+# Claude-generated: bulk Secret Manager import</span>
+set -euo pipefail
+
+ENV_FILE=<span class="st">"prod.env"</span>
+PROJECT=<span class="st">"your-project-id"</span>
+PREFIX=<span class="st">"myapp-prod"</span>
+
+<span class="br">while</span> IFS=<span class="st">'='</span> <span class="br">read</span> -r key rest; <span class="br">do</span>
+  [[ <span class="st">"$key"</span> =~ ^# ]] &amp;&amp; <span class="br">continue</span>
+  [[ -z <span class="st">"$key"</span> ]]   &amp;&amp; <span class="br">continue</span>
+  value=<span class="st">"${rest}"</span>
+  secret_name=<span class="st">"${PREFIX}-${key}"</span>
+  <span class="br">if</span> <span class="kg">gcloud</span> secrets describe <span class="st">"$secret_name"</span> <span class="fl">--project</span>=<span class="st">"$PROJECT"</span> &amp;>/dev/null; <span class="br">then</span>
+    <span class="cm"># Secret exists: add new version</span>
+    printf <span class="st">'%s'</span> <span class="st">"$value"</span> | <span class="kg">gcloud</span> secrets versions add <span class="st">"$secret_name"</span> <span class="fl">--data-file</span>=-
+  <span class="br">else</span>
+    <span class="cm"># New secret: create</span>
+    printf <span class="st">'%s'</span> <span class="st">"$value"</span> | <span class="kg">gcloud</span> secrets create <span class="st">"$secret_name"</span> <span class="fl">--data-file</span>=- <span class="fl">--replication-policy</span>=automatic
+  <span class="br">fi</span>
+  <span class="ok">echo "✓ ${secret_name}"</span>
+<span class="br">done</span> &lt; <span class="st">"$ENV_FILE"</span>
+printf <span class="st">'%s'</span> <span class="st">""</span> &gt; <span class="st">"$ENV_FILE"</span>  <span class="cm"># zero out file after import</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Workflow 3: Dockerfile from Procfile -->
+    <div class="card" data-search="ai claude dockerfile procfile conversion generate">
+      <div class="ch ch-ai">🤖 AI Workflow 3: Dockerfile Generation</div>
+      <div class="cb">
+        <div class="ai-dialog">
+          <div class="ai-prompt-bar">
+            <div class="ai-who">You</div>
+            <div class="ai-text">"Here's my Procfile and package.json. Generate a production-grade multi-stage Dockerfile for Cloud Run. The app uses Node 20, ESM modules, and has a separate workers entry point."</div>
+          </div>
+          <div class="ai-resp">
+            <div class="ai-who">Claude Code</div>
+            <div class="ai-body">
+              <div class="text-xs text-muted mb-6">Claude generates optimized Dockerfile + explains every decision:</div>
+              <ul style="list-style:none;font-size:12.7px;color:#b0c8a8;">
+                <li class="mb-5">✓ Multi-stage build (deps → runtime) to minimize image size</li>
+                <li class="mb-5">✓ Non-root user (<code class="mono">appuser</code>) for security</li>
+                <li class="mb-5">✓ <code class="mono">.dockerignore</code> to exclude dev deps and secrets</li>
+                <li class="mb-5">✓ <code class="mono">NODE_ENV=production</code> and <code class="mono">PORT=8080</code> set</li>
+                <li class="mb-5">✓ Health check endpoint recommendation</li>
+                <li class="mb-5">✓ Separate CMD for workers service deployment</li>
+              </ul>
+              <div class="tip-box mt-6">
+                Also generates a <code class="mono">.dockerignore</code> that excludes: <code class="mono">.env</code> files,
+                <code class="mono">node_modules</code> (reinstalled in build), test files, and git history.
+                Claude flags if it detects any secrets or credentials in your source files.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="plat-grid" style="grid-template-columns:repeat(3,1fr);gap:14px;">
+
+    <!-- AI Workflow 4: cloudbuild.yaml -->
+    <div class="card" data-search="ai claude cloudbuild yaml ci cd pipeline generate">
+      <div class="ch ch-ai">🤖 AI Workflow 4: Full CI/CD Pipeline</div>
+      <div class="cb">
+        <div class="ai-dialog">
+          <div class="ai-prompt-bar">
+            <div class="ai-who">You</div>
+            <div class="ai-text">"Generate a cloudbuild.yaml for our Node.js app. Dev branch auto-deploys to Cloud Run dev. Staging and prod require manual promotion using image digest. Include test execution and separate api/workers services."</div>
+          </div>
+          <div class="ai-resp">
+            <div class="ai-who">Claude Code</div>
+            <div class="ai-body">
+              <div class="text-xs text-muted mb-6">Claude generates a complete CI/CD config covering:</div>
+              <ul style="list-style:none;font-size:12.7px;color:#b0c8a8;">
+                <li class="mb-5">✓ Test step (<code class="mono">npm ci &amp;&amp; npm test</code>) before any deploy</li>
+                <li class="mb-5">✓ Docker build with <code class="mono">$COMMIT_SHA</code> tag + <code class="mono">latest</code></li>
+                <li class="mb-5">✓ Push to Artifact Registry</li>
+                <li class="mb-5">✓ Auto-deploy api + workers services to dev environment</li>
+                <li class="mb-5">✓ Promotion script for staging/prod (image digest based)</li>
+                <li class="mb-5">✓ Substitution variables for project ID, region, service names</li>
+              </ul>
+              <div class="info-box mt-6">
+                <strong>Cloud Build trigger:</strong> Claude also generates the <code class="mono">gcloud builds triggers create</code>
+                command to connect the cloudbuild.yaml to your GitHub repository branch.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Workflow 5: Cloud Scheduler migration -->
+    <div class="card" data-search="ai claude scheduler jobs migration bulk create">
+      <div class="ch ch-ai">🤖 AI Workflow 5: Bulk Scheduler Migration</div>
+      <div class="cb">
+        <div class="ai-dialog">
+          <div class="ai-prompt-bar">
+            <div class="ai-who">You</div>
+            <div class="ai-text">"I have 12 Heroku Scheduler jobs listed in this table [pasted CSV: name, schedule, script]. Generate all the gcloud scheduler jobs create commands plus the Express router code for the Cloud Run workers service."</div>
+          </div>
+          <div class="ai-resp">
+            <div class="ai-who">Claude Code</div>
+            <div class="ai-body">
+              <div class="text-xs text-muted mb-6">Claude generates three outputs from a single prompt:</div>
+              <pre class="code-block" style="font-size:11.6px;"><span class="cm"># Output 1: workers/index.js with all route handlers
+# Output 2: gcloud commands for all 12 scheduler jobs
+# Output 3: IAM binding commands for scheduler SA</span>
+
+<span class="ok"># Claude also identifies:</span>
+<span class="cm"># - Jobs with &lt;10 min intervals (invalid for Heroku Scheduler,
+#   may need refactoring for Cloud Scheduler)
+# - Jobs that run "every 10 min" → recommends self-looping
+#   Cloud Run pattern for sub-minute frequency
+# - Long-running jobs → recommends --timeout flag</span></pre>
+              <div class="tip-box mt-6">
+                <strong>Pattern recognition:</strong> Claude identifies which jobs are short-lived
+                (schedulable via Cloud Scheduler HTTP) vs. long-running (need self-looping process),
+                and recommends the right architecture for each.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI + Security -->
+    <div class="card" data-search="ai claude security iam policy audit migration">
+      <div class="ch ch-ai">🤖 AI Workflow 6: Security Audit &amp; IAM Review</div>
+      <div class="cb">
+        <div class="ai-dialog">
+          <div class="ai-prompt-bar">
+            <div class="ai-who">You</div>
+            <div class="ai-text">"Review our GCP IAM setup for the migration. Here are our service accounts and their roles [paste output of gcloud projects get-iam-policy]. Flag any overly-permissive grants and suggest least-privilege replacements."</div>
+          </div>
+          <div class="ai-resp">
+            <div class="ai-who">Claude Code</div>
+            <div class="ai-body">
+              <ul style="list-style:none;font-size:12.7px;color:#b0c8a8;">
+                <li class="mb-5">✓ Flags <code class="mono">roles/editor</code> or <code class="mono">roles/owner</code> on service accounts</li>
+                <li class="mb-5">✓ Identifies unused service accounts</li>
+                <li class="mb-5">✓ Recommends replacing broad roles with minimal scoped roles</li>
+                <li class="mb-5">✓ Checks for <code class="mono">allUsers</code> / <code class="mono">allAuthenticatedUsers</code> bindings</li>
+                <li class="mb-5">✓ Generates remediation <code class="mono">gcloud</code> commands</li>
+              </ul>
+              <div class="warn-box mt-6">
+                <strong>Critical pattern:</strong> Never give your Cloud Run service account
+                <code class="mono">roles/editor</code>. Use specific roles:
+                <code class="mono">cloudsql.client</code> + <code class="mono">secretmanager.secretAccessor</code> + <code class="mono">storage.objectAdmin</code>.
+                Claude flags this automatically.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-2 gap-14 mt-14">
+    <div class="card" data-search="ai migration timeline checklist">
+      <div class="ch ch-ai">📋 AI-Accelerated Migration Timeline</div>
+      <div class="cb">
+        <table class="tbl" style="font-size:13.2px;">
+          <tr><th>Phase</th><th>Manual Time</th><th class="tg">With AI Assist</th><th>Notes</th></tr>
+          <tr><td>Phase 0: Setup &amp; APIs</td><td class="score-md">2–3 hours</td><td class="tg score-hi">20 min</td><td>AI generates all enable/create commands</td></tr>
+          <tr><td>Phase 1: Database</td><td class="score-md">3–5 hours</td><td class="tg score-hi">1 hour</td><td>Export/import commands + connection string</td></tr>
+          <tr><td>Phase 2: Redis</td><td class="score-hi">30 min</td><td class="tg score-hi">10 min</td><td>Simple — AI confirms no export needed</td></tr>
+          <tr><td>Phase 3: Logging</td><td class="score-hi">1 hour</td><td class="tg score-hi">15 min</td><td>Pino config + LQL query examples</td></tr>
+          <tr><td>Phase 4: Storage (GCS)</td><td class="score-md">2–4 hours</td><td class="tg score-hi">45 min</td><td>AI generates SDK conversion + rsync commands</td></tr>
+          <tr><td>Phase 5: Secrets</td><td class="score-md">2–3 hours</td><td class="tg score-hi">30 min</td><td>Bulk import script generated instantly</td></tr>
+          <tr><td>Phase 7: Containers</td><td class="score-md">3–5 hours</td><td class="tg score-hi">45 min</td><td>Dockerfile + cloudbuild.yaml generated</td></tr>
+          <tr><td>Phase 8: VPC/Networking</td><td class="score-lo">8–16 hours</td><td class="tg score-hi">1–2 hours</td><td>Most complex; AI biggest value-add here</td></tr>
+          <tr><td>Phase 9: Scheduler</td><td class="score-md">2–4 hours</td><td class="tg score-hi">30 min</td><td>Bulk job creation from CSV/table</td></tr>
+          <tr><td>Phase 10: DNS Cutover</td><td class="score-md">1–2 hours</td><td class="tg score-hi">30 min</td><td>Checklist + cert provisioning commands</td></tr>
+          <tr><td class="bold">Total</td><td class="score-lo bold">~25–45 hours</td><td class="tg score-hi bold">~6–8 hours</td><td class="text-green bold">~80% time reduction</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card" data-search="ai best practices prompting claude migration">
+      <div class="ch ch-ai">💡 Best Practices for AI-Assisted Migration</div>
+      <div class="cb">
+        <ol class="steps">
+          <li class="step-item"><div class="step-num gcp">1</div><div class="step-text"><strong>Give full context upfront:</strong> Tell the AI your exact stack (Node version, ESM/CJS, framework, which Heroku add-ons, GCP region). Better context → better output on first attempt.</div></li>
+          <li class="step-item"><div class="step-num gcp">2</div><div class="step-text"><strong>Paste actual output, not descriptions:</strong> Share the output of <code>heroku config -s</code>, <code>heroku ps</code>, <code>cat Procfile</code> directly. AI works on real data, not summaries.</div></li>
+          <li class="step-item"><div class="step-num gcp">3</div><div class="step-text"><strong>Ask for explanations:</strong> "Explain every gcloud flag you used." Understanding what was generated helps you debug if something doesn't work as expected.</div></li>
+          <li class="step-item"><div class="step-num gcp">4</div><div class="step-text"><strong>Security review pass:</strong> After AI generates IAM roles or secrets config, ask: "Review this for security issues or over-permissive grants." AI can audit its own output.</div></li>
+          <li class="step-item"><div class="step-num gcp">5</div><div class="step-text"><strong>Iterative validation:</strong> Run one phase at a time. Paste error output back into the chat. AI can diagnose gcloud errors and suggest fixes without you leaving the terminal.</div></li>
+          <li class="step-item"><div class="step-num gcp">6</div><div class="step-text"><strong>Generate tests:</strong> Ask AI to generate connectivity tests (can Cloud Run reach Memorystore? Can it access Secret Manager?) to validate each phase before moving on.</div></li>
+        </ol>
+        <div class="warn-box mt-10">
+          <strong>Never share secrets with AI:</strong> Always redact API keys, passwords, and credentials
+          before pasting config output into any AI chat. Use placeholder values like
+          <code class="mono">REDACTED</code> or <code class="mono">***</code> in shared snippets.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /r17 -->
+
+</div><!-- /canvas -->
+</div><!-- /viewport -->
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     MINIMAP
+══════════════════════════════════════════════════════════════════════════ -->
+<button id="minimap-toggle" title="Toggle minimap">◉</button>
+<div id="minimap">
+  <canvas id="minimap-canvas" width="290" height="200"></canvas>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     LEGEND
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="legend">
+  <div class="leg-item"><div class="leg-swatch" style="background:#79589f"></div>Heroku context</div>
+  <div class="leg-item"><div class="leg-swatch" style="background:#4285F4"></div>GCP services</div>
+  <div class="leg-item"><div class="leg-swatch" style="background:#34A853"></div>Simple migration</div>
+  <div class="leg-item"><div class="leg-swatch" style="background:#FBBC04"></div>Moderate complexity</div>
+  <div class="leg-item"><div class="leg-swatch" style="background:#EA4335"></div>Complex / requires VPC</div>
+  <div class="leg-item"><div class="leg-swatch" style="background:#34A853;border-radius:50%"></div>AI workflow</div>
+  <div class="leg-item"><div class="leg-swatch" style="background:#FF9900"></div>AWS / secrets</div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   INTERACTIVE ENGINE — Zoom, Pan, Minimap, Search, Nav, Keyboard
+══════════════════════════════════════════════════════════════════════ */
+const viewport = document.getElementById('viewport');
+const canvas   = document.getElementById('canvas');
+const zoomEl   = document.getElementById('zoom-level');
+const mmCanvas = document.getElementById('minimap-canvas');
+const mmCtx    = mmCanvas.getContext('2d');
+const mmEl     = document.getElementById('minimap');
+
+// ── Canvas logical dimensions ──────────────────────────────────────
+const CANVAS_W = 4100;
+const CANVAS_H = 11600;
+
+// ── Regions for minimap coloring ─────────────────────────────────
+const REGIONS = [
+  { x:40,   y:40,   w:1640, h:1262, color:'#4a2d7c' },
+  { x:1780, y:40,   w:2280, h:967,  color:'#1f3060' },
+  { x:40,   y:1377, w:4020, h:927,  color:'#2d2040' },
+  { x:40,   y:2360, w:1900, h:794,  color:'#1a3040' },
+  { x:2040, y:2360, w:1980, h:604,  color:'#1f3060' },
+  { x:40,   y:3238, w:1270, h:1600, color:'#1a3a3a' },
+  { x:1410, y:3238, w:1270, h:1499, color:'#3a2810' },
+  { x:2780, y:3238, w:1280, h:1285, color:'#301a40' },
+  { x:40,   y:4938, w:1270, h:1015, color:'#1a3030' },
+  { x:1410, y:4938, w:1270, h:1261, color:'#382018' },
+  { x:2780, y:4938, w:1280, h:889,  color:'#1a1a38' },
+  { x:40,   y:6299, w:1900, h:1430, color:'#1a2840' },
+  { x:2040, y:6299, w:1980, h:1148, color:'#301030' },
+  { x:40,   y:7829, w:1900, h:860,  color:'#1a3020' },
+  { x:2040, y:7829, w:1980, h:835,  color:'#301a30' },
+  { x:40,   y:8789, w:1970, h:930,  color:'#181840' },
+  { x:40,   y:9819, w:4020, h:1627, color:'#183018' },
+];
+
+// ── Nav anchor map ────────────────────────────────────────────────
+const NAV_ANCHORS = {
+  r01:{ x:40,   y:40   }, r02:{ x:1780, y:40   }, r03:{ x:40,   y:1377 },
+  r04:{ x:40,   y:2360 }, r05:{ x:2040, y:2360 }, r06:{ x:40,   y:3238 },
+  r07:{ x:1410, y:3238 }, r08:{ x:2780, y:3238 }, r09:{ x:40,   y:4938 },
+  r10:{ x:1410, y:4938 }, r11:{ x:2780, y:4938 }, r12:{ x:40,   y:6299 },
+  r13:{ x:2040, y:6299 }, r14:{ x:40,   y:7829 }, r15:{ x:2040, y:7829 },
+  r16:{ x:40,   y:8789 }, r17:{ x:40,   y:9819 },
+};
+
+// ── Zoom ──────────────────────────────────────────────────────────
+let currentZoom = 1.0;
+function setZoom(z) {
+  currentZoom = Math.max(0.1, Math.min(2.0, z));
+  canvas.style.transform = `scale(${currentZoom})`;
+  zoomEl.textContent = Math.round(currentZoom * 100) + '%';
+  requestAnimationFrame(updateMinimap);
+}
+function adjustZoom(delta) { setZoom(currentZoom + delta / 100); }
+function resetZoom()        { setZoom(1.0); }
+
+// ── Nav scroll-to ────────────────────────────────────────────────
+function navTo(id) {
+  const a = NAV_ANCHORS[id]; if (!a) return;
+  viewport.scrollLeft = a.x * currentZoom - 60;
+  viewport.scrollTop  = a.y * currentZoom - 80;
+  // highlight
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.boxShadow = '0 0 0 3px #79589f, 0 0 40px rgba(121,88,159,0.5)';
+    setTimeout(() => { el.style.boxShadow = ''; }, 1800);
+  }
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  // find nav item by onclick
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(id)) n.classList.add('active');
+  });
+  requestAnimationFrame(updateMinimap);
+}
+
+// ── Drag-to-pan ──────────────────────────────────────────────────
+let isDragging = false, dragStartX, dragStartY, scrollStartX, scrollStartY;
+viewport.addEventListener('mousedown', e => {
+  if (e.target.closest('a,button,input,select,textarea')) return;
+  isDragging = true;
+  dragStartX = e.clientX; dragStartY = e.clientY;
+  scrollStartX = viewport.scrollLeft; scrollStartY = viewport.scrollTop;
+  viewport.style.cursor = 'grabbing';
+});
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  viewport.scrollLeft = scrollStartX - (e.clientX - dragStartX);
+  viewport.scrollTop  = scrollStartY - (e.clientY - dragStartY);
+  requestAnimationFrame(updateMinimap);
+});
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  viewport.style.cursor = 'default';
+});
+
+// ── Ctrl+Scroll zoom ─────────────────────────────────────────────
+viewport.addEventListener('wheel', e => {
+  if (!e.ctrlKey && !e.metaKey) return;
+  e.preventDefault();
+  adjustZoom(e.deltaY < 0 ? 5 : -5);
+}, { passive: false });
+
+// ── Minimap ───────────────────────────────────────────────────────
+let mmVisible = true;
+document.getElementById('minimap-toggle').addEventListener('click', () => {
+  mmVisible = !mmVisible;
+  mmEl.style.display = mmVisible ? 'block' : 'none';
+});
+
+function updateMinimap() {
+  const mw = mmCanvas.width, mh = mmCanvas.height;
+  const sx = mw / CANVAS_W, sy = mh / CANVAS_H;
+  mmCtx.clearRect(0, 0, mw, mh);
+  // background
+  mmCtx.fillStyle = '#0a0814';
+  mmCtx.fillRect(0, 0, mw, mh);
+  // regions
+  REGIONS.forEach(r => {
+    mmCtx.fillStyle = r.color + '88';
+    mmCtx.fillRect(r.x*sx, r.y*sy, r.w*sx, r.h*sy);
+  });
+  // viewport indicator
+  const vpW = (viewport.clientWidth  / currentZoom) * sx;
+  const vpH = (viewport.clientHeight / currentZoom) * sy;
+  const vpX = (viewport.scrollLeft   / currentZoom) * sx;
+  const vpY = (viewport.scrollTop    / currentZoom) * sy;
+  mmCtx.strokeStyle = '#79589f';
+  mmCtx.lineWidth = 1.5;
+  mmCtx.strokeRect(vpX, vpY, vpW, vpH);
+  mmCtx.fillStyle = 'rgba(121,88,159,0.1)';
+  mmCtx.fillRect(vpX, vpY, vpW, vpH);
+}
+
+mmCanvas.addEventListener('click', e => {
+  const r = mmCanvas.getBoundingClientRect();
+  const mx = (e.clientX - r.left) / mmCanvas.width;
+  const my = (e.clientY - r.top)  / mmCanvas.height;
+  viewport.scrollLeft = (mx * CANVAS_W - viewport.clientWidth  / currentZoom / 2) * currentZoom;
+  viewport.scrollTop  = (my * CANVAS_H - viewport.clientHeight / currentZoom / 2) * currentZoom;
+  requestAnimationFrame(updateMinimap);
+});
+let mmDrag = false;
+mmCanvas.addEventListener('mousedown', () => mmDrag = true);
+window.addEventListener('mouseup', () => mmDrag = false);
+mmCanvas.addEventListener('mousemove', e => {
+  if (!mmDrag) return;
+  const r = mmCanvas.getBoundingClientRect();
+  const mx = (e.clientX - r.left) / mmCanvas.width;
+  const my = (e.clientY - r.top)  / mmCanvas.height;
+  viewport.scrollLeft = (mx * CANVAS_W - viewport.clientWidth  / currentZoom / 2) * currentZoom;
+  viewport.scrollTop  = (my * CANVAS_H - viewport.clientHeight / currentZoom / 2) * currentZoom;
+  requestAnimationFrame(updateMinimap);
+});
+viewport.addEventListener('scroll', () => requestAnimationFrame(updateMinimap));
+
+// ── Search / filter ──────────────────────────────────────────────
+const searchBox = document.getElementById('search-box');
+searchBox.addEventListener('input', () => {
+  const q = searchBox.value.trim().toLowerCase();
+  const searchable = document.querySelectorAll('[data-search],.card,.region');
+  if (!q) { searchable.forEach(el => el.classList.remove('search-dim')); return; }
+  searchable.forEach(el => {
+    const text = (el.getAttribute('data-search') || '') + ' ' + el.textContent;
+    el.classList.toggle('search-dim', !text.toLowerCase().includes(q));
+  });
+});
+
+// ── Keyboard shortcuts ───────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.target === searchBox) {
+    if (e.key === 'Escape') { searchBox.value = ''; searchBox.dispatchEvent(new Event('input')); searchBox.blur(); }
+    return;
+  }
+  switch(e.key) {
+    case '+': case '=': adjustZoom(10);  e.preventDefault(); break;
+    case '-':            adjustZoom(-10); e.preventDefault(); break;
+    case '0':            resetZoom();     e.preventDefault(); break;
+    case '/':            e.preventDefault(); searchBox.focus(); break;
+    case 'Escape':
+      searchBox.value = ''; searchBox.dispatchEvent(new Event('input'));
+      break;
+  }
+});
+
+// ── Init ─────────────────────────────────────────────────────────
+setZoom(1.0);
+requestAnimationFrame(updateMinimap);
+</script>
+</body>
+</html>
