@@ -978,18 +978,18 @@ pre.mermaid g.node[onclick]:hover > path {
     <a href="#observability">Observability &amp; Telemetry</a>
     <a href="#credit-model">Agent Script&trade; Credit Model</a>
 
-    <span class="nav-group">Path A: Pure Org-Side</span>
-    <a href="#path-a-overview">Path A Overview</a>
-    <a href="#path-a-flow">Flow-Based Gateway</a>
-    <a href="#path-a-apex">Apex Components</a>
-    <a href="#path-a-dashboard">Monitoring Dashboard</a>
-    <a href="#path-a-loe">Path A: LOE &amp; Timeline</a>
+    <span class="nav-group">Baseline: Pure Org-Side</span>
+    <a href="#baseline-overview">Baseline Overview</a>
+    <a href="#baseline-flow">Flow-Based Gateway</a>
+    <a href="#baseline-apex">Apex Components</a>
+    <a href="#baseline-dashboard">Monitoring Dashboard</a>
+    <a href="#baseline-loe">Baseline: LOE &amp; Timeline</a>
 
-    <span class="nav-group">Path B: Hybrid</span>
-    <a href="#path-b-overview">Path B Overview</a>
-    <a href="#path-b-offplatform">Off-Platform Gateway</a>
-    <a href="#path-b-integration">Integration Layer</a>
-    <a href="#path-b-loe">Path B: LOE &amp; Timeline</a>
+    <span class="nav-group">Enterprise: Hybrid</span>
+    <a href="#enterprise-overview">Enterprise Overview</a>
+    <a href="#enterprise-offplatform">Off-Platform Gateway</a>
+    <a href="#enterprise-integration">Integration Layer</a>
+    <a href="#enterprise-loe">Enterprise: LOE &amp; Timeline</a>
 
     <span class="nav-group">Implementation</span>
     <a href="#critical-path">Critical Path &amp; Gantt</a>
@@ -1005,7 +1005,7 @@ pre.mermaid g.node[onclick]:hover > path {
     <a href="#appendix-b" class="nav-indent" data-tech-only>B: Apex Starters</a>
     <a href="#appendix-c" class="nav-indent" data-tech-only>C: Flow Definitions</a>
     <a href="#appendix-d" class="nav-indent" data-tech-only>D: Agent Script</a>
-    <a href="#appendix-e" class="nav-indent" data-tech-only>E: Off-Platform (Path B)</a>
+    <a href="#appendix-e" class="nav-indent" data-tech-only>E: Off-Platform (Enterprise)</a>
     <a href="#disclosures">Disclosures</a>
 
     <span class="nav-group" data-exec-only>Executive Focus</span>
@@ -1068,7 +1068,7 @@ pre.mermaid g.node[onclick]:hover > path {
   </p>
   <div class="exec-kpi-grid">
     <div class="exec-kpi"><span class="kpi-num">30&ndash;60%</span><span class="kpi-label">Waste Reduction</span><span class="kpi-sub">vs. ungoverned agent rollout</span></div>
-    <div class="exec-kpi"><span class="kpi-num">6&ndash;8 wk</span><span class="kpi-label">Time to Production</span><span class="kpi-sub">Path A (org-side only)</span></div>
+    <div class="exec-kpi"><span class="kpi-num">6&ndash;8 wk</span><span class="kpi-label">Time to Production</span><span class="kpi-sub">Baseline (org-side only)</span></div>
     <div class="exec-kpi"><span class="kpi-num">$0</span><span class="kpi-label">Overage Risk</span><span class="kpi-sub">gateway blocks new LLM calls at 0% budget</span></div>
     <div class="exec-kpi"><span class="kpi-num">4</span><span class="kpi-label">Graduated Phases</span><span class="kpi-sub">before hard stop</span></div>
   </div>
@@ -1089,13 +1089,13 @@ pre.mermaid g.node[onclick]:hover > path {
   &mdash; before hitting the ceiling. When the budget is healthy, agents operate at full power. When it
   tightens, they step down model tier and cache responses. At zero, new LLM calls are blocked entirely
   and complex requests route to a live human.</p>
-  <p><strong>The decision.</strong> Two delivery paths. <strong>Path A</strong> (pure Salesforce&reg;) ships
-  in 6&ndash;8 weeks for ~42 person-days and covers 80% of governance needs. <strong>Path B</strong>
+  <p><strong>The decision.</strong> Two delivery paths. <strong>Baseline</strong> (pure Salesforce&reg;) ships
+  in 6&ndash;8 weeks for ~42 person-days and covers 80% of governance needs. <strong>Enterprise</strong>
   (hybrid with an off-platform service) adds 4&ndash;6 weeks for real-time latency, auto-calibration,
-  multi-org rollup, and ML forecasting. Most organizations start with Path A; Path B is the upgrade once
+  multi-org rollup, and ML forecasting. Most organizations start with Baseline; Enterprise is the upgrade once
   volume or multi-org operation demands it.</p>
-  <p><strong>The investment.</strong> One-time build: ~42 person-days (Path A) or ~75 person-days (Path B).
-  Ongoing: ~2&ndash;4 hours/week of admin time, plus $200&ndash;$800/month cloud infrastructure (Path B only).
+  <p><strong>The investment.</strong> One-time build: ~42 person-days (Baseline) or ~75 person-days (Enterprise).
+  Ongoing: ~2&ndash;4 hours/week of admin time, plus $200&ndash;$800/month cloud infrastructure (Enterprise only).
   No additional Salesforce&reg; licenses required beyond Agentforce&trade; flex credits you already own.</p>
 </div>
 
@@ -1140,8 +1140,8 @@ pre.mermaid g.node[onclick]:hover > path {
     <tr><td><strong>Circuit Breaker</strong></td><td>A safety fuse. When the gateway trips, complex requests reroute to humans or cached answers until the problem clears.</td></tr>
     <tr><td><strong>Model Tiering</strong></td><td>Using small, cheap models for routine work and reserving expensive models for hard problems. Largest single lever for cost savings.</td></tr>
     <tr><td><strong>Shadow Ledger</strong></td><td>The gateway&rsquo;s in-org running count of estimated spend; reconciled periodically against Salesforce&reg;&rsquo;s authoritative usage data.</td></tr>
-    <tr><td><strong>HITL &mdash; Human-in-the-Loop</strong></td><td>Routing a customer to a live human agent when AI is unavailable or unsafe. The gateway&rsquo;s safety net.</td></tr>
-    <tr><td><strong>Path A / Path B</strong></td><td>Two delivery options. Path A = inside Salesforce&reg; only (faster, cheaper). Path B = adds a small cloud service (more accurate, lower latency, multi-org).</td></tr>
+    <tr><td><strong>HITL &mdash; Human-in-the-Loop</strong></td><td>The gateway&rsquo;s safety net. When AI is unavailable, throttled, or below a confidence threshold, the customer is routed to a live human agent via Omni-Channel&reg; rather than getting an error or a bad AI answer. Appears throughout this document as HITL <em>routing</em>, <em>escalation</em>, <em>queue</em>, and <em>capacity</em> &mdash; all the same mechanism.</td></tr>
+    <tr><td><strong>Baseline / Enterprise</strong></td><td>Two delivery options. Baseline = inside Salesforce&reg; only (faster, cheaper). Enterprise = adds a small cloud service (more accurate, lower latency, multi-org).</td></tr>
   </table>
 </div>
 
@@ -1177,9 +1177,9 @@ pre.mermaid g.node[onclick]:hover > path {
     <tr><th style="width:36%;">Item</th><th style="width:14%;">Needed?</th><th>Typical Cost Exposure</th></tr>
     <tr><td>Agentforce&trade; flex credits</td><td><strong>Yes</strong></td><td>The AI you&rsquo;re governing. Already on your P&amp;L.</td></tr>
     <tr><td>Service Cloud or Sales Cloud (Enterprise+)</td><td><strong>Yes</strong></td><td>Typically already owned; no incremental cost.</td></tr>
-    <tr><td>Data Cloud add-on</td><td>Recommended</td><td>May be included; otherwise &sim;$65K+/yr. Not a blocker for Path A.</td></tr>
+    <tr><td>Data Cloud add-on</td><td>Recommended</td><td>May be included; otherwise &sim;$65K+/yr. Not a blocker for Baseline.</td></tr>
     <tr><td>Shield&trade; (Event Monitoring)</td><td>Recommended</td><td>&sim;$25/user/mo &mdash; enhances audit; not strictly required.</td></tr>
-    <tr><td>Cloud infrastructure (Path B only)</td><td>Path B only</td><td>$200&ndash;$800/month total &mdash; serverless, pay-per-use.</td></tr>
+    <tr><td>Cloud infrastructure (Enterprise only)</td><td>Enterprise only</td><td>$200&ndash;$800/month total &mdash; serverless, pay-per-use.</td></tr>
   </table>
   <div class="callout success">
     <p><strong>Commercial takeaway:</strong> The gateway is overwhelmingly a <em>build</em> investment
@@ -1191,10 +1191,10 @@ pre.mermaid g.node[onclick]:hover > path {
 <!-- EXEC · Personas ------------------------------------------------------ -->
 <div class="card" id="exec-personas" data-exec-only data-search="team personas roles staffing executive summary skills">
   <h2>Team &amp; Staffing &mdash; What This Takes</h2>
-  <p>A small team can deliver either path. Path A needs 3 people part-time for 6&ndash;8 weeks. Path B
+  <p>A small team can deliver either path. Baseline needs 3 people part-time for 6&ndash;8 weeks. Enterprise
   adds 2 more for the extended cloud-side build.</p>
   <table>
-    <tr><th>Role</th><th style="width:14%;">Path A</th><th style="width:14%;">Path B</th><th>Typical Engagement</th></tr>
+    <tr><th>Role</th><th style="width:14%;">Baseline</th><th style="width:14%;">Enterprise</th><th>Typical Engagement</th></tr>
     <tr><td>Salesforce&reg; Architect</td><td>Yes</td><td>Yes</td><td>Part-time, 8&ndash;10 days</td></tr>
     <tr><td>Salesforce&reg; Developer (Apex&trade;)</td><td>Yes</td><td>Yes</td><td>Full-time, 20&ndash;25 days</td></tr>
     <tr><td>Salesforce&reg; Admin</td><td>Yes</td><td>Yes</td><td>Part-time, 8&ndash;10 days</td></tr>
@@ -1205,7 +1205,7 @@ pre.mermaid g.node[onclick]:hover > path {
   <div class="callout">
     <p><strong>Staff or partner?</strong> Most organizations engage a Salesforce&reg; SI partner for the
     4&ndash;8 week build phase, then hand off ongoing operations to in-house admins and developers.
-    Ongoing maintenance is &sim;2 hrs/week for Path A, &sim;4 hrs/week for Path B.</p>
+    Ongoing maintenance is &sim;2 hrs/week for Baseline, &sim;4 hrs/week for Enterprise.</p>
   </div>
 </div>
 
@@ -1220,7 +1220,7 @@ pre.mermaid g.node[onclick]:hover > path {
     <tr><td>2</td><td>Enterprise-tier Salesforce&reg; edition (supports Platform Events + Platform Cache)</td><td>&#x2610;</td></tr>
     <tr><td>3</td><td>Sandbox (Partial or Full Copy) with the production agent deployed</td><td>&#x2610;</td></tr>
     <tr><td>4</td><td>Executive sponsor aligned on &ldquo;what happens at 0% budget&rdquo; (hard stop / HITL / auto-purchase)</td><td>&#x2610;</td></tr>
-    <tr><td>5</td><td>Budget envelope approved for 42 or 75 person-day engagement (Path A or B)</td><td>&#x2610;</td></tr>
+    <tr><td>5</td><td>Budget envelope approved for 42 or 75 person-day engagement (Baseline or B)</td><td>&#x2610;</td></tr>
   </table>
 </div>
 
@@ -1266,7 +1266,7 @@ pre.mermaid g.node[onclick]:hover > path {
   <ul class="bullets">
     <li><strong>Real-time visibility</strong> &mdash; you see what&rsquo;s being spent today, not in next month&rsquo;s invoice.</li>
     <li><strong>Safety band</strong> &mdash; the gateway holds a ~10% margin below the official ceiling so estimation drift never causes a surprise overage.</li>
-    <li><strong>Calibration discipline</strong> &mdash; a scheduled reconciliation compares estimated vs. actual; if drift grows, the gateway auto-tunes its multipliers (Path B) or prompts an admin to do so (Path A).</li>
+    <li><strong>Calibration discipline</strong> &mdash; a scheduled reconciliation compares estimated vs. actual; if drift grows, the gateway auto-tunes its multipliers (Enterprise) or prompts an admin to do so (Baseline).</li>
   </ul>
   <div class="callout">
     <p><strong>Bottom line for finance:</strong> The shadow ledger turns an opaque monthly invoice into a
@@ -1354,7 +1354,7 @@ pre.mermaid g.node[onclick]:hover > path {
     <tr><td>Alert History</td><td>&ldquo;Did anything notable happen last week?&rdquo;</td></tr>
   </table>
   <div class="callout">
-    <p><strong>Path B only:</strong> these dashboards are also exported as standard OpenTelemetry &mdash;
+    <p><strong>Enterprise only:</strong> these dashboards are also exported as standard OpenTelemetry &mdash;
     so AI spend lands on the same pane of glass your SRE team already watches, alongside everything
     else.</p>
   </div>
@@ -1379,13 +1379,13 @@ pre.mermaid g.node[onclick]:hover > path {
   </div>
 </div>
 
-<!-- EXEC · Path A Overview ---------------------------------------------- -->
-<div class="card path-overview" id="exec-path-a-overview" data-exec-only data-search="path a overview executive pure org side pros cons">
-  <h2><span class="path-eyebrow">Path A &middot; Implementation Approach #1</span>Pure Org-Side Implementation</h2>
+<!-- EXEC · Baseline Overview ---------------------------------------------- -->
+<div class="card path-overview" id="exec-baseline-overview" data-exec-only data-search="path a overview executive pure org side pros cons">
+  <h2><span class="path-eyebrow">Baseline &middot; Implementation Approach #1</span>Pure Org-Side Implementation</h2>
   <p>Everything inside Salesforce&reg;. No external servers, no cloud subscriptions, no separate DevOps
   pipeline. Fastest to deliver, cheapest to maintain, lowest organizational complexity.</p>
   <table>
-    <tr><th style="width:28%;">Dimension</th><th>Path A</th></tr>
+    <tr><th style="width:28%;">Dimension</th><th>Baseline</th></tr>
     <tr><td>Time to production</td><td>6&ndash;8 weeks</td></tr>
     <tr><td>Total person-days</td><td>~42</td></tr>
     <tr><td>Required skills</td><td>Salesforce&reg; Architect, Apex&trade; Developer, Admin, Agentforce&trade; Specialist</td></tr>
@@ -1395,34 +1395,34 @@ pre.mermaid g.node[onclick]:hover > path {
     <tr><td>Trade-offs</td><td>Manual weekly calibration; ~100&ndash;500ms budget-check latency; Apex governor limits at high volume</td></tr>
   </table>
   <div class="callout success">
-    <p><strong>Recommended starting point.</strong> 80% of organizations deploy Path A first, run it for
-    a quarter to understand their actual consumption patterns, and only then consider Path B.</p>
+    <p><strong>Recommended starting point.</strong> 80% of organizations deploy Baseline first, run it for
+    a quarter to understand their actual consumption patterns, and only then consider Enterprise.</p>
   </div>
 </div>
 
-<!-- EXEC · Path A Flow / Apex / Dashboard / LOE — consolidated stub ----- -->
-<div class="card" id="exec-path-a-flow" data-exec-only data-search="path a flow gateway executive declarative business">
-  <h2>Path A: Flow-Based Gateway Components</h2>
-  <p>The admin-configurable layer of Path A &mdash; reactive Flows that respond to budget-phase
+<!-- EXEC · Baseline Flow / Apex / Dashboard / LOE — consolidated stub ----- -->
+<div class="card" id="exec-baseline-flow" data-exec-only data-search="path a flow gateway executive declarative business">
+  <h2>Baseline: Flow-Based Gateway Components</h2>
+  <p>The admin-configurable layer of Baseline &mdash; reactive Flows that respond to budget-phase
   transitions by sending alerts, toggling subagents on/off, and orchestrating HITL handoff. For the
   implementing developer&rsquo;s perspective, switch to the Full Technical Readout.</p>
   <p><strong>For the CIO:</strong> this is the layer your admins can tune without code. Threshold changes,
   alert recipients, and subagent on/off policy are all changeable without a deployment.</p>
-  <p>See <a href="#exec-path-a-overview">Path A Overview</a> for commercial summary.</p>
+  <p>See <a href="#exec-baseline-overview">Baseline Overview</a> for commercial summary.</p>
 </div>
 
-<div class="card" id="exec-path-a-apex" data-exec-only data-search="path a apex components executive pro code business">
-  <h2>Path A: Apex Components (Pro-Code Core)</h2>
-  <p>Four Apex&trade; service classes that form the programmatic core of Path A: <em>ConsumptionTracker</em>,
+<div class="card" id="exec-baseline-apex" data-exec-only data-search="path a apex components executive pro code business">
+  <h2>Baseline: Apex Components (Pro-Code Core)</h2>
+  <p>Four Apex&trade; service classes that form the programmatic core of Baseline: <em>ConsumptionTracker</em>,
   <em>BudgetPhaseEngine</em>, <em>CircuitBreakerService</em>, and <em>ModelTierRouter</em>. Total ~20
-  person-days of developer time &mdash; this is the critical-path investment for Path A.</p>
+  person-days of developer time &mdash; this is the critical-path investment for Baseline.</p>
   <p><strong>For the CIO:</strong> these are the components that require senior Apex&trade; talent or an SI partner.
   Once built, they require only quarterly Salesforce&reg;-release maintenance (~2&ndash;4 hours per release).</p>
-  <p>See <a href="#exec-path-a-overview">Path A Overview</a> for commercial summary.</p>
+  <p>See <a href="#exec-baseline-overview">Baseline Overview</a> for commercial summary.</p>
 </div>
 
-<div class="card" id="exec-path-a-dashboard" data-exec-only data-search="path a dashboard executive monitoring reporting">
-  <h2>Path A: Monitoring Dashboard</h2>
+<div class="card" id="exec-baseline-dashboard" data-exec-only data-search="path a dashboard executive monitoring reporting">
+  <h2>Baseline: Monitoring Dashboard</h2>
   <p>A Lightning&reg; App Builder page combining native Salesforce&reg; reports (trend, agent breakdown, phase
   distribution) with a custom Lightning Web Component for real-time burn-rate, exhaustion forecast, and
   circuit-breaker status. Accessible via the same dashboard mechanism your organization already uses
@@ -1430,8 +1430,8 @@ pre.mermaid g.node[onclick]:hover > path {
   <p>See <a href="#exec-observability">Observability</a> for what each view answers.</p>
 </div>
 
-<div class="card" id="exec-path-a-loe" data-exec-only data-search="path a loe timeline executive schedule weeks 42 days">
-  <h2>Path A: Timeline &amp; Effort Summary</h2>
+<div class="card" id="exec-baseline-loe" data-exec-only data-search="path a loe timeline executive schedule weeks 42 days">
+  <h2>Baseline: Timeline &amp; Effort Summary</h2>
   <div class="exec-kpi-grid">
     <div class="exec-kpi"><span class="kpi-num">6&ndash;8 wk</span><span class="kpi-label">Duration</span></div>
     <div class="exec-kpi"><span class="kpi-num">~42</span><span class="kpi-label">Person-Days</span></div>
@@ -1444,47 +1444,67 @@ pre.mermaid g.node[onclick]:hover > path {
   <p>See the <a href="#exec-critical-path">Critical Path</a> summary for the detailed Gantt.</p>
 </div>
 
-<!-- EXEC · Path B Overview ---------------------------------------------- -->
-<div class="card path-overview path-b-accent" id="exec-path-b-overview" data-exec-only data-search="path b overview executive hybrid off platform">
-  <h2><span class="path-eyebrow">Path B &middot; Implementation Approach #2</span>Hybrid On-Org / Off-Platform Implementation</h2>
-  <p>Extends Path A by adding a small external microservice that handles heavy lifting: real-time credit
+<!-- EXEC · Enterprise Overview ---------------------------------------------- -->
+<div class="card path-overview path-b-accent" id="exec-enterprise-overview" data-exec-only data-search="enterprise overview executive hybrid off platform multi-org ai-wide scope">
+  <h2><span class="path-eyebrow">Enterprise &middot; Implementation Approach #2</span>Hybrid On-Org / Off-Platform Implementation</h2>
+  <p>Extends Baseline by adding a small external microservice that handles heavy lifting: real-time credit
   monitoring, ML-based forecasting, automated calibration, cross-org budget management, and vendor-neutral
-  OpenTelemetry observability.</p>
+  OpenTelemetry observability. Crucially, Enterprise is the tier where cost governance expands from
+  <strong>&ldquo;Agentforce only&rdquo;</strong> to cover <strong>the whole organization&rsquo;s AI
+  footprint</strong> &mdash; one budget envelope, one dashboard, one enforcement policy. Benefits both
+  single-org customers (AI spend control beyond Agentforce) and multi-org customers (centralized rollup
+  across every region, BU, and sandbox that shares the flex-credit wallet).</p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin:14px 0;">
+    <div style="background:rgba(0,112,210,0.10); border:1px solid rgba(0,112,210,0.35); border-left:4px solid var(--sf-blue); border-radius:8px; padding:12px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; color:var(--sf-blue); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">Single-org benefit</div>
+      <p style="margin:0; font-size:12px;">One policy layer governs Agentforce&trade; + Prompt Builder + Einstein&trade;
+      generative actions + custom Apex&trade; LLM calls + Data Cloud&trade; AI &mdash; every line item that bills
+      the flex-credit wallet.</p>
+    </div>
+    <div style="background:rgba(144,80,233,0.10); border:1px solid rgba(144,80,233,0.35); border-left:4px solid var(--sf-purple); border-radius:8px; padding:12px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:10px; font-weight:700; color:var(--sf-purple); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">Multi-org benefit</div>
+      <p style="margin:0; font-size:12px;">Single enterprise-wide budget pool across regional prods, acquired-company
+      orgs, staging and UAT. Org-level enforcement; audit-ready rollup &mdash; the only tier that meets regulated-industry
+      single-source-of-truth requirements.</p>
+    </div>
+  </div>
+
   <table>
-    <tr><th style="width:28%;">Dimension</th><th>Path B (as delta over Path A)</th></tr>
+    <tr><th style="width:28%;">Dimension</th><th>Enterprise (as delta over Baseline)</th></tr>
     <tr><td>Added time to production</td><td>+4&ndash;6 weeks (10&ndash;14 weeks total)</td></tr>
     <tr><td>Added person-days</td><td>+33 (~75 total)</td></tr>
     <tr><td>Added skills</td><td>Cloud / DevOps engineer, Data analyst / BI</td></tr>
     <tr><td>Added monthly run cost</td><td>$200&ndash;$800/month infrastructure</td></tr>
     <tr><td>Added ongoing maintenance</td><td>+2 hrs/week (cloud engineering)</td></tr>
-    <tr><td>Best for</td><td>&gt;5K conversations/day, multi-org deployments, SRE teams that already run OpenTelemetry, organizations with runaway-spend risk tolerance = zero</td></tr>
+    <tr><td>Best for</td><td>&gt;5K conversations/day, multi-org deployments, organizations running AI <em>beyond</em> Agentforce&trade;, SRE teams that already run OpenTelemetry, runaway-spend risk tolerance = zero</td></tr>
   </table>
   <div class="callout">
-    <p>See <a href="#exec-path-b-offplatform">Off-Platform Gateway</a> for the component breakdown, and
+    <p>See <a href="#exec-enterprise-offplatform">Off-Platform Gateway</a> for the component breakdown, and
     the <a href="#exec-critical-path">Critical Path</a> comparison for the side-by-side timeline.</p>
   </div>
 </div>
 
-<div class="card" id="exec-path-b-offplatform" data-exec-only data-search="path b off platform gateway executive node postgres redis cloud">
-  <h2>Path B: Off-Platform Gateway Service</h2>
+<div class="card" id="exec-enterprise-offplatform" data-exec-only data-search="path b off platform gateway executive node postgres redis cloud">
+  <h2>Enterprise: Off-Platform Gateway Service</h2>
   <p>A small Node.js microservice running on Google Cloud Run&trade; (or AWS&reg; / Azure&reg; equivalents). It
   handles consumption ingestion, budget phase computation, circuit-breaker state, and forecasting &mdash;
   and exports OpenTelemetry to whatever observability backend your SRE team already runs.</p>
   <p>The service is designed so that <strong>if it goes down, Salesforce&reg; keeps working</strong>. The
-  on-org Path A components remain fully functional and continue to enforce budget policy; the off-platform
+  on-org Baseline components remain fully functional and continue to enforce budget policy; the off-platform
   layer is an enhancer, not a single point of failure.</p>
 </div>
 
-<div class="card" id="exec-path-b-integration" data-exec-only data-search="path b integration executive oauth jwt connected app pub sub">
-  <h2>Path B: Integration Layer</h2>
+<div class="card" id="exec-enterprise-integration" data-exec-only data-search="path b integration executive oauth jwt connected app pub sub">
+  <h2>Enterprise: Integration Layer</h2>
   <p>Authentication is OAuth JWT Bearer flow between the gateway service and Salesforce&reg; &mdash; a
   server-to-server pattern with certificate-based credentials, no user passwords, and IP allowlisting
   for egress control. Usage events flow from Salesforce&reg; to the gateway via the Pub/Sub API (gRPC
   streaming), which <strong>does not count against daily API limits</strong>.</p>
 </div>
 
-<div class="card" id="exec-path-b-loe" data-exec-only data-search="path b loe timeline executive schedule weeks 75 days">
-  <h2>Path B: Timeline &amp; Effort Summary</h2>
+<div class="card" id="exec-enterprise-loe" data-exec-only data-search="path b loe timeline executive schedule weeks 75 days">
+  <h2>Enterprise: Timeline &amp; Effort Summary</h2>
   <div class="exec-kpi-grid">
     <div class="exec-kpi"><span class="kpi-num">10&ndash;14 wk</span><span class="kpi-label">Total Duration</span></div>
     <div class="exec-kpi"><span class="kpi-num">~75</span><span class="kpi-label">Total Person-Days</span></div>
@@ -1493,7 +1513,7 @@ pre.mermaid g.node[onclick]:hover > path {
   </div>
   <p>The critical path runs through the off-platform gateway build (Weeks 3&ndash;5), then integration
   testing, UAT, and a longer 4-week calibration window in production. See the
-  <a href="#exec-critical-path">Critical Path</a> for the side-by-side comparison with Path A.</p>
+  <a href="#exec-critical-path">Critical Path</a> for the side-by-side comparison with Baseline.</p>
 </div>
 
 <!-- EXEC · Critical Path (decision matrix + mini-gantt) ----------------- -->
@@ -1501,38 +1521,38 @@ pre.mermaid g.node[onclick]:hover > path {
   <h2>Critical Path &amp; Decision Matrix</h2>
   <p>The head-to-head decision matrix, stripped to the eight factors a CIO actually weighs.</p>
   <table>
-    <tr><th>Factor</th><th style="width:20%;">Path A</th><th style="width:20%;">Path B</th><th>Recommendation</th></tr>
-    <tr><td><strong>Conversation volume</strong></td><td>&lt; 5K/day</td><td>&gt; 5K/day</td><td>High volume favors Path B</td></tr>
-    <tr><td><strong>Orgs to govern</strong></td><td>1</td><td>Many</td><td>Multi-org requires Path B</td></tr>
-    <tr><td><strong>Calibration</strong></td><td>Manual weekly</td><td>Auto nightly</td><td>Path B for hands-free</td></tr>
-    <tr><td><strong>Budget-check latency</strong></td><td>100&ndash;500ms</td><td>&lt; 10ms</td><td>Path B for latency-sensitive agents</td></tr>
-    <tr><td><strong>Forecasting</strong></td><td>Simple projection</td><td>ML burn-rate</td><td>Path B for sophisticated forecasting</td></tr>
-    <tr><td><strong>Build effort</strong></td><td>42 PD</td><td>75 PD</td><td>Path A for capacity-constrained teams</td></tr>
-    <tr><td><strong>Cloud expertise</strong></td><td>None</td><td>Mid-level</td><td>Path A if no cloud engineering</td></tr>
-    <tr><td><strong>Time to production</strong></td><td>6&ndash;8 wk</td><td>10&ndash;14 wk</td><td>Path A for faster time-to-value</td></tr>
+    <tr><th>Factor</th><th style="width:20%;">Baseline</th><th style="width:20%;">Enterprise</th><th>Recommendation</th></tr>
+    <tr><td><strong>Conversation volume</strong></td><td>&lt; 5K/day</td><td>&gt; 5K/day</td><td>High volume favors Enterprise</td></tr>
+    <tr><td><strong>Orgs to govern</strong></td><td>1</td><td>Many</td><td>Multi-org requires Enterprise</td></tr>
+    <tr><td><strong>Calibration</strong></td><td>Manual weekly</td><td>Auto nightly</td><td>Enterprise for hands-free</td></tr>
+    <tr><td><strong>Budget-check latency</strong></td><td>100&ndash;500ms</td><td>&lt; 10ms</td><td>Enterprise for latency-sensitive agents</td></tr>
+    <tr><td><strong>Forecasting</strong></td><td>Simple projection</td><td>ML burn-rate</td><td>Enterprise for sophisticated forecasting</td></tr>
+    <tr><td><strong>Build effort</strong></td><td>42 PD</td><td>75 PD</td><td>Baseline for capacity-constrained teams</td></tr>
+    <tr><td><strong>Cloud expertise</strong></td><td>None</td><td>Mid-level</td><td>Baseline if no cloud engineering</td></tr>
+    <tr><td><strong>Time to production</strong></td><td>6&ndash;8 wk</td><td>10&ndash;14 wk</td><td>Baseline for faster time-to-value</td></tr>
   </table>
   <h3>Timeline &mdash; At-a-Glance</h3>
   <pre class="mermaid" style="min-height:280px;">
 gantt
-  title Path A vs Path B &mdash; Executive View
+  title Baseline vs Enterprise &mdash; Executive View
   dateFormat YYYY-MM-DD
   axisFormat  Wk %V
 
-  section Path A (6-8 wk, $0 infra)
+  section Baseline (6-8 wk, $0 infra)
   Prerequisites &amp; Data Model :a1, 2026-05-04, 10d
   Apex + Flows + Dashboard    :crit, a2, after a1, 15d
   Testing + UAT                :a3, after a2, 10d
   Shadow + Pilot + Full        :a4, after a3, 15d
 
-  section Path B Supplement (+4-6 wk, +$200-800/mo)
+  section Enterprise Supplement (+4-6 wk, +$200-800/mo)
   Cloud Foundation             :b1, 2026-05-04, 10d
   Off-Platform Gateway         :crit, b2, after b1, 20d
   Extra Testing + UAT          :b3, after b2, 10d
   Extended Calibration         :b4, after b3, 20d
   </pre>
   <div class="callout success">
-    <p><strong>Recommended sequence:</strong> ship Path A, operate for a quarter, evaluate whether the volume
-    or multi-org requirement justifies Path B. This is the lowest-risk, highest-ROI ordering.</p>
+    <p><strong>Recommended sequence:</strong> ship Baseline, operate for a quarter, evaluate whether the volume
+    or multi-org requirement justifies Enterprise. This is the lowest-risk, highest-ROI ordering.</p>
   </div>
 </div>
 
@@ -1609,7 +1629,7 @@ xychart-beta
   (role-by-role staffing rows, cloud-component detail, ongoing ops lines) lives in the Full Technical
   Readout &mdash; this card is the summary.</p>
   <table>
-    <tr><th>Category</th><th style="width:22%;">Path A</th><th style="width:22%;">Path B</th></tr>
+    <tr><th>Category</th><th style="width:22%;">Baseline</th><th style="width:22%;">Enterprise</th></tr>
     <tr><td><strong>One-time build (staffing)</strong></td><td>~42 person-days</td><td>~75 person-days</td></tr>
     <tr><td><strong>Incremental Salesforce&reg; licensing</strong></td><td>$0</td><td>$0</td></tr>
     <tr><td><strong>Annual cloud infrastructure</strong></td><td>N/A</td><td>$2,400&ndash;$9,600/yr</td></tr>
@@ -1667,20 +1687,20 @@ xychart-beta
     <tr><th style="width:6%;">ID</th><th>Risk</th><th style="width:14%;">Impact</th><th>Mitigation Summary</th></tr>
     <tr><td>R1</td><td>Estimation drift from actual consumption</td><td><span class="pill critical">High</span></td><td>Weekly (A) or nightly auto (B) calibration; 10% safety band.</td></tr>
     <tr><td>R2</td><td>Salesforce&reg; changes credit pricing</td><td><span class="pill warning">Medium</span></td><td>Multipliers in Custom Metadata; no code change required to adjust.</td></tr>
-    <tr><td>R3</td><td>Apex&trade; governor limits at volume</td><td><span class="pill critical">High</span></td><td>Bulk patterns + async Platform Events; Path B offloads to cloud.</td></tr>
-    <tr><td>R4</td><td>Platform Cache eviction</td><td><span class="pill planned">Low</span></td><td>Fail-open on cache miss; Path B uses persistent Redis&trade;.</td></tr>
+    <tr><td>R3</td><td>Apex&trade; governor limits at volume</td><td><span class="pill critical">High</span></td><td>Bulk patterns + async Platform Events; Enterprise offloads to cloud.</td></tr>
+    <tr><td>R4</td><td>Platform Cache eviction</td><td><span class="pill planned">Low</span></td><td>Fail-open on cache miss; Enterprise uses persistent Redis&trade;.</td></tr>
     <tr><td>R5</td><td>False-positive phase transitions from traffic spikes</td><td><span class="pill warning">Medium</span></td><td>Hysteresis buffer (5-min sustain before downgrade).</td></tr>
     <tr><td>R6</td><td>Subagent deactivation breaks integrations</td><td><span class="pill warning">Medium</span></td><td>&ldquo;Protected subagents&rdquo; list; never auto-disabled.</td></tr>
-    <tr><td>R7</td><td>Off-platform gateway outage (Path B)</td><td><span class="pill critical">High</span></td><td>On-org Path A core remains functional independently.</td></tr>
+    <tr><td>R7</td><td>Off-platform gateway outage (Enterprise)</td><td><span class="pill critical">High</span></td><td>On-org Baseline core remains functional independently.</td></tr>
   </table>
 </div>
 
 <!-- EXEC · Implementation Plan ------------------------------------------ -->
 <div class="card" id="exec-implementation-plan" data-exec-only data-search="implementation plan executive outline weekly phases a b supplement">
   <h2>Implementation Plan &mdash; Weekly Outline</h2>
-  <p>The executive-friendly outline of the build. Plan A is the complete 6&ndash;8 week program; Plan B
-  adds 4&ndash;6 weeks of supplemental off-platform work on top of Plan A.</p>
-  <h3>Plan A &mdash; 6&ndash;8 Weeks, ~42 Person-Days</h3>
+  <p>The executive-friendly outline of the build. Baseline Plan is the complete 6&ndash;8 week program; Enterprise Plan
+  adds 4&ndash;6 weeks of supplemental off-platform work on top of Baseline Plan.</p>
+  <h3>Baseline Plan &mdash; 6&ndash;8 Weeks, ~42 Person-Days</h3>
   <ol>
     <li><strong>Week 1:</strong> Licensing &amp; policy decisions, sandbox provisioning, executive sign-off on the Exceeded-phase policy.</li>
     <li><strong>Week 2:</strong> Data model deployment (custom objects, platform events, custom metadata).</li>
@@ -1688,16 +1708,16 @@ xychart-beta
     <li><strong>Week 5:</strong> Full testing (unit + integration + UAT).</li>
     <li><strong>Weeks 6&ndash;8:</strong> Production deployment in Shadow Mode, calibration, pilot rollout, expansion, full enforcement, and hand-off to ops.</li>
   </ol>
-  <h3>Plan B Supplement &mdash; +4&ndash;6 Weeks, +33 Person-Days</h3>
+  <h3>Enterprise Plan Supplement &mdash; +4&ndash;6 Weeks, +33 Person-Days</h3>
   <ol>
     <li><strong>Concurrent Week 1:</strong> Cloud account, Connected App, JWT Bearer credentials.</li>
     <li><strong>Week 2:</strong> Cloud foundation (infrastructure-as-code, Redis&trade;, Postgres&reg;).</li>
     <li><strong>Weeks 3&ndash;5:</strong> Off-platform gateway service build &mdash; Node.js API, Pub/Sub integration, auto-calibrator, forecasting, OpenTelemetry instrumentation.</li>
-    <li><strong>Weeks 6&ndash;8:</strong> Integration testing + UAT (runs in parallel with Plan A testing).</li>
+    <li><strong>Weeks 6&ndash;8:</strong> Integration testing + UAT (runs in parallel with Baseline Plan testing).</li>
     <li><strong>Weeks 9&ndash;14:</strong> Production gateway deployment + extended 4-week auto-calibration window + staged enforcement rollout.</li>
   </ol>
   <div class="callout success">
-    <p><strong>Plan A alone delivers a production-grade cost gateway.</strong> Plan B is the enhancement
+    <p><strong>Baseline Plan alone delivers a production-grade cost gateway.</strong> Enterprise Plan is the enhancement
     for organizations that need real-time decisioning, multi-org rollup, or enterprise observability.</p>
   </div>
 </div>
@@ -1808,14 +1828,14 @@ xychart-beta
     <h4>The Decision Required</h4>
     <p>Approve the implementation of an AI Cost Management Gateway for your Salesforce Agentforce
     deployment. Two paths are available:</p>
-    <p><strong>Path A</strong> (recommended start): Built entirely inside Salesforce.
+    <p><strong>Baseline</strong> (recommended start): Built entirely inside Salesforce.
     <strong>~42 person-days</strong> of effort across a <strong>6&ndash;8 week</strong> timeline
     with a team of 3. Low ongoing maintenance.</p>
-    <p><strong>Path B</strong> (enterprise scale): Adds an external monitoring service for real-time
+    <p><strong>Enterprise</strong> (enterprise scale): Adds an external monitoring service for real-time
     accuracy and forecasting. <strong>~75 person-days</strong> across a <strong>10&ndash;14 week</strong>
     timeline with 5&ndash;6 people. Best for organizations with &gt;5,000 AI interactions per day or
     multiple Salesforce environments.</p>
-    <p>Path A can evolve into Path B later &mdash; the investment is cumulative, not redundant.
+    <p>Baseline can evolve into Enterprise later &mdash; the investment is cumulative, not redundant.
     Detailed role requirements, licensing prerequisites, per-component effort estimates, and
     implementation timelines are provided in the sections that follow.</p>
   </div>
@@ -1931,10 +1951,10 @@ xychart-beta
     <tr><td><strong>Circuit Breaker</strong></td><td>A failsafe pattern that &ldquo;trips open&rdquo; after consecutive failures or budget threshold breaches, redirecting traffic away from expensive AI paths to deterministic or cached fallbacks.</td><td>Technical</td></tr>
     <tr><td><strong>Model Tiering</strong></td><td>Routing agent requests to different foundation model sizes (small/medium/large) based on task complexity and budget phase. Smaller models cost fewer credits.</td><td>Technical</td></tr>
     <tr><td><strong>Step-Down Logic</strong></td><td>Automatic degradation of AI capability (e.g., from full reasoning to template-based responses) when budget approaches its ceiling. Ensures continuity of service at reduced cost.</td><td>All</td></tr>
-    <tr><td><strong>HITL Escalation</strong></td><td>Human-In-The-Loop &mdash; routing to a live agent or supervisor when AI budget or confidence thresholds are breached, ensuring critical interactions are handled even when AI is throttled.</td><td>All</td></tr>
+    <tr><td><strong>HITL &mdash; Human-in-the-Loop</strong></td><td>The failover pattern that routes a customer or internal user to a live human agent when the AI gateway cannot (or should not) serve them &mdash; e.g. when the circuit breaker is open, the budget phase is Exceeded, or the model&rsquo;s confidence is below a configured threshold. On Salesforce&reg; this is implemented via Omni-Channel&reg; routing (<code>ServiceChannel</code> + skills-based queue). Also referenced throughout the document as <strong>HITL routing</strong>, <strong>HITL escalation</strong>, <strong>HITL queue</strong>, and <strong>HITL capacity</strong> &mdash; all refer to the same live-agent fallback lane.</td><td>All</td></tr>
     <tr><td><strong>Token Budget</strong></td><td>The maximum number of AI tokens (input + output) allocated to a single session, daily period, or agent type. Enforced by the gateway to prevent runaway consumption.</td><td>Technical</td></tr>
     <tr><td><strong>Usage-Based Entitlements</strong></td><td>Salesforce Setup page showing flex credit allocation and consumption. Currently read-only; does not support programmatic triggers or real-time alerts.</td><td>Technical</td></tr>
-    <tr><td><strong>Custom Object: <code>AI_Budget_Ledger__c</code></strong></td><td>The gateway&rsquo;s on-platform shadow ledger tracking estimated credit consumption per agent, per period, with budget phase calculations. See <a href="#path-a-apex">Path A: Apex Components</a>.</td><td>Technical</td></tr>
+    <tr><td><strong>Custom Object: <code>AI_Budget_Ledger__c</code></strong></td><td>The gateway&rsquo;s on-platform shadow ledger tracking estimated credit consumption per agent, per period, with budget phase calculations. See <a href="#baseline-apex">Baseline: Apex Components</a>.</td><td>Technical</td></tr>
   </table>
 </div>
 
@@ -2116,7 +2136,7 @@ xychart-beta
     <tr><td><strong><code>TenantUsageEntitlement</code></strong></td>
         <td>Standard object (API v28+). Daily-refresh entitlement data. No Data Cloud license required.</td>
         <td><code>Setting</code>, <code>CurrentValue</code>, <code>StartDate</code>, <code>EndDate</code>, <code>MasterLabel</code></td>
-        <td>Path A daily calibration source (no extra license)</td>
+        <td>Baseline daily calibration source (no extra license)</td>
         <td><a href="#appendix-f">F-4: SOQL</a></td></tr>
   </table>
 
@@ -2165,12 +2185,12 @@ xychart-beta
 
   <div class="tech-bubble">
     <p><strong>Gateway Calibration Strategy by Path:</strong></p>
-    <p><strong>Path A (no Data Cloud):</strong> The gateway relies on <code>TenantUsageEntitlement</code>
+    <p><strong>Baseline (no Data Cloud):</strong> The gateway relies on <code>TenantUsageEntitlement</code>
     (daily SOQL, no extra license) as the calibration source. The Consumption Threshold Alerts Flow is
     customized to publish an <code>AI_Budget_Phase_Change__e</code> Platform Event when thresholds are hit,
     giving the gateway near-real-time awareness of consumption spikes. An admin manually enters the current
     credit balance weekly as a backup calibration point.</p>
-    <p><strong>Path B (with Data Cloud):</strong> The off-platform gateway queries
+    <p><strong>Enterprise (with Data Cloud):</strong> The off-platform gateway queries
     <code>TenantEnrichedUsageEvent</code> DLO via Data Cloud SOQL for near-real-time, resource-level
     consumption data. <code>TenantEntitlementTransaction</code> provides credit balance tracking.
     <code>GenAIGatewayRequest__dlm</code> feeds per-LLM-call token attribution for model tier optimization.
@@ -2302,14 +2322,14 @@ xychart-beta
   </div>
 
   <h3>Minimum Viable License Stack</h3>
-  <p>For a <strong>Path A (pure org-side)</strong> implementation, the minimum stack is:</p>
+  <p>For a <strong>Baseline (pure org-side)</strong> implementation, the minimum stack is:</p>
   <ul class="bullets">
     <li><strong>Service Cloud Enterprise</strong> (or Sales Cloud Enterprise with Agentforce add-on)</li>
     <li><strong>Agentforce conversation credits</strong> (flex credit block)</li>
     <li><strong>Platform Events</strong> (included with Enterprise)</li>
     <li><strong>Data Cloud</strong> (strongly recommended for telemetry; technically optional for MVP)</li>
   </ul>
-  <p>For a <strong>Path B (hybrid)</strong> implementation, add:</p>
+  <p>For a <strong>Enterprise (hybrid)</strong> implementation, add:</p>
   <ul class="bullets">
     <li><strong>Connected App</strong> configuration for off-platform gateway authentication (OAuth 2.0 JWT Bearer)</li>
     <li><strong>API call entitlements</strong> sufficient for telemetry polling (typically 1,000+/day beyond existing usage)</li>
@@ -2327,11 +2347,11 @@ xychart-beta
   <div class="exec-bubble">
     <p><strong>For Business Leaders:</strong> You&rsquo;ll need a small, cross-functional team to implement the
     gateway. The table below shows who you need, what they do, and whether the role is a one-time build
-    effort or ongoing. Plan for 2&ndash;4 people for Path A, or 4&ndash;6 for Path B (hybrid).</p>
+    effort or ongoing. Plan for 2&ndash;4 people for Baseline, or 4&ndash;6 for Enterprise (hybrid).</p>
   </div>
 
   <table>
-    <tr><th>Role</th><th>Responsibility</th><th>Path A</th><th>Path B</th><th>Duration</th><th>Skill Level</th></tr>
+    <tr><th>Role</th><th>Responsibility</th><th>Baseline</th><th>Enterprise</th><th>Duration</th><th>Skill Level</th></tr>
     <tr><td><strong>Salesforce Architect</strong></td>
         <td>Overall gateway design, org impact assessment, data model, integration patterns, security review</td>
         <td><span class="pill live">Required</span></td>
@@ -2399,7 +2419,7 @@ xychart-beta
     <tr><td>2</td><td>Flex credit block purchased and allocated</td><td>Setup &gt; Usage-Based Entitlements — verify credit balance &gt; 0</td><td><span class="pill critical">Blocker</span></td></tr>
     <tr><td>3</td><td>Full sandbox available for development</td><td>Setup &gt; Sandboxes — verify a Full or Partial Copy sandbox is available</td><td><span class="pill critical">Blocker</span></td></tr>
     <tr><td>4</td><td>Platform Events enabled (edition check)</td><td>Setup &gt; Platform Events — verify you can create custom events</td><td><span class="pill critical">Blocker</span></td></tr>
-    <tr><td>5</td><td>API call allocation sufficient</td><td>Setup &gt; Company Information — verify API requests remaining &gt; 10,000/day headroom</td><td><span class="pill warning">Path B only</span></td></tr>
+    <tr><td>5</td><td>API call allocation sufficient</td><td>Setup &gt; Company Information — verify API requests remaining &gt; 10,000/day headroom</td><td><span class="pill warning">Enterprise only</span></td></tr>
     <tr><td>6</td><td>Custom Metadata Type limits not exhausted</td><td>Setup &gt; Custom Metadata Types — verify count allows ~5 new types</td><td><span class="pill planned">Soft limit</span></td></tr>
     <tr><td>7</td><td>Data Cloud provisioned (if using telemetry path)</td><td>Setup &gt; Data Cloud — verify Data Cloud Setup is complete</td><td><span class="pill warning">Recommended</span></td></tr>
     <tr><td>8</td><td>Shield Event Monitoring enabled (if using detailed audit)</td><td>Setup &gt; Event Monitoring — verify EventLogFile access</td><td><span class="pill planned">Optional</span></td></tr>
@@ -2425,7 +2445,7 @@ xychart-beta
   </div>
 
   <p>The gateway is composed of five interlocking subsystems, each of which can be implemented on-platform
-  (Path A) or as a hybrid (Path B). The subsystems are designed to be <strong>independently deployable</strong> &mdash;
+  (Baseline) or as a hybrid (Enterprise). The subsystems are designed to be <strong>independently deployable</strong> &mdash;
   you can start with the Budget Phase Engine alone and add the others incrementally.</p>
 
 <div style="margin:16px 0;">
@@ -2499,7 +2519,7 @@ xychart-beta
   <div class="callout warn">
     <p><strong>Calibration Required:</strong> These estimates are starting points. You <strong>must</strong>
     calibrate against your org&rsquo;s actual Usage-Based Entitlements data after 2&ndash;4 weeks of production
-    usage. The gateway includes a <strong>calibration routine</strong> (see <a href="#path-a-apex">Apex Components</a>)
+    usage. The gateway includes a <strong>calibration routine</strong> (see <a href="#baseline-apex">Apex Components</a>)
     that compares estimated vs. actual consumption and auto-adjusts the multipliers.</p>
   </div>
 
@@ -2564,9 +2584,9 @@ pie title "Credit Distribution by Action Type"
     <p><strong>Shadow Ledger Implementation:</strong> The <code>AI_Budget_Ledger__c</code> custom object accumulates
     estimated consumption per <code>Agent_Type__c</code> per <code>Budget_Period__c</code> (monthly by default).
     A nightly calibration routine reconciles shadow estimates against actual consumption data.
-    In <strong>Path A</strong>, this queries
+    In <strong>Baseline</strong>, this queries
     <a href="https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_tenantusageentitlement.htm" target="_blank" rel="noopener"><code>TenantUsageEntitlement</code></a>
-    via standard SOQL (daily refresh, no extra license). In <strong>Path B</strong> (with Data Cloud), the
+    via standard SOQL (daily refresh, no extra license). In <strong>Enterprise</strong> (with Data Cloud), the
     off-platform service queries the
     <a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_view_dlos.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener"><code>TenantEnrichedUsageEvent</code> DLO</a>
     via Data Cloud SOQL for near-real-time, resource-level consumption data. The reconciliation factor feeds
@@ -2591,47 +2611,26 @@ pie title "Credit Distribution by Action Type"
     as spending approaches the ceiling.</p>
   </div>
 
-  <pre class="mermaid">
+  <pre class="mermaid" style="min-height:260px;">
 stateDiagram-v2
+  direction LR
+
   [*] --> Abundant : Budget > 60% remaining
   Abundant --> Conservative : Budget drops below 60%
   Conservative --> Emergency : Budget drops below 20%
   Emergency --> Exceeded : Budget reaches 0%
-  Exceeded --> Emergency : Credits replenished / new period
 
   Conservative --> Abundant : Budget restored above 60%
   Emergency --> Conservative : Budget restored above 20%
-
-  state Abundant {
-    [*] --> FullAI : All models available
-    FullAI --> MultiHop : Full context assembly
-    MultiHop --> SpeculativeTools : Proactive tool invocation OK
-  }
-
-  state Conservative {
-    [*] --> MidTier : Medium models preferred
-    MidTier --> SingleHop : Simplified context only
-    SingleHop --> NoSpeculative : Reactive tools only
-  }
-
-  state Emergency {
-    [*] --> SmallOnly : Small models only
-    SmallOnly --> CacheFirst : Cached responses preferred
-    CacheFirst --> HITLReady : Human escalation prepped
-  }
-
-  state Exceeded {
-    [*] --> NoNewAI : No new AI invocations
-    NoNewAI --> DeterministicOnly : Template responses only
-    DeterministicOnly --> HITLRoute : All complex → human agents
-  }
+  Exceeded --> Emergency : Credits replenished / new period
   </pre>
 
   <h3>Reading the Phase Diagram &mdash; Plain-English Walkthrough</h3>
-  <p>The four outer boxes in the diagram above are the <strong>budget phases</strong>. The inner boxes are
-  the specific <strong>behavioral postures</strong> the gateway enforces inside each phase. The
-  camelCase labels are identifiers used by the implementation &mdash; their plain-English meaning
-  is called out below.</p>
+  <p>The four boxes above are the <strong>budget phases</strong>. Arrows show the transitions that move
+  the gateway from one phase to the next &mdash; downward as budget is consumed, upward as it&rsquo;s
+  restored. Inside each phase the gateway enforces a specific <strong>behavioral posture</strong>
+  (model tier ceiling, context budget, tool policy). Those postures use camelCase identifiers in the
+  implementation; their plain-English meaning is spelled out below.</p>
 
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin:16px 0;">
     <div style="background:rgba(4,132,75,0.08); border:1px solid rgba(4,132,75,0.35); border-left:4px solid var(--sf-green); border-radius:8px; padding:14px;">
@@ -2709,7 +2708,7 @@ stateDiagram-v2
     <p><strong>Implementation:</strong> The phase is computed as:
     <code>phase = ratio > 0.6 ? 'ABUNDANT' : ratio > 0.2 ? 'CONSERVATIVE' : ratio > 0 ? 'EMERGENCY' : 'EXCEEDED'</code>
     where <code>ratio = 1 - (consumed_credits / budget_ceiling)</code>. Phase transitions fire a
-    <code>AI_Budget_Phase_Change__e</code> Platform Event consumed by Flows, Apex triggers, and (Path B)
+    <code>AI_Budget_Phase_Change__e</code> Platform Event consumed by Flows, Apex triggers, and (Enterprise)
     the off-platform gateway. The Custom Metadata Type <code>AI_Cost_Config__mdt</code> stores the
     threshold percentages (60/20/0 defaults), allowing admins to tune without code deployment.</p>
   </div>
@@ -2782,13 +2781,13 @@ stateDiagram-v2
   </table>
 
   <div class="tech-bubble">
-    <p><strong>State Storage:</strong> In Path A, circuit breaker state is stored in a
+    <p><strong>State Storage:</strong> In Baseline, circuit breaker state is stored in a
     <code>Platform Cache (Session Partition)</code> with the cooldown duration as TTL. This gives automatic
-    expiry (closed-to-half-open transition) without scheduled jobs. In Path B, state lives in Redis&trade;
+    expiry (closed-to-half-open transition) without scheduled jobs. In Enterprise, state lives in Redis&trade;
     with the same TTL pattern. The key schema: <code>cb:{agentType}:{orgId}</code>.</p>
     <p><strong>Apex Implementation:</strong> The <code>CircuitBreakerService</code> class exposes
     <code>isOpen(String agentType)</code> and <code>recordFailure(String agentType)</code> methods
-    that are invoked before and after every agent dispatch. See <a href="#path-a-apex">Path A: Apex Components</a>.</p>
+    that are invoked before and after every agent dispatch. See <a href="#baseline-apex">Baseline: Apex Components</a>.</p>
   </div>
 </div>
 
@@ -3030,12 +3029,12 @@ erDiagram
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 13: PATH A OVERVIEW                                       ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card path-overview" id="path-a-overview" data-search="path a pure org-side salesforce native low code flow apex implementation">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-a-overview">Path A: Pure Org-Side</a></div>
-  <h2><span class="path-eyebrow">Path A &middot; Implementation Approach #1</span>Pure Org-Side Implementation</h2>
+<div class="card path-overview" id="baseline-overview" data-search="path a pure org-side salesforce native low code flow apex implementation">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#baseline-overview">Baseline: Pure Org-Side</a></div>
+  <h2><span class="path-eyebrow">Baseline &middot; Implementation Approach #1</span>Pure Org-Side Implementation</h2>
 
   <div class="exec-bubble">
-    <p><strong>For Business Leaders:</strong> Path A keeps everything inside Salesforce. No external servers,
+    <p><strong>For Business Leaders:</strong> Baseline keeps everything inside Salesforce. No external servers,
     no additional cloud subscriptions, no separate DevOps pipeline. It&rsquo;s faster to implement, cheaper
     to maintain, and doesn&rsquo;t require cloud engineering expertise. The trade-off: some advanced
     capabilities (real-time sub-second budget checks, ML-based forecasting) require workarounds or
@@ -3074,14 +3073,14 @@ erDiagram
   </div>
 
   <h3>End-to-End State Flow: Preload &rarr; Decisioning &rarr; Dispatch</h3>
-  <p>The state diagram below traces a single agent invocation through Path A &mdash; from the
+  <p>The state diagram below traces a single agent invocation through Baseline &mdash; from the
   Agent Script DSL preload (where the agent loads cost context before any LLM call), through the
   gateway&rsquo;s decisioning gate, and into one of three routed outcomes: <strong>Apex dispatch</strong>
   (normal path, consumes credits), <strong>Flow orchestration</strong> (triggered when a Platform
   Event signals a budget phase transition), or <strong>fallback</strong> (deterministic template or
   Omni-Channel&reg; HITL escalation when the circuit breaker is OPEN or the budget phase is Exceeded).
-  It is the Path A counterpart to the <a href="#path-b-integration">Path B Data Flow sequence diagram</a>,
-  re-framed as states rather than inter-service messages because Path A runs entirely inside the org.</p>
+  It is the Baseline counterpart to the <a href="#enterprise-integration">Enterprise Data Flow sequence diagram</a>,
+  re-framed as states rather than inter-service messages because Baseline runs entirely inside the org.</p>
 
   <pre class="mermaid">
 stateDiagram-v2
@@ -3149,13 +3148,13 @@ stateDiagram-v2
     (<code>FallbackRoute</code>). When Apex Dispatch detects a phase transition during
     <code>checkAndTransition()</code>, it fires the <code>AI_Budget_Phase_Change__e</code> Platform Event,
     which in turn drives <strong>FlowOrchestration</strong> (the
-    <a href="#path-a-flow">Budget Phase Transition Handler Flow</a>) to dispatch alerts, toggle subagents,
+    <a href="#baseline-flow">Budget Phase Transition Handler Flow</a>) to dispatch alerts, toggle subagents,
     or escalate to Omni-Channel&reg; human agents. The decisioning branch conditions are
     <strong>free</strong> under the <a href="#credit-model">Agent Script Credit Model</a> &mdash; the
     gateway never consumes a credit to <em>decide not to</em> consume credits.</p>
   </div>
 
-  <h3>Path A: Low-Code vs. Pro-Code Breakdown</h3>
+  <h3>Baseline: Low-Code vs. Pro-Code Breakdown</h3>
   <table>
     <tr><th>Component</th><th>Approach</th><th>LOE</th><th>Tech Debt Risk</th></tr>
     <tr><td>Custom Objects &amp; Fields</td><td><span class="pill low-code">Low-Code</span> Declarative</td><td><span class="loe low">2 days</span></td><td>Low</td></tr>
@@ -3176,9 +3175,9 @@ stateDiagram-v2
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 14: PATH A — FLOW-BASED GATEWAY                          ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="path-a-flow" data-search="path a flow based gateway record triggered platform event budget phase transition alert">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-a-overview">Path A</a><span class="sep">/</span>Flow-Based Gateway</div>
-  <h2>Path A: Flow-Based Gateway Components</h2>
+<div class="card" id="baseline-flow" data-search="path a flow based gateway record triggered platform event budget phase transition alert">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#baseline-overview">Baseline</a><span class="sep">/</span>Flow-Based Gateway</div>
+  <h2>Baseline: Flow-Based Gateway Components</h2>
 
   <p>The declarative layer leverages Salesforce Flow&trade; for event-driven budget governance. These
   Flows are admin-configurable and require no code deployment for threshold changes.</p>
@@ -3227,19 +3226,19 @@ stateDiagram-v2
   to reconcile estimated consumption against actual Usage-Based Entitlements data.</p>
 
   <div class="callout">
-    <p><strong>Admin Tip:</strong> In Path A, the calibration step requires a manual data point &mdash;
+    <p><strong>Admin Tip:</strong> In Baseline, the calibration step requires a manual data point &mdash;
     an admin enters the current &ldquo;Credits Used&rdquo; value from Setup &gt; Usage-Based Entitlements
     into a <code>AI_Budget_Ledger__c.Actual_Consumed__c</code> field. The calibration Flow then computes
-    the adjustment factor. Path B automates this via API scraping.</p>
+    the adjustment factor. Enterprise automates this via API scraping.</p>
   </div>
 </div>
 
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 15: PATH A — APEX COMPONENTS                              ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="path-a-apex" data-search="path a apex classes consumption tracker budget phase engine circuit breaker model tier router invocable">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-a-overview">Path A</a><span class="sep">/</span>Apex Components</div>
-  <h2>Path A: Apex Components (Pro-Code)</h2>
+<div class="card" id="baseline-apex" data-search="path a apex classes consumption tracker budget phase engine circuit breaker model tier router invocable">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#baseline-overview">Baseline</a><span class="sep">/</span>Apex Components</div>
+  <h2>Baseline: Apex Components (Pro-Code)</h2>
 
   <p>The gateway&rsquo;s pro-code core consists of four Apex Service Layer classes following the
   Salesforce Enterprise Architecture pattern (fflib). Each is independently testable with mock
@@ -3280,9 +3279,9 @@ stateDiagram-v2
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 16: PATH A — DASHBOARD                                    ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="path-a-dashboard" data-search="path a dashboard lwc monitoring reports lightning web component cost visualization">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-a-overview">Path A</a><span class="sep">/</span>Dashboard</div>
-  <h2>Path A: Monitoring Dashboard</h2>
+<div class="card" id="baseline-dashboard" data-search="path a dashboard lwc monitoring reports lightning web component cost visualization">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#baseline-overview">Baseline</a><span class="sep">/</span>Dashboard</div>
+  <h2>Baseline: Monitoring Dashboard</h2>
 
   <p>The monitoring layer combines native Salesforce Reports/Dashboards with a custom Lightning Web
   Component for the budget forecast and circuit breaker status &mdash; features that require real-time
@@ -3321,12 +3320,12 @@ stateDiagram-v2
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 17: PATH A — LOE & TIMELINE                               ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="path-a-loe" data-search="path a level of effort timeline gantt schedule duration weeks sprints estimation">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-a-overview">Path A</a><span class="sep">/</span>LOE &amp; Timeline</div>
-  <h2>Path A: Level of Effort &amp; Timeline</h2>
+<div class="card" id="baseline-loe" data-search="path a level of effort timeline gantt schedule duration weeks sprints estimation">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#baseline-overview">Baseline</a><span class="sep">/</span>LOE &amp; Timeline</div>
+  <h2>Baseline: Level of Effort &amp; Timeline</h2>
 
   <div class="exec-bubble">
-    <p><strong>For Business Leaders:</strong> Path A can be delivered in <strong>6&ndash;8 weeks</strong> with
+    <p><strong>For Business Leaders:</strong> Baseline can be delivered in <strong>6&ndash;8 weeks</strong> with
     a team of 3 (architect + developer + admin). The critical path runs through the Apex development;
     declarative components (Flows, reports) can be built in parallel. Total estimated effort:
     <strong>42 person-days</strong>.</p>
@@ -3363,7 +3362,7 @@ stateDiagram-v2
     <tr style="border-top:2px solid var(--sf-blue);"><td colspan="2" style="text-align:right;"><strong>Critical Path Total</strong></td><td><strong>~42</strong></td><td colspan="2">Elapsed: 6&ndash;8 weeks (with parallel tracks)</td></tr>
   </table>
 
-  <h3>Path A: Cost &amp; Skill Summary</h3>
+  <h3>Baseline: Cost &amp; Skill Summary</h3>
   <table>
     <tr><th>Metric</th><th>Estimate</th></tr>
     <tr><td><strong>Total Duration</strong></td><td>6&ndash;8 weeks (including UAT + calibration)</td></tr>
@@ -3377,55 +3376,105 @@ stateDiagram-v2
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 18: PATH B OVERVIEW                                       ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card path-overview path-b-accent" id="path-b-overview" data-search="path b hybrid off-platform gateway node python cloud external service integration opentelemetry">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-b-overview">Path B: Hybrid</a></div>
-  <h2><span class="path-eyebrow">Path B &middot; Implementation Approach #2</span>Hybrid On-Org / Off-Platform Implementation</h2>
+<div class="card path-overview path-b-accent" id="enterprise-overview" data-search="enterprise hybrid off-platform gateway node python cloud external service integration opentelemetry multi-org">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#enterprise-overview">Enterprise: Hybrid</a></div>
+  <h2><span class="path-eyebrow">Enterprise &middot; Implementation Approach #2</span>Hybrid On-Org / Off-Platform Implementation</h2>
 
   <div class="exec-bubble">
-    <p><strong>For Business Leaders:</strong> Path B extends Path A by adding an external microservice that
+    <p><strong>For Business Leaders:</strong> Enterprise extends Baseline by adding an external microservice that
     handles the heavy lifting &mdash; real-time credit monitoring, ML-based forecasting, automated
-    calibration, and cross-org budget management. This approach is ideal for enterprises with multiple
-    Salesforce&reg; orgs, high conversation volumes (&gt;10K/day), or requirements for sub-second budget
-    decisions. It adds cloud infrastructure cost but dramatically improves accuracy and automation.</p>
+    calibration, and cross-org budget management. Crucially, Enterprise is the tier where cost governance
+    stops being an &ldquo;Agentforce-only&rdquo; concern and expands to cover
+    <strong>the entire organization&rsquo;s Salesforce&reg;-hosted AI footprint</strong> &mdash; one budget
+    envelope, one dashboard, one enforcement policy for every AI-driven workflow in every production org.
+    The benefits accrue to both single-org and multi-org architectures: single-org customers gain
+    organization-wide AI-spend control beyond Agentforce&trade;; multi-org customers gain centralized,
+    audit-ready rollup across every region, business unit, and sandbox that shares the same flex-credit
+    wallet.</p>
   </div>
 
-  <h3>Why Path B &mdash; What You Actually Get Back</h3>
-  <p>Path A is a complete, production-ready cost gateway. Path B is not a replacement &mdash; it is an
-  <em>amplifier</em>. Everything Path A does, Path B does faster, more accurately, and hands-free. Below is
+  <h3>Scope &mdash; What the Enterprise Tier Actually Gates</h3>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin:16px 0;">
+    <div style="background:rgba(0,112,210,0.10); border:1px solid rgba(0,112,210,0.35); border-left:4px solid var(--sf-blue); border-radius:8px; padding:16px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-blue); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Single-Org Deployments</div>
+      <p style="margin:0 0 8px 0; font-size:12px;">Even with a single production org, Enterprise is the tier
+      at which the gateway&rsquo;s scope crosses the <strong>Agentforce&trade;-only boundary</strong>.
+      Once the off-platform service is in place, the same budget-phase, circuit-breaker, and model-tiering
+      policies can govern every other AI feature that meters against the flex-credit wallet &mdash;
+      <strong>Prompt Builder</strong> templates fired from Flows, <strong>Einstein&trade; generative
+      actions</strong>, custom LLM invocations from Apex&trade; and Data Cloud&trade; activations,
+      Marketing Cloud&reg; send-time AI, and anything else that bills against the same wallet. One
+      policy layer, one budget, one dashboard for every AI line item on the Salesforce&reg; P&amp;L.</p>
+      <p style="margin:0; font-size:11px; color:var(--text-muted);"><strong>Why this matters:</strong>
+      customers who start with a single Agentforce&trade; deployment typically add 2&ndash;4 additional
+      AI surfaces within 12 months. Enterprise keeps all of them inside the same governance envelope as
+      they come online &mdash; no re-architecture required.</p>
+    </div>
+    <div style="background:rgba(144,80,233,0.10); border:1px solid rgba(144,80,233,0.35); border-left:4px solid var(--sf-purple); border-radius:8px; padding:16px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-purple); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Multi-Org Deployments</div>
+      <p style="margin:0 0 8px 0; font-size:12px;">Enterprise is the <em>only</em> tier that supports
+      multi-org cost governance. One off-platform gateway service subscribes to Platform Events from
+      <strong>every production org you operate</strong> &mdash; regional prod orgs (NA / EMEA / APAC),
+      business-unit orgs from acquisitions, dev sandboxes, staging, UAT &mdash; and rolls all of them up
+      into a single budget ledger. Enforcement happens at the org level: dev sandboxes might be capped
+      at 5% of the budget, staging at 10%, production at 85% &mdash; all tuned centrally, all visible on
+      one executive dashboard.</p>
+      <p style="margin:0; font-size:11px; color:var(--text-muted);"><strong>Why this matters:</strong>
+      regulated industries (financial services, healthcare, public sector) routinely require a
+      <em>single source of truth</em> for AI spend across all subsidiaries and regions. Baseline
+      can&rsquo;t provide that &mdash; it governs one org at a time. Enterprise is the only tier that
+      meets the audit requirement.</p>
+    </div>
+  </div>
+
+  <h3>Why Enterprise &mdash; What You Actually Get Back</h3>
+  <p>Baseline is a complete, production-ready cost gateway. Enterprise is not a replacement &mdash; it is an
+  <em>amplifier</em>. Everything Baseline does, Enterprise does faster, more accurately, and hands-free. Below is
   the concrete delta, framed as what changes for the business, the admin, and the end user.</p>
 
   <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin:16px 0;">
     <div style="background:rgba(4,132,75,0.08); border:1px solid rgba(4,132,75,0.35); border-left:4px solid var(--sf-green); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-green); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Accuracy &mdash; no more drift</div>
-      <p style="margin:0; font-size:12px;">Path A&rsquo;s shadow ledger is an <em>estimate</em> that an admin manually calibrates weekly.
-      Path B reconciles estimated vs. actual consumption <strong>every night, automatically</strong>, via
+      <p style="margin:0; font-size:12px;">Baseline&rsquo;s shadow ledger is an <em>estimate</em> that an admin manually calibrates weekly.
+      Enterprise reconciles estimated vs. actual consumption <strong>every night, automatically</strong>, via
       direct API scraping of Usage-Based Entitlements. Drift stays under &plusmn;5% continuously
       instead of oscillating to &plusmn;25% between manual calibrations.</p>
     </div>
     <div style="background:rgba(0,112,210,0.08); border:1px solid rgba(0,112,210,0.35); border-left:4px solid var(--sf-blue); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-blue); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Latency &mdash; &lt; 10ms budget checks</div>
-      <p style="margin:0; font-size:12px;">Path A budget checks are Apex + SOQL: ~100&ndash;500ms per check, and they count against
-      governor limits. Path B answers &ldquo;what phase are we in?&rdquo; from a Redis&trade; cache in
+      <p style="margin:0; font-size:12px;">Baseline budget checks are Apex + SOQL: ~100&ndash;500ms per check, and they count against
+      governor limits. Enterprise answers &ldquo;what phase are we in?&rdquo; from a Redis&trade; cache in
       <strong>under 10ms</strong>, with no governor-limit exposure. At high volume this is the difference
       between agents that feel snappy and agents that feel sluggish.</p>
     </div>
     <div style="background:rgba(144,80,233,0.08); border:1px solid rgba(144,80,233,0.35); border-left:4px solid var(--sf-purple); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-purple); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Forecasting &mdash; days-until-exhaustion</div>
-      <p style="margin:0; font-size:12px;">Path A&rsquo;s LWC forecast is a simple linear projection. Path B runs
+      <p style="margin:0; font-size:12px;">Baseline&rsquo;s LWC forecast is a simple linear projection. Enterprise runs
       <strong>ML-powered burn-rate prediction</strong> (linear regression or Prophet&reg;) that accounts for
       seasonality, day-of-week patterns, and anomalies &mdash; so you see &ldquo;you&rsquo;ll hit Exceeded on
       the 23rd&rdquo; four days in advance, not four hours.</p>
     </div>
     <div style="background:rgba(6,165,154,0.08); border:1px solid rgba(6,165,154,0.35); border-left:4px solid var(--sf-teal); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-teal); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Multi-org &mdash; one budget, many orgs</div>
-      <p style="margin:0; font-size:12px;">Path A tracks budget within a single Salesforce&reg; org. Path B lets you pool and allocate
+      <p style="margin:0; font-size:12px;">Baseline tracks budget within a single Salesforce&reg; org. Enterprise lets you pool and allocate
       a single flex-credit budget across <strong>multiple production orgs</strong> &mdash; sandbox, EMEA
-      prod, APAC prod, etc. &mdash; with org-level enforcement and a rolled-up executive dashboard. Essential
-      for regulated multi-org deployments.</p>
+      prod, APAC prod, acquired-company orgs, etc. &mdash; with org-level enforcement and a rolled-up
+      executive dashboard. Essential for regulated multi-org deployments and acquisition-heavy
+      organizations where unified AI governance is an audit requirement.</p>
+    </div>
+    <div style="background:rgba(88,197,142,0.08); border:1px solid rgba(88,197,142,0.35); border-left:4px solid #58C58E; border-radius:8px; padding:14px;">
+      <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:#58C58E; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; AI-wide scope &mdash; beyond Agentforce&trade;</div>
+      <p style="margin:0; font-size:12px;">Baseline governs the Agentforce&trade; runtime. Enterprise
+      extends the same budget phase, circuit breaker, and model-tiering policies to
+      <strong>every other AI surface that bills against your flex-credit wallet</strong> &mdash;
+      Prompt Builder invocations from Flows, Einstein&trade; generative actions, custom LLM calls from
+      Apex&trade;, Marketing Cloud&reg; AI, Data Cloud&trade; activations. One gateway, one policy, one
+      budget for the whole organization&rsquo;s AI footprint &mdash; applies to single-org and multi-org
+      deployments alike.</p>
     </div>
     <div style="background:rgba(255,154,60,0.08); border:1px solid rgba(255,154,60,0.35); border-left:4px solid var(--sf-orange); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-orange); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Observability &mdash; self-managed OpenTelemetry</div>
-      <p style="margin:0 0 8px 0; font-size:12px;">Path A uses native Salesforce&reg; reports and a custom LWC. Path B emits
+      <p style="margin:0 0 8px 0; font-size:12px;">Baseline uses native Salesforce&reg; reports and a custom LWC. Enterprise emits
       <strong>standard OpenTelemetry traces, metrics, and logs</strong> from the gateway and lets you
       land them in whatever <strong>self-managed backend</strong> you already operate &mdash; so AI spend
       shows up on the same pane of glass your SRE / DevOps team already watches. Anomalies (a runaway
@@ -3440,15 +3489,15 @@ stateDiagram-v2
     </div>
     <div style="background:rgba(194,57,52,0.08); border:1px solid rgba(194,57,52,0.35); border-left:4px solid var(--sf-red); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-red); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">&#9679; Governor limits &mdash; offloaded</div>
-      <p style="margin:0; font-size:12px;">Path A runs every consumption record through Apex + DML, which at &gt;10K conversations/day
-      starts bumping SOQL / DML governor limits. Path B moves that write-path
+      <p style="margin:0; font-size:12px;">Baseline runs every consumption record through Apex + DML, which at &gt;10K conversations/day
+      starts bumping SOQL / DML governor limits. Enterprise moves that write-path
       <strong>off-platform entirely</strong> &mdash; Salesforce&reg; fires a Platform Event, the gateway
       absorbs the write, and governor limits stop being a capacity ceiling.</p>
     </div>
   </div>
 
   <div class="callout success">
-    <p><strong>When Path B pays for itself:</strong> The extra ~33 person-days and $200&ndash;$800/month cloud
+    <p><strong>When Enterprise pays for itself:</strong> The extra ~33 person-days and $200&ndash;$800/month cloud
     bill are justified when <em>any</em> of these apply &mdash; (1) conversation volume exceeds ~5K/day and
     latency matters, (2) you run multiple production orgs, (3) your ops team already runs a
     <strong>self-managed OpenTelemetry</strong> backend and wants AI spend on the same pane of glass,
@@ -3491,9 +3540,9 @@ stateDiagram-v2
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 19: PATH B — OFF-PLATFORM GATEWAY                        ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="path-b-offplatform" data-search="path b off-platform gateway node.js python tech stack redis postgres grafana cloud">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-b-overview">Path B</a><span class="sep">/</span>Off-Platform Gateway</div>
-  <h2>Path B: Off-Platform Gateway Service</h2>
+<div class="card" id="enterprise-offplatform" data-search="path b off-platform gateway node.js python tech stack redis postgres grafana cloud">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#enterprise-overview">Enterprise</a><span class="sep">/</span>Off-Platform Gateway</div>
+  <h2>Enterprise: Off-Platform Gateway Service</h2>
 
   <h3>Recommended Technology Stack</h3>
   <table>
@@ -3533,7 +3582,7 @@ stateDiagram-v2
     <p><strong>Authentication:</strong> The off-platform service authenticates to Salesforce via <strong>OAuth 2.0
     JWT Bearer Flow</strong> using a Connected App with a certificate-based credential. The private key is stored
     in the cloud provider&rsquo;s Secret Manager (never in source control). The Connected App must have
-    <code>api</code>, <code>refresh_token</code>, and <code>event_bus</code> scopes. See <a href="#path-b-integration">Integration Layer</a>
+    <code>api</code>, <code>refresh_token</code>, and <code>event_bus</code> scopes. See <a href="#enterprise-integration">Integration Layer</a>
     for the detailed Connected App configuration.</p>
   </div>
 </div>
@@ -3541,9 +3590,9 @@ stateDiagram-v2
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 20: PATH B — INTEGRATION LAYER                           ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="path-b-integration" data-search="path b integration connected app oauth jwt bearer platform events pub sub api">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-b-overview">Path B</a><span class="sep">/</span>Integration Layer</div>
-  <h2>Path B: Integration Layer</h2>
+<div class="card" id="enterprise-integration" data-search="path b integration connected app oauth jwt bearer platform events pub sub api">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#enterprise-overview">Enterprise</a><span class="sep">/</span>Integration Layer</div>
+  <h2>Enterprise: Integration Layer</h2>
 
   <h3>Connected App Configuration</h3>
   <table>
@@ -3591,13 +3640,13 @@ sequenceDiagram
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 21: PATH B — LOE & TIMELINE                               ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="path-b-loe" data-search="path b level of effort timeline gantt hybrid off-platform duration cost estimation">
-  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#path-b-overview">Path B</a><span class="sep">/</span>LOE &amp; Timeline</div>
-  <h2>Path B: Level of Effort &amp; Timeline</h2>
+<div class="card" id="enterprise-loe" data-search="path b level of effort timeline gantt hybrid off-platform duration cost estimation">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#enterprise-overview">Enterprise</a><span class="sep">/</span>LOE &amp; Timeline</div>
+  <h2>Enterprise: Level of Effort &amp; Timeline</h2>
 
   <div class="exec-bubble">
-    <p><strong>For Business Leaders:</strong> Path B requires <strong>10&ndash;14 weeks</strong> with a team
-    of 5&ndash;6 (adding a cloud engineer and data analyst to the Path A team). Total estimated effort:
+    <p><strong>For Business Leaders:</strong> Enterprise requires <strong>10&ndash;14 weeks</strong> with a team
+    of 5&ndash;6 (adding a cloud engineer and data analyst to the Baseline team). Total estimated effort:
     <strong>75 person-days</strong>. The additional effort delivers: automated calibration
     (no manual admin entry), real-time sub-second budget decisions, ML-powered forecasting,
     multi-org support, and enterprise-grade observability via <strong>self-managed OpenTelemetry</strong>
@@ -3607,10 +3656,10 @@ sequenceDiagram
   <table>
     <tr><th>Phase</th><th>Task</th><th>Days</th><th>Depends On</th><th>Parallel?</th></tr>
     <tr style="background:rgba(0,112,210,0.08);"><td rowspan="3"><strong>Prerequisites</strong></td>
-        <td>All Path A Prerequisites</td><td>5</td><td>&mdash;</td><td rowspan="3">All parallel</td></tr>
+        <td>All Baseline Prerequisites</td><td>5</td><td>&mdash;</td><td rowspan="3">All parallel</td></tr>
     <tr style="background:rgba(0,112,210,0.08);"><td>Cloud Account Provisioning</td><td>3</td><td>&mdash;</td></tr>
     <tr style="background:rgba(0,112,210,0.08);"><td>Connected App Configuration</td><td>2</td><td>Cloud Account</td></tr>
-    <tr><td rowspan="4"><strong>On-Org</strong><br>(Path A subset)</td>
+    <tr><td rowspan="4"><strong>On-Org</strong><br>(Baseline subset)</td>
         <td>Custom Objects &amp; Metadata</td><td>3</td><td>Prerequisites</td><td rowspan="4">Parallel with Off-Platform</td></tr>
     <tr><td>Platform Events</td><td>1</td><td>Objects</td></tr>
     <tr><td>Gateway Apex Classes</td><td>15</td><td>Objects</td></tr>
@@ -3633,7 +3682,7 @@ sequenceDiagram
     <tr style="border-top:2px solid var(--sf-blue);"><td colspan="2" style="text-align:right;"><strong>Critical Path Total</strong></td><td><strong>~75</strong></td><td colspan="2">Elapsed: 10&ndash;14 weeks (with parallel tracks)</td></tr>
   </table>
 
-  <h3>Path B: Cost &amp; Skill Summary</h3>
+  <h3>Enterprise: Cost &amp; Skill Summary</h3>
   <table>
     <tr><th>Metric</th><th>Estimate</th></tr>
     <tr><td><strong>Total Duration</strong></td><td>10&ndash;14 weeks (including UAT + calibration)</td></tr>
@@ -3641,7 +3690,7 @@ sequenceDiagram
     <tr><td><strong>Monthly Cloud Infra Cost</strong></td><td>$200&ndash;$800/month (Cloud Run + managed Redis + managed Postgres)</td></tr>
     <tr><td><strong>Ongoing Maintenance</strong></td><td>~4 hrs/week (cloud eng: infra monitoring; admin: threshold tuning)</td></tr>
     <tr><td><strong>Technical Debt Risk</strong></td><td>Low&ndash;Medium (automated calibration eliminates manual data entry; more components but better separation of concerns)</td></tr>
-    <tr><td><strong>Required Skills</strong></td><td>All Path A skills + Node.js/Python developer, Cloud/DevOps engineer, Data analyst</td></tr>
+    <tr><td><strong>Required Skills</strong></td><td>All Baseline skills + Node.js/Python developer, Cloud/DevOps engineer, Data analyst</td></tr>
   </table>
 </div>
 
@@ -3652,36 +3701,36 @@ sequenceDiagram
   <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#critical-path">Implementation</a><span class="sep">/</span>Critical Path</div>
   <h2>Critical Path &amp; Implementation Sequence</h2>
 
-  <h3>Decision Matrix: Path A vs. Path B</h3>
+  <h3>Decision Matrix: Baseline vs. Enterprise</h3>
   <table>
-    <tr><th>Factor</th><th>Path A (Org-Side)</th><th>Path B (Hybrid)</th><th>Recommendation</th></tr>
-    <tr><td><strong>Conversation Volume</strong></td><td>&lt; 5K/day</td><td>&gt; 5K/day</td><td>High volume favors Path B for real-time accuracy</td></tr>
-    <tr><td><strong>Number of Orgs</strong></td><td>Single org</td><td>Multi-org</td><td>Multi-org requires Path B for centralized budget</td></tr>
-    <tr><td><strong>Calibration Accuracy</strong></td><td>Manual (weekly admin entry)</td><td>Automated (nightly API reconciliation)</td><td>Path B for hands-free accuracy</td></tr>
-    <tr><td><strong>Budget Decision Latency</strong></td><td>~100&ndash;500ms (Apex + SOQL)</td><td>&lt;10ms (Redis cache)</td><td>Path B for latency-sensitive agents</td></tr>
-    <tr><td><strong>Forecasting</strong></td><td>Simple LWC linear projection</td><td>ML-powered burn-rate prediction</td><td>Path B for sophisticated forecasting</td></tr>
-    <tr><td><strong>Build Effort</strong></td><td>~42 person-days</td><td>~75 person-days</td><td>Path A for capacity-constrained teams</td></tr>
-    <tr><td><strong>Cloud Expertise Required</strong></td><td>None</td><td>Mid-level cloud/DevOps</td><td>Path A if no cloud engineering capacity</td></tr>
-    <tr><td><strong>Time to Production</strong></td><td>6&ndash;8 weeks</td><td>10&ndash;14 weeks</td><td>Path A for faster time-to-value</td></tr>
-    <tr><td><strong>Technical Debt</strong></td><td>Medium (manual calibration, Apex governor limits)</td><td>Low&ndash;Medium (more components, but better architecture)</td><td>Path B for long-term maintainability</td></tr>
+    <tr><th>Factor</th><th>Baseline (Org-Side)</th><th>Enterprise (Hybrid)</th><th>Recommendation</th></tr>
+    <tr><td><strong>Conversation Volume</strong></td><td>&lt; 5K/day</td><td>&gt; 5K/day</td><td>High volume favors Enterprise for real-time accuracy</td></tr>
+    <tr><td><strong>Number of Orgs</strong></td><td>Single org</td><td>Multi-org</td><td>Multi-org requires Enterprise for centralized budget</td></tr>
+    <tr><td><strong>Calibration Accuracy</strong></td><td>Manual (weekly admin entry)</td><td>Automated (nightly API reconciliation)</td><td>Enterprise for hands-free accuracy</td></tr>
+    <tr><td><strong>Budget Decision Latency</strong></td><td>~100&ndash;500ms (Apex + SOQL)</td><td>&lt;10ms (Redis cache)</td><td>Enterprise for latency-sensitive agents</td></tr>
+    <tr><td><strong>Forecasting</strong></td><td>Simple LWC linear projection</td><td>ML-powered burn-rate prediction</td><td>Enterprise for sophisticated forecasting</td></tr>
+    <tr><td><strong>Build Effort</strong></td><td>~42 person-days</td><td>~75 person-days</td><td>Baseline for capacity-constrained teams</td></tr>
+    <tr><td><strong>Cloud Expertise Required</strong></td><td>None</td><td>Mid-level cloud/DevOps</td><td>Baseline if no cloud engineering capacity</td></tr>
+    <tr><td><strong>Time to Production</strong></td><td>6&ndash;8 weeks</td><td>10&ndash;14 weeks</td><td>Baseline for faster time-to-value</td></tr>
+    <tr><td><strong>Technical Debt</strong></td><td>Medium (manual calibration, Apex governor limits)</td><td>Low&ndash;Medium (more components, but better architecture)</td><td>Enterprise for long-term maintainability</td></tr>
   </table>
 
   <div class="callout success">
-    <p><strong>Recommended Approach:</strong> Start with <strong>Path A</strong> for immediate value (6&ndash;8 weeks),
-    then evolve to <strong>Path B</strong> once conversation volumes justify the additional investment.
-    Path A&rsquo;s Apex classes and data model are fully reused in Path B &mdash; the off-platform service
+    <p><strong>Recommended Approach:</strong> Start with <strong>Baseline</strong> for immediate value (6&ndash;8 weeks),
+    then evolve to <strong>Enterprise</strong> once conversation volumes justify the additional investment.
+    Baseline&rsquo;s Apex classes and data model are fully reused in Enterprise &mdash; the off-platform service
     <em>extends</em> the on-org foundation rather than replacing it. This is the lowest-risk, highest-ROI
     implementation sequence.</p>
   </div>
 
-  <h3>Gantt &mdash; Path A (Pure Org-Side, 6&ndash;8 Weeks)</h3>
+  <h3>Gantt &mdash; Baseline (Pure Org-Side, 6&ndash;8 Weeks)</h3>
   <p>The chart below shows the task dependencies that produce the <strong>~42 person-day / 6&ndash;8 week
-  calendar</strong> for Path A. Bars on the same row run sequentially; bars on different rows run in parallel
-  where dependencies allow. Source data: <a href="#path-a-loe">Path A LOE &amp; Timeline</a>.</p>
+  calendar</strong> for Baseline. Bars on the same row run sequentially; bars on different rows run in parallel
+  where dependencies allow. Source data: <a href="#baseline-loe">Baseline LOE &amp; Timeline</a>.</p>
 
   <pre class="mermaid" style="min-height:500px;">
 gantt
-  title Path A Implementation Timeline (Pure Org-Side)
+  title Baseline Implementation Timeline (Pure Org-Side)
   dateFormat  YYYY-MM-DD
   axisFormat  Wk %V
 
@@ -3718,14 +3767,14 @@ gantt
   Calibration Period               :active, cal, after deploy, 10d
   </pre>
 
-  <h3>Gantt &mdash; Path B Supplement (Adds to Path A, 10&ndash;14 Weeks Total)</h3>
-  <p>Path B reuses the Path A on-org foundation and adds an off-platform critical path. The chart below
-  shows <em>only the incremental work</em> stacked on top of Path A &mdash; the Path A tracks above still
-  run in parallel. Source data: <a href="#path-b-loe">Path B LOE &amp; Timeline</a>.</p>
+  <h3>Gantt &mdash; Enterprise Supplement (Adds to Baseline, 10&ndash;14 Weeks Total)</h3>
+  <p>Enterprise reuses the Baseline on-org foundation and adds an off-platform critical path. The chart below
+  shows <em>only the incremental work</em> stacked on top of Baseline &mdash; the Baseline tracks above still
+  run in parallel. Source data: <a href="#enterprise-loe">Enterprise LOE &amp; Timeline</a>.</p>
 
   <pre class="mermaid" style="min-height:520px;">
 gantt
-  title Path B Supplement &mdash; Off-Platform Additions
+  title Enterprise Supplement &mdash; Off-Platform Additions
   dateFormat  YYYY-MM-DD
   axisFormat  Wk %V
 
@@ -3755,7 +3804,7 @@ gantt
 
   <h3>Implementation Sequence &mdash; Where to Start Monday Morning</h3>
   <p>The recommended order of operations for a new program. Each step links back to the section that
-  covers it in detail; the Path column indicates whether the step applies to Path A only, Path B only,
+  covers it in detail; the Path column indicates whether the step applies to Baseline only, Enterprise only,
   or both.</p>
 
   <table>
@@ -3769,15 +3818,15 @@ gantt
     <tr><td>4</td><td><strong>Deploy data model</strong></td><td>A + B</td><td>Admin</td>
         <td>Custom objects, Custom Metadata, Platform Event. Day-one change &mdash; everything else depends on it. See <a href="#appendix-a">Appendix A: Metadata</a>.</td></tr>
     <tr><td>5</td><td><strong>Build Apex service classes</strong></td><td>A + B</td><td>Developer</td>
-        <td>ConsumptionTracker &rarr; BudgetPhaseEngine &rarr; CircuitBreakerService &rarr; ModelTierRouter (sequential, this is the critical path). See <a href="#path-a-apex">Path A: Apex Components</a>.</td></tr>
+        <td>ConsumptionTracker &rarr; BudgetPhaseEngine &rarr; CircuitBreakerService &rarr; ModelTierRouter (sequential, this is the critical path). See <a href="#baseline-apex">Baseline: Apex Components</a>.</td></tr>
     <tr><td>6</td><td><strong>Build declarative Flows</strong></td><td>A + B</td><td>Admin</td>
-        <td>Phase Transition Handler, Alert Flows, Nightly Calibration &mdash; parallel with Apex. See <a href="#path-a-flow">Path A: Flow-Based Gateway</a>.</td></tr>
+        <td>Phase Transition Handler, Alert Flows, Nightly Calibration &mdash; parallel with Apex. See <a href="#baseline-flow">Baseline: Flow-Based Gateway</a>.</td></tr>
     <tr><td>7</td><td><strong>Build dashboard</strong></td><td>A + B</td><td>Developer + Admin</td>
-        <td>Native reports + Cost Dashboard LWC &mdash; parallel with Apex. See <a href="#path-a-dashboard">Path A: Monitoring Dashboard</a>.</td></tr>
+        <td>Native reports + Cost Dashboard LWC &mdash; parallel with Apex. See <a href="#baseline-dashboard">Baseline: Monitoring Dashboard</a>.</td></tr>
     <tr><td>8</td><td><strong>Provision cloud foundation</strong></td><td>B only</td><td>Cloud eng</td>
-        <td>Cloud Run / ECS service, Redis, PostgreSQL, Secret Manager, Connected App for JWT Bearer. See <a href="#path-b-offplatform">Path B: Off-Platform Gateway</a>.</td></tr>
+        <td>Cloud Run / ECS service, Redis, PostgreSQL, Secret Manager, Connected App for JWT Bearer. See <a href="#enterprise-offplatform">Enterprise: Off-Platform Gateway</a>.</td></tr>
     <tr><td>9</td><td><strong>Build off-platform gateway</strong></td><td>B only</td><td>Cloud eng + Developer</td>
-        <td>Node.js API &rarr; Pub/Sub subscription &rarr; Auto-Calibrator &rarr; Forecasting Engine &rarr; OTel exporters &rarr; self-managed observability backend. See <a href="#path-b-integration">Path B: Integration Layer</a>.</td></tr>
+        <td>Node.js API &rarr; Pub/Sub subscription &rarr; Auto-Calibrator &rarr; Forecasting Engine &rarr; OTel exporters &rarr; self-managed observability backend. See <a href="#enterprise-integration">Enterprise: Integration Layer</a>.</td></tr>
     <tr><td>10</td><td><strong>Unit + integration tests to &ge; 95% coverage</strong></td><td>A + B</td><td>Developer</td>
         <td>Apex test classes, LWC Jest, (B) gateway API tests. See <a href="#testing">Testing Strategy</a> and <a href="#appendix-b">Appendix B: Apex Starter Code</a>.</td></tr>
     <tr><td>11</td><td><strong>End-to-end UAT in sandbox</strong></td><td>A + B</td><td>Admin + Architect</td>
@@ -3785,7 +3834,7 @@ gantt
     <tr><td>12</td><td><strong>Deploy to production in Shadow Mode</strong></td><td>A + B</td><td>Architect</td>
         <td>No enforcement yet &mdash; just observation for 2 weeks. See <a href="#rollout">Rollout Playbook</a> Stage 1.</td></tr>
     <tr><td>13</td><td><strong>Calibrate estimates vs. actuals</strong></td><td>A + B</td><td>Admin / Cloud eng</td>
-        <td>Manual entry (Path A) or automated nightly reconciliation (Path B). Tune multipliers in <code>AI_Cost_Config__mdt</code>. See <a href="#cost-model">Flex Credit Cost Model</a>.</td></tr>
+        <td>Manual entry (Baseline) or automated nightly reconciliation (Enterprise). Tune multipliers in <code>AI_Cost_Config__mdt</code>. See <a href="#cost-model">Flex Credit Cost Model</a>.</td></tr>
     <tr><td>14</td><td><strong>Flip enforcement on for pilot</strong></td><td>A + B</td><td>Architect</td>
         <td>One subagent or one business unit. Alerts live. See <a href="#rollout">Rollout Playbook</a> Stage 2.</td></tr>
     <tr><td>15</td><td><strong>Expand to all subagents</strong></td><td>A + B</td><td>Architect</td>
@@ -3814,23 +3863,23 @@ gantt
   fully-loaded rate or SI partner rate to arrive at a total. Salesforce licensing costs should be
   verified against your current contract and Account Executive.</p>
 
-  <h3>1. Staffing &mdash; Path A (Pure Org-Side)</h3>
+  <h3>1. Staffing &mdash; Baseline (Pure Org-Side)</h3>
   <table>
     <tr><th>Role</th><th>Skill Level</th><th>Est. Person-Days</th><th>Duration</th><th>Your Rate</th><th>Your Cost</th></tr>
     <tr><td>Salesforce Architect</td><td>Senior (5+ yrs)</td><td>8&ndash;10</td><td>Build + advisory</td><td style="color:var(--sf-orange);">$______/day</td><td style="color:var(--sf-orange);">$__________</td></tr>
     <tr><td>Salesforce Developer (Apex)</td><td>Mid&ndash;Senior</td><td>20&ndash;25</td><td>Build phase</td><td style="color:var(--sf-orange);">$______/day</td><td style="color:var(--sf-orange);">$__________</td></tr>
     <tr><td>Salesforce Admin</td><td>Advanced</td><td>8&ndash;10</td><td>Build + ongoing</td><td style="color:var(--sf-orange);">$______/day</td><td style="color:var(--sf-orange);">$__________</td></tr>
     <tr><td>Agentforce Specialist</td><td>Certified AI Specialist</td><td>4&ndash;6</td><td>Build + ongoing</td><td style="color:var(--sf-orange);">$______/day</td><td style="color:var(--sf-orange);">$__________</td></tr>
-    <tr><td colspan="2" style="text-align:right;"><strong>Path A Staffing Subtotal</strong></td><td><strong>~42 days</strong></td><td></td><td></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
+    <tr><td colspan="2" style="text-align:right;"><strong>Baseline Staffing Subtotal</strong></td><td><strong>~42 days</strong></td><td></td><td></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
   </table>
 
-  <h3>2. Additional Staffing &mdash; Path B (Hybrid, adds to Path A)</h3>
+  <h3>2. Additional Staffing &mdash; Enterprise (Hybrid, adds to Baseline)</h3>
   <table>
     <tr><th>Role</th><th>Skill Level</th><th>Est. Person-Days</th><th>Duration</th><th>Your Rate</th><th>Your Cost</th></tr>
     <tr><td>Cloud / DevOps Engineer</td><td>Mid&ndash;Senior</td><td>20&ndash;25</td><td>Build phase</td><td style="color:var(--sf-orange);">$______/day</td><td style="color:var(--sf-orange);">$__________</td></tr>
     <tr><td>Data Analyst / BI</td><td>Mid</td><td>8&ndash;10</td><td>Build + ongoing</td><td style="color:var(--sf-orange);">$______/day</td><td style="color:var(--sf-orange);">$__________</td></tr>
-    <tr><td colspan="2" style="text-align:right;"><strong>Path B Additional Subtotal</strong></td><td><strong>~33 days</strong></td><td></td><td></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
-    <tr><td colspan="2" style="text-align:right;"><strong>Path B Total (A + B)</strong></td><td><strong>~75 days</strong></td><td></td><td></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
+    <tr><td colspan="2" style="text-align:right;"><strong>Enterprise Additional Subtotal</strong></td><td><strong>~33 days</strong></td><td></td><td></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
+    <tr><td colspan="2" style="text-align:right;"><strong>Enterprise Total (A + B)</strong></td><td><strong>~75 days</strong></td><td></td><td></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
   </table>
 
   <h3>3. Salesforce Licensing &amp; Subscriptions</h3>
@@ -3846,7 +3895,7 @@ gantt
     <tr><td colspan="4" style="text-align:right;"><strong>Annual Licensing Subtotal</strong></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
   </table>
 
-  <h3>4. Cloud Infrastructure &mdash; Path B Only</h3>
+  <h3>4. Cloud Infrastructure &mdash; Enterprise Only</h3>
   <table>
     <tr><th>Component</th><th>Service</th><th>Sizing Basis</th><th>Est. Monthly Range</th><th>Your Cost/Mo</th></tr>
     <tr><td>Compute (gateway API)</td><td>Cloud Run / ECS / App Service</td><td>~50K&ndash;500K requests/day</td><td>$50&ndash;$300/mo</td><td style="color:var(--sf-orange);">$______/mo</td></tr>
@@ -3864,13 +3913,13 @@ gantt
     <tr><td>Threshold tuning &amp; calibration review</td><td>Weekly</td><td>Admin</td><td>1&ndash;2 hrs/wk</td><td style="color:var(--sf-orange);">$______/wk</td></tr>
     <tr><td>Dashboard review &amp; executive reporting</td><td>Weekly</td><td>Admin / BI</td><td>1 hr/wk</td><td style="color:var(--sf-orange);">$______/wk</td></tr>
     <tr><td>Apex / LWC maintenance (quarterly SF releases)</td><td>3x/year</td><td>Developer</td><td>2&ndash;4 hrs per release</td><td style="color:var(--sf-orange);">$______/yr</td></tr>
-    <tr><td>Cloud infra monitoring (Path B)</td><td>Weekly</td><td>Cloud Eng</td><td>1&ndash;2 hrs/wk</td><td style="color:var(--sf-orange);">$______/wk</td></tr>
+    <tr><td>Cloud infra monitoring (Enterprise)</td><td>Weekly</td><td>Cloud Eng</td><td>1&ndash;2 hrs/wk</td><td style="color:var(--sf-orange);">$______/wk</td></tr>
     <tr><td colspan="4" style="text-align:right;"><strong>Annual Operations Subtotal</strong></td><td style="color:var(--sf-orange);"><strong>$__________</strong></td></tr>
   </table>
 
   <h3>Total Project Budget Summary</h3>
   <table>
-    <tr><th>Category</th><th>Path A</th><th>Path B</th></tr>
+    <tr><th>Category</th><th>Baseline</th><th>Enterprise</th></tr>
     <tr><td><strong>One-Time Build (staffing)</strong></td><td style="color:var(--sf-orange);">$__________</td><td style="color:var(--sf-orange);">$__________</td></tr>
     <tr><td><strong>Annual Licensing (new/incremental)</strong></td><td style="color:var(--sf-orange);">$__________</td><td style="color:var(--sf-orange);">$__________</td></tr>
     <tr><td><strong>Annual Cloud Infrastructure</strong></td><td>N/A</td><td style="color:var(--sf-orange);">$__________</td></tr>
@@ -3912,7 +3961,7 @@ gantt
     <tr><td>Agent routes to HITL in Exceeded phase</td><td>UAT</td><td>Omni-Channel routing activates; human agent receives case</td></tr>
     <tr><td>Calibration adjusts multipliers correctly</td><td>Integration</td><td>Nightly job updates AI_Cost_Config__mdt factors</td></tr>
     <tr><td>Dashboard shows accurate real-time data</td><td>UAT</td><td>LWC reflects current phase, consumption, and forecast</td></tr>
-    <tr><td>Off-platform Pub/Sub API connection resilient</td><td>Integration (Path B)</td><td>Gateway reconnects after SF maintenance window</td></tr>
+    <tr><td>Off-platform Pub/Sub API connection resilient</td><td>Integration (Enterprise)</td><td>Gateway reconnects after SF maintenance window</td></tr>
   </table>
 </div>
 
@@ -3994,8 +4043,8 @@ gantt
     <tr><td>6</td><td>Dashboard accessible to stakeholders</td><td>Admin</td><td>&#x2610;</td></tr>
     <tr><td>7</td><td>Rollback plan documented (disable gateway, restore full AI)</td><td>Architect</td><td>&#x2610;</td></tr>
     <tr><td>8</td><td>On-call rotation established for first 2 weeks</td><td>Ops</td><td>&#x2610;</td></tr>
-    <tr><td>9</td><td>(Path B) Off-platform service health checks green</td><td>Cloud Eng</td><td>&#x2610;</td></tr>
-    <tr><td>10</td><td>(Path B) Pub/Sub API subscription active and receiving events</td><td>Cloud Eng</td><td>&#x2610;</td></tr>
+    <tr><td>9</td><td>(Enterprise) Off-platform service health checks green</td><td>Cloud Eng</td><td>&#x2610;</td></tr>
+    <tr><td>10</td><td>(Enterprise) Pub/Sub API subscription active and receiving events</td><td>Cloud Eng</td><td>&#x2610;</td></tr>
   </table>
 </div>
 
@@ -4010,25 +4059,25 @@ gantt
     <tr><th style="width:40px;">ID</th><th>Risk</th><th>Impact</th><th>Likelihood</th><th>Mitigation</th></tr>
     <tr><td>R1</td><td><strong>Estimation accuracy drift</strong> &mdash; Shadow ledger diverges from actual flex credit consumption over time</td>
         <td><span class="pill critical">High</span></td><td><span class="pill warning">Medium</span></td>
-        <td>Weekly calibration (Path A) or nightly auto-calibration (Path B). Safety band: gateway never allows estimated consumption to exceed 90% of ceiling without Emergency phase.</td></tr>
+        <td>Weekly calibration (Baseline) or nightly auto-calibration (Enterprise). Safety band: gateway never allows estimated consumption to exceed 90% of ceiling without Emergency phase.</td></tr>
     <tr><td>R2</td><td><strong>Salesforce changes credit pricing model</strong> &mdash; Estimation multipliers become invalid after a release</td>
         <td><span class="pill warning">Medium</span></td><td><span class="pill planned">Low</span></td>
         <td>Multipliers stored in Custom Metadata (admin-editable, no deployment required). Subscribe to Salesforce release notes for pricing changes.</td></tr>
     <tr><td>R3</td><td><strong>Apex governor limits</strong> &mdash; High-volume orgs hit SOQL/DML limits during consumption tracking</td>
         <td><span class="pill critical">High</span></td><td><span class="pill warning">Medium</span></td>
-        <td>Bulkified Apex patterns; batch aggregation via Platform Events (async); Path B offloads to off-platform service.</td></tr>
+        <td>Bulkified Apex patterns; batch aggregation via Platform Events (async); Enterprise offloads to off-platform service.</td></tr>
     <tr><td>R4</td><td><strong>Platform Cache eviction</strong> &mdash; Circuit breaker state lost during cache partition eviction</td>
         <td><span class="pill planned">Low</span></td><td><span class="pill warning">Medium</span></td>
-        <td>Default to CLOSED on cache miss (fail-open). Path B uses Redis with persistence (fail-safe).</td></tr>
+        <td>Default to CLOSED on cache miss (fail-open). Enterprise uses Redis with persistence (fail-safe).</td></tr>
     <tr><td>R5</td><td><strong>False positive phase transitions</strong> &mdash; Temporary consumption spike triggers premature Emergency phase</td>
         <td><span class="pill warning">Medium</span></td><td><span class="pill warning">Medium</span></td>
         <td>Hysteresis buffer: phase doesn&rsquo;t downgrade unless consumption stays above threshold for 5+ minutes. Configurable via Custom Metadata.</td></tr>
     <tr><td>R6</td><td><strong>Subagent deactivation side effects</strong> &mdash; Disabling subagents in Emergency phase breaks dependent integrations</td>
         <td><span class="pill warning">Medium</span></td><td><span class="pill planned">Low</span></td>
         <td>Maintain a &ldquo;protected subagents&rdquo; list in AI_Cost_Config__mdt that are never disabled regardless of phase. Document dependencies in runbook.</td></tr>
-    <tr><td>R7</td><td><strong>Off-platform service outage (Path B)</strong> &mdash; Gateway goes down; Salesforce loses budget enforcement</td>
+    <tr><td>R7</td><td><strong>Off-platform service outage (Enterprise)</strong> &mdash; Gateway goes down; Salesforce loses budget enforcement</td>
         <td><span class="pill critical">High</span></td><td><span class="pill planned">Low</span></td>
-        <td>On-org Apex classes (Path A core) remain functional independently. Off-platform is an enhancer, not a single point of failure. Heartbeat check in Apex triggers alert on missed check-in.</td></tr>
+        <td>On-org Apex classes (Baseline core) remain functional independently. Off-platform is an enhancer, not a single point of failure. Heartbeat check in Apex triggers alert on missed check-in.</td></tr>
   </table>
 </div>
 
@@ -4043,11 +4092,12 @@ gantt
     <p><strong>For Program Managers:</strong> This section is the narrated, text-form counterpart to the
     <a href="#critical-path">Gantt charts</a>. It walks through the implementation in the same order you
     would execute it &mdash; week by week &mdash; with a short description of each step and links back
-    to the sections that cover it in detail. Path A is presented as the complete baseline plan; Path B
-    is presented as a <em>supplement</em> that layers additional work on top once Path A is committed to.</p>
+    to the sections that cover it in detail. The <strong>Baseline Plan</strong> is the complete, standalone
+    program; the <strong>Enterprise Plan</strong> is presented as a <em>supplement</em> that layers the
+    off-platform work on top once Baseline is committed to.</p>
   </div>
 
-  <h3>Plan A &mdash; Pure Org-Side Implementation (6&ndash;8 Weeks)</h3>
+  <h3>Baseline Plan &mdash; Pure Org-Side Implementation (6&ndash;8 Weeks)</h3>
   <p>This is the default plan. It produces a fully functional, production-ready cost gateway using only
   native Salesforce&reg; capabilities. Each group below is a calendar-week-sized batch of work; groups are
   sequential, tasks within a group are largely parallel.</p>
@@ -4089,10 +4139,10 @@ gantt
     <div style="background:rgba(6,165,154,0.08); border:1px solid rgba(6,165,154,0.35); border-left:4px solid var(--sf-teal); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-teal); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Weeks 3&ndash;4 &middot; Flows, Dashboards, Alerts (&sim;14 person-days, parallel with Apex)</div>
       <ol start="11" style="margin:0; padding-left:22px; font-size:12px;">
-        <li style="margin-bottom:6px;"><strong>Build the Phase Transition Handler Flow.</strong> Platform-Event-triggered Flow that reacts to every phase change and orchestrates alerts, subagent toggling, and HITL routing. <a href="#path-a-flow">&rarr; Path A: Flow-Based Gateway</a></li>
-        <li style="margin-bottom:6px;"><strong>Build Alert Flows.</strong> Email + Slack&reg; + SMS notifications wired to phase-specific severity. <a href="#path-a-flow">&rarr; Path A: Flow-Based Gateway</a></li>
-        <li style="margin-bottom:6px;"><strong>Build the Nightly Calibration Scheduled Flow.</strong> Reconciles estimated vs. actual consumption against Usage-Based Entitlements. <a href="#path-a-flow">&rarr; Path A: Flow-Based Gateway</a></li>
-        <li style="margin-bottom:6px;"><strong>Build the monitoring dashboard.</strong> Native Reports + Dashboards for the standard views, plus the Cost Dashboard LWC for real-time burn-rate, exhaustion forecast, and circuit-breaker status. <a href="#path-a-dashboard">&rarr; Path A: Dashboard</a></li>
+        <li style="margin-bottom:6px;"><strong>Build the Phase Transition Handler Flow.</strong> Platform-Event-triggered Flow that reacts to every phase change and orchestrates alerts, subagent toggling, and HITL routing. <a href="#baseline-flow">&rarr; Baseline: Flow-Based Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>Build Alert Flows.</strong> Email + Slack&reg; + SMS notifications wired to phase-specific severity. <a href="#baseline-flow">&rarr; Baseline: Flow-Based Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>Build the Nightly Calibration Scheduled Flow.</strong> Reconciles estimated vs. actual consumption against Usage-Based Entitlements. <a href="#baseline-flow">&rarr; Baseline: Flow-Based Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>Build the monitoring dashboard.</strong> Native Reports + Dashboards for the standard views, plus the Cost Dashboard LWC for real-time burn-rate, exhaustion forecast, and circuit-breaker status. <a href="#baseline-dashboard">&rarr; Baseline: Dashboard</a></li>
       </ol>
     </div>
 
@@ -4119,21 +4169,21 @@ gantt
 
   </div>
 
-  <h3>Plan B Supplement &mdash; Off-Platform Additions (+4&ndash;6 Weeks, +33 Person-Days)</h3>
-  <p>Plan B <em>adds</em> to Plan A &mdash; it does not replace it. The on-org foundation (Steps 1&ndash;21
+  <h3>Enterprise Plan Supplement &mdash; Off-Platform Additions (+4&ndash;6 Weeks, +33 Person-Days)</h3>
+  <p>Enterprise Plan <em>adds</em> to Baseline Plan &mdash; it does not replace it. The on-org foundation (Steps 1&ndash;21
   above) still runs to completion; the off-platform track below runs in parallel starting in Week 2 and
   extends the Production Rollout by several weeks for additional testing of the new cloud surface area.
-  All Path A step numbers remain valid; the supplement&rsquo;s numbering continues from them with a
+  All Baseline step numbers remain valid; the supplement&rsquo;s numbering continues from them with a
   <strong>B</strong> prefix.</p>
 
   <div style="display:grid; grid-template-columns:1fr; gap:14px; margin:16px 0;">
 
     <!-- ===== B - WEEK 1 (concurrent with A Week 1) ===== -->
     <div style="background:rgba(0,112,210,0.08); border:1px solid rgba(0,112,210,0.35); border-left:4px solid var(--sf-blue); border-radius:8px; padding:14px;">
-      <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-blue); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Week 1 (concurrent with Plan A) &middot; Cloud Prerequisites (&sim;5 person-days)</div>
+      <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-blue); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Week 1 (concurrent with Baseline Plan) &middot; Cloud Prerequisites (&sim;5 person-days)</div>
       <ol style="margin:0; padding-left:22px; font-size:12px;">
-        <li style="margin-bottom:6px;"><strong>B1. Provision cloud account.</strong> GCP / AWS / Azure project with billing alerts. Secret Manager + Cloud Run / ECS / App Service enabled. <a href="#path-b-offplatform">&rarr; Path B: Off-Platform Gateway</a></li>
-        <li style="margin-bottom:6px;"><strong>B2. Configure the Connected App.</strong> JWT Bearer OAuth flow with X.509 certificate; allowlist the gateway&rsquo;s egress IPs; dedicated API-only integration user. <a href="#path-b-integration">&rarr; Path B: Integration Layer</a></li>
+        <li style="margin-bottom:6px;"><strong>B1. Provision cloud account.</strong> GCP / AWS / Azure project with billing alerts. Secret Manager + Cloud Run / ECS / App Service enabled. <a href="#enterprise-offplatform">&rarr; Enterprise: Off-Platform Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>B2. Configure the Connected App.</strong> JWT Bearer OAuth flow with X.509 certificate; allowlist the gateway&rsquo;s egress IPs; dedicated API-only integration user. <a href="#enterprise-integration">&rarr; Enterprise: Integration Layer</a></li>
       </ol>
     </div>
 
@@ -4141,9 +4191,9 @@ gantt
     <div style="background:rgba(144,80,233,0.08); border:1px solid rgba(144,80,233,0.35); border-left:4px solid var(--sf-purple); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-purple); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Week 2 &middot; Cloud Foundation (&sim;11 person-days, parallel)</div>
       <ol start="3" style="margin:0; padding-left:22px; font-size:12px;">
-        <li style="margin-bottom:6px;"><strong>B3. Infrastructure-as-Code.</strong> Terraform / CDK modules for the Cloud Run service, Redis / Valkey, PostgreSQL, Secret Manager, VPC connector. <a href="#path-b-offplatform">&rarr; Path B: Off-Platform Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>B3. Infrastructure-as-Code.</strong> Terraform / CDK modules for the Cloud Run service, Redis / Valkey, PostgreSQL, Secret Manager, VPC connector. <a href="#enterprise-offplatform">&rarr; Enterprise: Off-Platform Gateway</a></li>
         <li style="margin-bottom:6px;"><strong>B4. Redis circuit breaker module.</strong> CLOSED / OPEN / HALF-OPEN state stored in Redis with TTL-based auto-expiry &mdash; sub-ms lookups. <a href="#circuit-breaker">&rarr; Circuit Breaker</a></li>
-        <li style="margin-bottom:6px;"><strong>B5. PostgreSQL schema + migrations.</strong> Shadow ledger, consumption facts, calibration history, forecasting training data. <a href="#path-b-offplatform">&rarr; Path B: Off-Platform Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>B5. PostgreSQL schema + migrations.</strong> Shadow ledger, consumption facts, calibration history, forecasting training data. <a href="#enterprise-offplatform">&rarr; Enterprise: Off-Platform Gateway</a></li>
       </ol>
     </div>
 
@@ -4151,8 +4201,8 @@ gantt
     <div style="background:rgba(144,80,233,0.08); border:1px solid rgba(144,80,233,0.35); border-left:4px solid var(--sf-purple); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-purple); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Weeks 3&ndash;5 &middot; Gateway Service &mdash; Critical Path (&sim;24 person-days, sequential)</div>
       <ol start="6" style="margin:0; padding-left:22px; font-size:12px;">
-        <li style="margin-bottom:6px;"><strong>B6. Build the Gateway API (Node.js).</strong> REST endpoints for <code>/consumption</code>, <code>/phase</code>, <code>/circuit-breaker</code>; all ESM; authenticates to Salesforce&reg; via JWT Bearer. <a href="#path-b-offplatform">&rarr; Off-Platform Gateway</a></li>
-        <li style="margin-bottom:6px;"><strong>B7. Pub/Sub API integration (gRPC).</strong> Subscribe to <code>AI_Agent_Usage__e</code> from Salesforce&reg; for zero-API-limit consumption ingestion. <a href="#path-b-integration">&rarr; Path B: Integration Layer</a></li>
+        <li style="margin-bottom:6px;"><strong>B6. Build the Gateway API (Node.js).</strong> REST endpoints for <code>/consumption</code>, <code>/phase</code>, <code>/circuit-breaker</code>; all ESM; authenticates to Salesforce&reg; via JWT Bearer. <a href="#enterprise-offplatform">&rarr; Off-Platform Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>B7. Pub/Sub API integration (gRPC).</strong> Subscribe to <code>AI_Agent_Usage__e</code> from Salesforce&reg; for zero-API-limit consumption ingestion. <a href="#enterprise-integration">&rarr; Enterprise: Integration Layer</a></li>
         <li style="margin-bottom:6px;"><strong>B8. Auto-calibrator service.</strong> Nightly job that queries <code>TenantUsageEntitlement</code>, compares to shadow ledger, and writes updated multipliers back to <code>AI_Cost_Config__mdt</code>. <a href="#cost-model">&rarr; Flex Credit Cost Model</a></li>
         <li style="margin-bottom:6px;"><strong>B9. Forecasting engine.</strong> Linear regression or Prophet&reg; over historical consumption &mdash; produces the &ldquo;days until exhaustion&rdquo; signal feeding the dashboard. <a href="#observability">&rarr; Observability</a></li>
         <li style="margin-bottom:6px;"><strong>B10. OTel instrumentation + dashboards.</strong> Emit OpenTelemetry traces / metrics / logs from the gateway; deploy an OTel Collector to route them to your self-managed backend (or managed OTLP receiver). Real-time burn-rate, phase distribution, circuit-breaker state, and anomaly alerts wired into PagerDuty&reg; / Slack&reg;. <a href="#observability">&rarr; Observability</a></li>
@@ -4164,7 +4214,7 @@ gantt
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-green); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Weeks 6&ndash;8 &middot; Integration Testing &amp; UAT (&sim;15 person-days)</div>
       <ol start="11" style="margin:0; padding-left:22px; font-size:12px;">
         <li style="margin-bottom:6px;"><strong>B11. Integration tests.</strong> End-to-end Salesforce&reg; &rarr; Pub/Sub &rarr; Gateway &rarr; PostgreSQL &rarr; Platform Event &rarr; Flow chain; reconnect resilience after simulated outages. <a href="#testing">&rarr; Testing Strategy</a></li>
-        <li style="margin-bottom:6px;"><strong>B12. On-org Apex coverage to &ge; 95%.</strong> Same as Plan A Step 15 &mdash; runs in parallel. <a href="#testing">&rarr; Testing Strategy</a></li>
+        <li style="margin-bottom:6px;"><strong>B12. On-org Apex coverage to &ge; 95%.</strong> Same as Baseline Plan Step 15 &mdash; runs in parallel. <a href="#testing">&rarr; Testing Strategy</a></li>
         <li style="margin-bottom:6px;"><strong>B13. Full end-to-end UAT.</strong> Includes off-platform outage scenarios, multi-org budget rollup (if applicable), forecasting accuracy validation. <a href="#testing">&rarr; Testing Strategy</a></li>
       </ol>
     </div>
@@ -4173,19 +4223,19 @@ gantt
     <div style="background:rgba(255,154,60,0.08); border:1px solid rgba(255,154,60,0.35); border-left:4px solid var(--sf-orange); border-radius:8px; padding:14px;">
       <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:var(--sf-orange); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Weeks 9&ndash;14 &middot; Production Rollout + Extended Calibration (&sim;5 person-days + calendar time)</div>
       <ol start="14" style="margin:0; padding-left:22px; font-size:12px;">
-        <li style="margin-bottom:6px;"><strong>B14. Deploy gateway to production.</strong> Blue-green deployment behind a load balancer; health checks green before flipping traffic. <a href="#path-b-offplatform">&rarr; Path B: Off-Platform Gateway</a></li>
+        <li style="margin-bottom:6px;"><strong>B14. Deploy gateway to production.</strong> Blue-green deployment behind a load balancer; health checks green before flipping traffic. <a href="#enterprise-offplatform">&rarr; Enterprise: Off-Platform Gateway</a></li>
         <li style="margin-bottom:6px;"><strong>B15. Shadow Mode with auto-calibration.</strong> 2&ndash;4 week observation; auto-calibrator tunes multipliers every night. <a href="#rollout">&rarr; Rollout Playbook</a></li>
-        <li style="margin-bottom:6px;"><strong>B16. Flip enforcement pilot &rarr; expansion &rarr; full.</strong> Same staged rollout as Plan A (Steps 19&ndash;21), but driven by the off-platform decisioning surface. <a href="#rollout">&rarr; Rollout Playbook</a></li>
+        <li style="margin-bottom:6px;"><strong>B16. Flip enforcement pilot &rarr; expansion &rarr; full.</strong> Same staged rollout as Baseline Plan (Steps 19&ndash;21), but driven by the off-platform decisioning surface. <a href="#rollout">&rarr; Rollout Playbook</a></li>
       </ol>
     </div>
 
   </div>
 
   <div class="callout success">
-    <p><strong>Bottom line:</strong> Plan A alone is &sim;21 steps across 6&ndash;8 weeks and delivers a fully
-    enforced production gateway. Plan B adds 16 supplement steps across +4&ndash;6 weeks and upgrades
+    <p><strong>Bottom line:</strong> Baseline Plan alone is &sim;21 steps across 6&ndash;8 weeks and delivers a fully
+    enforced production gateway. Enterprise Plan adds 16 supplement steps across +4&ndash;6 weeks and upgrades
     calibration, latency, forecasting, multi-org capability, and observability. Most organizations ship
-    Plan A, run it for a quarter to understand their actual consumption patterns, and then add Plan B
+    Baseline Plan, run it for a quarter to understand their actual consumption patterns, and then add Enterprise Plan
     once the volume or multi-org requirement forces the issue. See the
     <a href="#critical-path">Gantt charts</a> for visual scheduling and the
     <a href="#risks">Risk Register</a> for mitigations tied to each phase.</p>
@@ -4236,7 +4286,7 @@ gantt
   Metadata Type that serves as the <a href="#gateway-overview">gateway’s admin-configurable
   control panel</a>, and the GenAiFunction registrations that expose the gateway’s Apex
   classes as agent tools. These definitions are referenced throughout the
-  <a href="#path-a-overview">Path A implementation</a> sections and should be deployed in the
+  <a href="#baseline-overview">Baseline implementation</a> sections and should be deployed in the
   order listed: objects and fields first, then Platform Events, then Custom Metadata Types,
   and finally GenAiFunction registrations.</p>
 
@@ -4299,9 +4349,9 @@ gantt
   <p>This Platform Event (<code>AI_Budget_Phase_Change__e</code>) is the real-time communication
   backbone of the gateway. It fires whenever the <a href="#budget-phases">Budget Phase Engine</a>
   detects a phase transition. Downstream subscribers include the
-  <a href="#path-a-flow">Flow-Based Gateway</a> (alerts and subagent deactivation),
-  the <a href="#circuit-breaker">Circuit Breaker</a> (trip on Exceeded), and in Path B,
-  the <a href="#path-b-offplatform">off-platform gateway</a> via the Pub/Sub API.</p>
+  <a href="#baseline-flow">Flow-Based Gateway</a> (alerts and subagent deactivation),
+  the <a href="#circuit-breaker">Circuit Breaker</a> (trip on Exceeded), and in Enterprise,
+  the <a href="#enterprise-offplatform">off-platform gateway</a> via the Pub/Sub API.</p>
   <pre class="code-block">&lt;!-- AI_Budget_Phase_Change__e.object-meta.xml --&gt;
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;CustomObject xmlns="http://soap.sforce.com/2006/04/metadata"&gt;
@@ -4384,11 +4434,11 @@ gantt
      ╚══════════════════════════════════════════════════════════════════════╝ -->
 <div class="card" id="appendix-b" data-search="appendix b apex class starter code consumption tracker budget phase engine circuit breaker model tier router test">
   <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#appendix">Appendix</a><span class="sep">/</span>B: Apex Starters</div>
-  <h2>Appendix B: Apex Class Starters (Path A)</h2>
+  <h2>Appendix B: Apex Class Starters (Baseline)</h2>
 
   <p>This appendix contains starter implementations for the four Apex Service Layer classes
   that form the gateway’s pro-code core, plus a test class skeleton. These are the classes
-  summarized in the <a href="#path-a-apex">Path A: Apex Components</a> section. Together they
+  summarized in the <a href="#baseline-apex">Baseline: Apex Components</a> section. Together they
   implement the <a href="#gateway-overview">five gateway subsystems</a>: consumption tracking
   (B-1), budget phase computation (B-2), circuit breaker failsafe (B-3), and model tier routing
   (B-4). Each class is independently deployable and testable. The test skeleton (B-5) covers
@@ -4747,11 +4797,11 @@ private class CostGatewayTest {
      ╚══════════════════════════════════════════════════════════════════════╝ -->
 <div class="card" id="appendix-c" data-search="appendix c flow definitions platform event triggered scheduled calibration alert notification">
   <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#appendix">Appendix</a><span class="sep">/</span>C: Flows</div>
-  <h2>Appendix C: Flow Definitions (Path A)</h2>
+  <h2>Appendix C: Flow Definitions (Baseline)</h2>
 
   <p>This appendix provides design specifications for the three Salesforce Flows that wire the
   gateway’s declarative layer to its Apex core. These Flows are referenced in the
-  <a href="#path-a-flow">Flow-Based Gateway</a> section. The Phase Transition Handler (C-1)
+  <a href="#baseline-flow">Flow-Based Gateway</a> section. The Phase Transition Handler (C-1)
   dispatches alerts and enforcement actions when budget phases change. The Nightly Calibration
   Scheduler (C-2) reconciles the <a href="#cost-model">shadow ledger’s estimates</a> against
   actual consumption data. The Post-Conversation Usage Logger (C-3) captures per-interaction
@@ -4788,8 +4838,8 @@ private class CostGatewayTest {
 
   <h3>C-2: Nightly Calibration Scheduler</h3>
   <p>Runs daily at 02:00 UTC to reconcile the gateway’s shadow estimates against actual
-  consumption data. In Path A, checks whether an admin has entered the actual credit balance;
-  if so, invokes the Consumption Tracker’s calibrate() method (B-1). In Path B, automated
+  consumption data. In Baseline, checks whether an admin has entered the actual credit balance;
+  if so, invokes the Consumption Tracker’s calibrate() method (B-1). In Enterprise, automated
   via DLO queries. Finishes by rechecking the budget phase against calibrated data.</p>
   <table>
     <tr><th>Property</th><th>Value</th></tr>
@@ -4800,7 +4850,7 @@ private class CostGatewayTest {
   <p><strong>Logic:</strong></p>
   <ol class="numbered">
     <li>Get Records: <code>AI_Budget_Ledger__c</code> where <code>Budget_Period__c = CURRENT_PERIOD</code></li>
-    <li>Decision: Is <code>Actual_Consumed__c</code> populated? (Path A: admin manually enters this from Setup &gt; Usage-Based Entitlements)</li>
+    <li>Decision: Is <code>Actual_Consumed__c</code> populated? (Baseline: admin manually enters this from Setup &gt; Usage-Based Entitlements)</li>
     <li><strong>Yes:</strong> Invoke Apex Action <code>ConsumptionTrackerService.calibrate()</code></li>
     <li><strong>No:</strong> Create task for admin: &ldquo;Enter actual flex credit consumption from Usage-Based Entitlements&rdquo;</li>
     <li>Invoke Apex Action <code>BudgetPhaseEngine.checkAndTransition()</code></li>
@@ -4920,17 +4970,17 @@ topic BudgetExceededFallback
      ╚══════════════════════════════════════════════════════════════════════╝ -->
 <div class="card" id="appendix-e" data-search="appendix e off-platform node.js express postgresql redis terraform dockerfile docker cloud run gateway hybrid">
   <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#appendix">Appendix</a><span class="sep">/</span>E: Off-Platform Starters</div>
-  <h2>Appendix E: Off-Platform Code Starters (Path B)</h2>
+  <h2>Appendix E: Off-Platform Code Starters (Enterprise)</h2>
 
   <p>This appendix provides the structural foundation for the
-  <a href="#path-b-overview">Path B hybrid implementation</a>’s off-platform gateway
+  <a href="#enterprise-overview">Enterprise hybrid implementation</a>’s off-platform gateway
   service. It includes a Node.js ESM project layout, PostgreSQL schema mirroring the on-org
   <a href="#appendix-a">custom objects (Appendix A)</a>, an Express API server, a Redis-backed
   circuit breaker (the off-platform counterpart of <a href="#appendix-b">B-3</a>), a Salesforce
-  Pub/Sub API integration client for the <a href="#path-b-integration">integration layer</a>,
+  Pub/Sub API integration client for the <a href="#enterprise-integration">integration layer</a>,
   a production Dockerfile, and a Terraform starter for Google Cloud infrastructure. These
   starters implement the architecture described in the
-  <a href="#path-b-offplatform">Off-Platform Gateway</a> section and are designed to be
+  <a href="#enterprise-offplatform">Off-Platform Gateway</a> section and are designed to be
   extended, not used as-is.</p>
 
   <div class="callout ai-notice">
@@ -5040,8 +5090,8 @@ app.listen(PORT, () =&gt; logger.info(`Gateway listening on :${PORT}`));</pre>
   <h3>E-4: Circuit Breaker Service (Redis)</h3>
   <p>Off-platform equivalent of the on-org Apex Circuit Breaker (B-3), backed by Redis for
   sub-millisecond reads and native TTL expiry. The <code>INCR</code> + <code>EXPIRE</code>
-  pattern provides atomic failure counting with built-in cleanup. This makes Path B’s
-  budget decisions sub-10ms versus Path A’s 100–500ms.</p>
+  pattern provides atomic failure counting with built-in cleanup. This makes Enterprise’s
+  budget decisions sub-10ms versus Baseline’s 100–500ms.</p>
   <pre class="code-block">// src/services/circuitBreakerService.js
 import { redis } from '../shared/redis.js';
 
