@@ -2542,9 +2542,11 @@ xychart-beta
     <tr><td>Multi-step Sales Outreach (SDR)</td><td>35+</td><td>$3.50+</td><td>$2.00</td><td><strong>Conversations</strong></td></tr>
   </table>
   <p style="font-size:11px; color:var(--text-muted); font-style:italic;">Source: cross-referenced from
-  [`_external/jitendrazaa.com/agentforce-credits-cost-model-complete-guide-2026.md`] §4 and the
-  Salesforce Flex Credits Rate Card (verified 2026-04-28). The gateway&rsquo;s shadow ledger and
-  phase-engine logic both assume the Flex Credits model unless explicitly configured otherwise.</p>
+  the <a href="https://www.salesforce.com/en-us/wp-content/uploads/sites/4/assets/pdf/Flex-Credits-Rate-Card-11.18.2025.pdf" target="_blank" rel="noopener">Salesforce&reg; Flex Credits Rate Card</a>
+  and the
+  <a href="https://help.salesforce.com/s/articleView?id=ai.usage_flex_credits.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Flex Credits Billable Usage Types</a>
+  documentation (verified 2026-04-28). The gateway&rsquo;s shadow ledger and phase-engine logic both
+  assume the Flex Credits model unless explicitly configured otherwise.</p>
 </div>
 
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
@@ -3223,8 +3225,9 @@ stateDiagram-v2
   </div>
 
   <h3>What Salesforce&reg; Ships OOTB (Visual + Human-in-the-Loop)</h3>
-  <p>Verified 2026-04-28 against the Salesforce&reg; Help articles captured in
-  <code>ai-guide/xcloud/wallet_*.md</code>. All capabilities below ship today; this list is not
+  <p>Verified 2026-04-28 against the
+  <a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_about.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Salesforce&reg; Help</a>
+  Digital Wallet article set (links per row below). All capabilities ship today; this list is not
   speculative.</p>
   <table>
     <tr><th style="width:30%;">OOTB Capability</th><th>What It Does</th><th style="width:14%;">Surface</th><th style="width:14%;">Latency</th></tr>
@@ -6156,8 +6159,10 @@ public class AutoCalibrator implements Schedulable {
 
   <p style="font-size:11px; color:var(--text-muted); font-style:italic;">All field names referenced
   in this appendix were verified on 2026-04-28 against the Salesforce&reg; Help DLO reference articles
-  captured in <code>ai-guide/xcloud/wallet_*_reference.md</code>. Re-verify before relying on any
-  specific field name, especially for THEC and TUTM where the field set may evolve between releases.</p>
+  (linked at the top of this appendix and in the
+  <a href="#flex-credit-reference">Programmatic Consumption Access</a> section). Re-verify before
+  relying on any specific field name, especially for THEC and TUTM where the field set may evolve
+  between releases.</p>
 </div>
 
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
