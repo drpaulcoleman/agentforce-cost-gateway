@@ -1819,17 +1819,39 @@ xychart-beta
   </div>
 
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin:28px 0;">
-    <!-- LEFT: Today -->
+    <!-- LEFT: Today — bifurcated failure modes -->
     <div style="background:rgba(194,57,52,0.06); border:1px solid rgba(194,57,52,0.25); border-radius:10px; padding:24px;">
-      <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:#C23934; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:16px; text-align:center;">Today: No Guardrails</div>
-      <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
-        <span style="background:#1A3A63; border:1px solid #5B9BD5; color:#fff; padding:10px 16px; border-radius:6px; font-size:13px; font-weight:600; text-align:center;">AI Agents<br>Operating</span>
-        <span style="color:#5B9BD5; font-size:20px;">&rarr;</span>
-        <span style="background:#1A3A63; border:1px solid #5B9BD5; color:#fff; padding:10px 16px; border-radius:6px; font-size:13px; font-weight:600; text-align:center;">Unchecked<br>Spending</span>
-        <span style="color:#5B9BD5; font-size:20px;">&rarr;</span>
-        <span style="background:#3d0f0f; border:1px solid #C23934; color:#fff; padding:10px 16px; border-radius:6px; font-size:13px; font-weight:600; text-align:center;">Budget<br>Exhausted</span>
-        <span style="color:#C23934; font-size:20px;">&rarr;</span>
-        <span style="background:#3d0f0f; border:2px solid #C23934; color:#C23934; padding:10px 16px; border-radius:6px; font-size:13px; font-weight:800; text-align:center;">Overage<br>Charges</span>
+      <div style="font-family:'Montserrat',sans-serif; font-size:11px; font-weight:700; color:#C23934; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; text-align:center;">Today: No Cost-Based Intelligent Routing</div>
+      <div style="font-size:11px; color:#C23934; opacity:0.85; text-align:center; margin-bottom:14px; font-style:italic;">Two failure modes &mdash; both already on Salesforce&reg; today</div>
+
+      <!-- Mode 1: Don't intervene -->
+      <div style="font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; color:#C23934; letter-spacing:0.06em; text-transform:uppercase; margin:6px 0 6px 0;">Mode 1 &mdash; Spend continues, bill arrives</div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:5px; flex-wrap:wrap;">
+        <span style="background:#1A3A63; border:1px solid #5B9BD5; color:#fff; padding:7px 11px; border-radius:5px; font-size:11px; font-weight:600; text-align:center;">AI Agents<br>Operating</span>
+        <span style="color:#5B9BD5; font-size:16px;">&rarr;</span>
+        <span style="background:#1A3A63; border:1px solid #5B9BD5; color:#fff; padding:7px 11px; border-radius:5px; font-size:11px; font-weight:600; text-align:center;">Unchecked<br>Spending</span>
+        <span style="color:#5B9BD5; font-size:16px;">&rarr;</span>
+        <span style="background:#3d0f0f; border:1px solid #C23934; color:#fff; padding:7px 11px; border-radius:5px; font-size:11px; font-weight:600; text-align:center;">Budget<br>Exhausted</span>
+        <span style="color:#C23934; font-size:16px;">&rarr;</span>
+        <span style="background:#3d0f0f; border:2px solid #C23934; color:#C23934; padding:7px 11px; border-radius:5px; font-size:11px; font-weight:800; text-align:center;">Overage Bill<br>(Order Form)</span>
+      </div>
+
+      <!-- Mode 2: Manual kill -->
+      <div style="font-family:'Montserrat',sans-serif; font-size:9px; font-weight:700; color:#C23934; letter-spacing:0.06em; text-transform:uppercase; margin:18px 0 6px 0;">Mode 2 &mdash; Admin pulls the plug</div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:5px; flex-wrap:wrap;">
+        <span style="background:#1A3A63; border:1px solid #5B9BD5; color:#fff; padding:7px 11px; border-radius:5px; font-size:11px; font-weight:600; text-align:center;">Spend Spike<br>Spotted</span>
+        <span style="color:#C23934; font-size:16px;">&rarr;</span>
+        <span style="background:#3d0f0f; border:1px solid #C23934; color:#fff; padding:7px 11px; border-radius:5px; font-size:11px; font-weight:600; text-align:center;">Deactivate Agent<br>in Setup</span>
+        <span style="color:#C23934; font-size:16px;">&rarr;</span>
+        <span style="background:#3d0f0f; border:2px solid #C23934; color:#C23934; padding:7px 11px; border-radius:5px; font-size:11px; font-weight:800; text-align:center;">Service Dark<br>(all-or-nothing)</span>
+      </div>
+
+      <div style="font-size:11px; color:#C23934; opacity:0.92; margin-top:18px; line-height:1.5; padding:10px 12px; background:rgba(194,57,52,0.08); border-radius:6px;">
+        <strong>Both modes burn something.</strong> Mode 1 burns budget &mdash; the bill arrives in
+        arrears with no financial ceiling. Mode 2 burns trust &mdash; the agent goes dark globally
+        with no step-down logic, no job-type prioritization, and no human-in-the-loop fallback.
+        Salesforce&reg; provides no consumption-driven hard-stop and no graduated-response option
+        natively.
       </div>
     </div>
     <!-- RIGHT: With Gateway -->
