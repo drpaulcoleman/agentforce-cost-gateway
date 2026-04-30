@@ -999,6 +999,7 @@ pre.mermaid g.node[onclick]:hover > path {
     <a href="#risks">Risk Register</a>
     <a href="#roadmap">Salesforce Roadmap</a>
     <a href="#implementation-plan">Plan Outline (A + B)</a>
+    <a href="#ai-implementation">Implementing with AI</a>
 
     <span class="nav-group" data-tech-only>Appendices</span>
     <a href="#appendix" data-tech-only>References</a>
@@ -4946,6 +4947,575 @@ gantt
     <a href="#risks">Risk Register</a> for mitigations tied to each phase.</p>
   </div>
 </div>
+
+<!-- ╔══════════════════════════════════════════════════════════════════════╗
+     ║ SECTION 25c: IMPLEMENTING WITH AI (TABSET)                        ║
+     ╚══════════════════════════════════════════════════════════════════════╝ -->
+<style>
+  /* ── AI-Implementation tabset ──────────────────────────────────────
+     Self-contained, scoped to #ai-implementation. Six tabs sit on a
+     pill-style bar; clicking one swaps the visible panel below.       */
+  #ai-implementation .ai-tabs {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin: 14px 0 0; padding: 6px;
+    background: rgba(0, 112, 210, 0.06);
+    border: 1px solid rgba(0, 112, 210, 0.25);
+    border-radius: 10px;
+  }
+  #ai-implementation .ai-tab {
+    flex: 1 1 auto; min-width: 110px;
+    border: 1px solid transparent; border-radius: 7px;
+    background: transparent; color: var(--sf-blue);
+    font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 9px 12px; cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  #ai-implementation .ai-tab:hover:not(.active) {
+    background: rgba(0, 112, 210, 0.10);
+    border-color: rgba(0, 112, 210, 0.35);
+  }
+  #ai-implementation .ai-tab.active {
+    background: var(--sf-blue); color: var(--sf-white);
+    border-color: var(--sf-blue);
+    box-shadow: 0 2px 6px rgba(0, 112, 210, 0.35);
+  }
+  #ai-implementation .ai-tab .ai-tab-rank {
+    display: inline-block; font-size: 10px; opacity: 0.6;
+    margin-right: 6px; font-weight: 500;
+  }
+  #ai-implementation .ai-tab.active .ai-tab-rank { opacity: 0.9; }
+  #ai-implementation .ai-panel { display: none; margin-top: 14px; }
+  #ai-implementation .ai-panel.active { display: block; }
+  #ai-implementation .ai-panel .ai-tool-intro {
+    background: rgba(0, 112, 210, 0.06);
+    border-left: 4px solid var(--sf-blue);
+    border-radius: 6px; padding: 12px 14px; margin: 0 0 14px;
+    font-size: 13px;
+  }
+  #ai-implementation .ai-panel .ai-tool-intro strong {
+    color: var(--sf-blue); font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase; font-size: 11px; letter-spacing: 0.08em;
+    display: block; margin-bottom: 4px;
+  }
+  #ai-implementation .ai-phase {
+    border-radius: 8px; padding: 14px; margin-bottom: 12px;
+  }
+  #ai-implementation .ai-phase-label {
+    font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  #ai-implementation .ai-phase ol,
+  #ai-implementation .ai-phase ul {
+    margin: 0; padding-left: 22px; font-size: 12px;
+  }
+  #ai-implementation .ai-phase li { margin-bottom: 6px; }
+  #ai-implementation .ai-phase code {
+    background: rgba(0, 0, 0, 0.06); padding: 1px 5px; border-radius: 3px;
+    font-size: 11px;
+  }
+  #ai-implementation .ai-phase.ai-phase-blue   { background: rgba(0,112,210,0.08);  border: 1px solid rgba(0,112,210,0.35);  border-left: 4px solid var(--sf-blue); }
+  #ai-implementation .ai-phase.ai-phase-blue   .ai-phase-label { color: var(--sf-blue); }
+  #ai-implementation .ai-phase.ai-phase-purple { background: rgba(144,80,233,0.08); border: 1px solid rgba(144,80,233,0.35); border-left: 4px solid var(--sf-purple); }
+  #ai-implementation .ai-phase.ai-phase-purple .ai-phase-label { color: var(--sf-purple); }
+  #ai-implementation .ai-phase.ai-phase-teal   { background: rgba(6,165,154,0.08);  border: 1px solid rgba(6,165,154,0.35);  border-left: 4px solid var(--sf-teal); }
+  #ai-implementation .ai-phase.ai-phase-teal   .ai-phase-label { color: var(--sf-teal); }
+  #ai-implementation .ai-phase.ai-phase-green  { background: rgba(4,132,75,0.08);   border: 1px solid rgba(4,132,75,0.35);   border-left: 4px solid var(--sf-green); }
+  #ai-implementation .ai-phase.ai-phase-green  .ai-phase-label { color: var(--sf-green); }
+  #ai-implementation .ai-phase.ai-phase-orange { background: rgba(255,154,60,0.08); border: 1px solid rgba(255,154,60,0.35); border-left: 4px solid var(--sf-orange); }
+  #ai-implementation .ai-phase.ai-phase-orange .ai-phase-label { color: var(--sf-orange); }
+  #ai-implementation .ai-noob-tip {
+    background: rgba(255, 211, 84, 0.10);
+    border-left: 4px solid #f4c430;
+    border-radius: 6px; padding: 10px 12px; margin: 8px 0 0;
+    font-size: 12px;
+  }
+  #ai-implementation .ai-noob-tip strong {
+    color: #b08400; font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase; font-size: 10px; letter-spacing: 0.08em;
+    display: block; margin-bottom: 3px;
+  }
+</style>
+
+<div class="card" id="ai-implementation" data-search="implementing with ai claude code anthropic agentforce vibes cursor codex gemini github copilot microsoft copilot prompt engineering vibe coding">
+  <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#critical-path">Implementation</a><span class="sep">/</span>Implementing with AI</div>
+  <h2>Implementing with AI</h2>
+
+  <div class="exec-bubble">
+    <p><strong>For first-time AI-assisted developers:</strong> The same step-by-step plan above can be executed
+    <em>2&ndash;3&times; faster</em> when an AI coding assistant generates the boilerplate
+    metadata, Apex, Flow XML, and tests for you. This section walks through the exact same Baseline Plan
+    weeks &mdash; Foundation, Data Model, Apex Core, Flows &amp; Dashboards, Testing, Rollout &mdash; but
+    with concrete prompts, commands, and noob-friendly tips for each major AI tool. <strong>Pick one tab and
+    follow it end-to-end</strong>; do not mix tools mid-build, or you will fight conflicting code-style
+    conventions. Tabs are ordered by recommendation strength for this specific Salesforce&reg; +
+    Agentforce&reg; workload.</p>
+  </div>
+
+  <div class="ai-tabs" role="tablist" aria-label="AI tool selection">
+    <button type="button" class="ai-tab active" role="tab" aria-selected="true" data-ai-tab="claude" aria-controls="ai-panel-claude"><span class="ai-tab-rank">1</span>Claude</button>
+    <button type="button" class="ai-tab" role="tab" aria-selected="false" data-ai-tab="vibes" aria-controls="ai-panel-vibes"><span class="ai-tab-rank">2</span>Agentforce Vibes</button>
+    <button type="button" class="ai-tab" role="tab" aria-selected="false" data-ai-tab="cursor" aria-controls="ai-panel-cursor"><span class="ai-tab-rank">3</span>Cursor IDE</button>
+    <button type="button" class="ai-tab" role="tab" aria-selected="false" data-ai-tab="codex" aria-controls="ai-panel-codex"><span class="ai-tab-rank">4</span>OpenAI Codex</button>
+    <button type="button" class="ai-tab" role="tab" aria-selected="false" data-ai-tab="gemini" aria-controls="ai-panel-gemini"><span class="ai-tab-rank">5</span>Gemini</button>
+    <button type="button" class="ai-tab" role="tab" aria-selected="false" data-ai-tab="copilot" aria-controls="ai-panel-copilot"><span class="ai-tab-rank">6</span>MS Copilot</button>
+  </div>
+
+  <!-- ╔════════ TAB 1: CLAUDE ════════╗ -->
+  <div class="ai-panel active" id="ai-panel-claude" role="tabpanel" aria-labelledby="ai-tab-claude">
+    <div class="ai-tool-intro">
+      <strong>Recommended &middot; Claude Code (CLI) + Anthropic API</strong>
+      Claude Code is Anthropic&rsquo;s terminal-based agent that reads, edits, and runs commands inside your
+      repo. It is the strongest fit for this workload because it natively understands large multi-file
+      Salesforce&reg; metadata projects, follows long instructions without losing context, and executes
+      <code>sf</code> CLI deploy/test commands directly. <strong>If you&rsquo;ve never used an AI coding
+      tool before, start here.</strong>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Setup &middot; ~30 minutes (one-time)</div>
+      <ol>
+        <li>Install Node.js 18+ (<a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a>), then run <code>npm install -g @anthropic-ai/claude-code</code>.</li>
+        <li>Sign up at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>, generate an API key, and run <code>claude</code> in any folder &mdash; it will prompt you to paste the key on first run.</li>
+        <li>Install Salesforce&reg; CLI: <code>npm install -g @salesforce/cli</code>, then <code>sf org login web</code> against your sandbox.</li>
+        <li>Open a terminal in your SFDX project root and run <code>claude</code>. Type <code>/init</code> &mdash; Claude will scan the repo and write a <code>CLAUDE.md</code> that anchors every future prompt in the project&rsquo;s conventions.</li>
+        <li>Paste the entire Plan Outline section above into <code>CLAUDE.md</code> under a heading <em>&ldquo;Implementation Plan&rdquo;</em> so Claude has the spec on every turn.</li>
+      </ol>
+      <div class="ai-noob-tip"><strong>AI-Noob Tip</strong>Claude is just a chat at first &mdash; type plain English, hit Enter, watch it propose file edits. You approve each edit before it writes. Nothing is destructive without your &ldquo;y&rdquo;.</div>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Week 1 &middot; Foundation &amp; Policy</div>
+      <ol>
+        <li>Prompt: <em>&ldquo;Read CLAUDE.md. Generate a one-page Exceeded-phase policy decision memo for the executive sponsor with three options (hard stop / HITL-only / emergency credit purchase), tradeoffs, and a recommendation.&rdquo;</em></li>
+        <li>Prompt: <em>&ldquo;Produce an org-readiness checklist as a markdown table covering flex credits, Platform Events allocation, Platform Cache partitions, and API request headroom &mdash; with the exact <code>sf</code> CLI command to verify each row.&rdquo;</em></li>
+        <li>Have Claude run the verification commands itself: <em>&ldquo;Execute each <code>sf</code> command from the checklist in my sandbox and fill in the actual values.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Week 2 &middot; Data Model</div>
+      <ol>
+        <li>Prompt: <em>&ldquo;Generate the SFDX metadata XML for the two custom objects (<code>AI_Budget_Ledger__c</code>, <code>AI_Agent_Usage__c</code>), the Custom Metadata Type <code>AI_Cost_Config__mdt</code>, and the Platform Event <code>AI_Budget_Phase_Change__e</code>, matching the schemas in Appendix A. Place files under <code>force-app/main/default/objects/</code>.&rdquo;</em></li>
+        <li>Prompt: <em>&ldquo;Add three seed records for <code>AI_Cost_Config__mdt</code> with the default thresholds from the Budget Phase Engine section.&rdquo;</em></li>
+        <li>Prompt: <em>&ldquo;Run <code>sf project deploy start --target-org sandbox</code> and report any deploy errors. If validation fails, fix and retry up to three times.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-purple">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Apex Core (sequential)</div>
+      <ol>
+        <li>Prompt one class at a time, in dependency order, so each fits in context: <em>&ldquo;Implement <code>ConsumptionTrackerService</code> per Appendix B-1. Use <code>with sharing</code>, bulkify all SOQL/DML, and add inline comments only where the WHY is non-obvious.&rdquo;</em></li>
+        <li>Repeat for <code>BudgetPhaseEngine</code>, <code>CircuitBreakerService</code>, <code>ModelTierRouter</code>. After each, run <em>&ldquo;Deploy and run the test class. Fix any compile or test failure before continuing.&rdquo;</em></li>
+        <li>End-of-phase prompt: <em>&ldquo;Audit all four services for governor-limit risks and security-review readiness. List findings as a checklist.&rdquo;</em></li>
+      </ol>
+      <div class="ai-noob-tip"><strong>AI-Noob Tip</strong>If Claude proposes 800 lines in one go, type <em>&ldquo;Stop. Implement only the public method signatures and the constructor. We will fill in bodies one at a time.&rdquo;</em> Smaller turns &rarr; fewer hallucinations.</div>
+    </div>
+
+    <div class="ai-phase ai-phase-teal">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Flows, Dashboards, Alerts (parallel)</div>
+      <ol>
+        <li>Prompt: <em>&ldquo;Generate the Flow XML for the Phase Transition Handler (Platform-Event-triggered) per Appendix C. Include decision elements for each phase and an Action Subflow stub for alerts.&rdquo;</em></li>
+        <li>Prompt: <em>&ldquo;Scaffold a Lightning Web Component <code>costDashboard</code> with three tiles: burn-rate, days-until-exhaustion, circuit-breaker state. Use <code>@wire</code> with the <code>getBudgetSnapshot</code> Apex method we wrote earlier.&rdquo;</em></li>
+        <li>Prompt: <em>&ldquo;Write Jest tests for the LWC covering each tile&rsquo;s render path and the empty-state.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-green">
+      <div class="ai-phase-label">Week 5 &middot; Testing</div>
+      <ol>
+        <li>Prompt: <em>&ldquo;For each Apex class produced this sprint, generate a test class targeting &ge;95% coverage with positive, negative, bulk, and governor-edge scenarios. Use <code>Test.startTest()</code>/<code>stopTest()</code> around any async work.&rdquo;</em></li>
+        <li>Prompt: <em>&ldquo;Run all tests with <code>sf apex run test --code-coverage --result-format human</code>, summarise the report, and list any class below 95%.&rdquo;</em></li>
+        <li>Prompt: <em>&ldquo;Generate a UAT script in <code>/docs/uat-script.md</code> with one numbered scenario per row in the Testing Strategy table, including expected dashboard state after each.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-orange">
+      <div class="ai-phase-label">Weeks 6&ndash;8 &middot; Production Rollout</div>
+      <ol>
+        <li>Prompt: <em>&ldquo;Generate the four-stage rollout runbook (Shadow &rarr; Calibrate &rarr; Pilot &rarr; Full) as a single markdown file with go/no-go criteria, rollback steps, and the exact <code>sf</code> deploy commands per stage.&rdquo;</em></li>
+        <li>During Shadow Mode: feed Claude the nightly delta between estimated and actual flex-credit consumption and ask <em>&ldquo;Recommend new multipliers in <code>AI_Cost_Config__mdt</code> to bring drift within &plusmn;25%. Output the metadata XML diff.&rdquo;</em></li>
+        <li>End of rollout: <em>&ldquo;Generate the ops handoff packet: runbooks, on-call playbook, quarterly threshold-review template, and a one-page architecture diagram in Mermaid.&rdquo;</em></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ╔════════ TAB 2: AGENTFORCE VIBES ════════╗ -->
+  <div class="ai-panel" id="ai-panel-vibes" role="tabpanel" aria-labelledby="ai-tab-vibes">
+    <div class="ai-tool-intro">
+      <strong>Salesforce&reg;-Native &middot; Agentforce&reg; Vibes</strong>
+      Agentforce&reg; Vibes is Salesforce&rsquo;s in-platform AI development assistant &mdash; it lives in
+      Setup, Code Builder, and the Agentforce&reg; Studio. It knows your org&rsquo;s metadata natively, can
+      generate Apex, Flow, and LWC artefacts in-place, and respects org-specific permission and SOC
+      boundaries by default. Best choice if you want everything to stay inside Salesforce&reg;.
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Setup &middot; ~15 minutes (one-time)</div>
+      <ol>
+        <li>In your sandbox: <strong>Setup &rarr; Einstein Setup &rarr; Agentforce Vibes</strong> &mdash; toggle on for the integration user. Confirm flex-credit availability.</li>
+        <li>Open <strong>Code Builder</strong> (<code>setup &rarr; Code Builder &rarr; Launch</code>); Vibes appears as the right-hand pane.</li>
+        <li>Connect to your DX project: <strong>File &rarr; Open Salesforce Project</strong>, authenticate against the sandbox.</li>
+        <li>Paste the Plan Outline into a workspace note (<code>/docs/plan.md</code>) so Vibes can reference it via @-mentions.</li>
+      </ol>
+      <div class="ai-noob-tip"><strong>AI-Noob Tip</strong>Vibes is the only option here that won&rsquo;t ask for an external API key &mdash; it bills against the same flex credits you&rsquo;re trying to govern. Ironic, but convenient for procurement.</div>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Week 1 &middot; Foundation &amp; Policy</div>
+      <ol>
+        <li>In Vibes: <em>&ldquo;Generate an org-readiness checklist for an Agentforce&reg; cost-gateway implementation. Include flex-credit, Platform Cache, Platform Events, and API allocation rows.&rdquo;</em></li>
+        <li>Use the <strong>&ldquo;Run in Org&rdquo;</strong> button on each suggested SOQL probe &mdash; Vibes returns live counts inline.</li>
+        <li>Ask Vibes to generate the Exceeded-phase policy memo as a Quip or Notes &amp; Attachments draft on the project record.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Week 2 &middot; Data Model</div>
+      <ol>
+        <li>In Setup, navigate to <strong>Object Manager &rarr; New Custom Object</strong>. Click the Vibes icon and prompt <em>&ldquo;Build the <code>AI_Budget_Ledger__c</code> object per the Plan Outline Appendix A schema.&rdquo;</em> Vibes pre-fills every field, validation rule, and page layout.</li>
+        <li>Repeat for <code>AI_Agent_Usage__c</code>, the Custom Metadata Type, and the Platform Event &mdash; Vibes will offer to chain the four creations as a single &ldquo;workspace.&rdquo;</li>
+        <li>Click <strong>&ldquo;Deploy to Sandbox&rdquo;</strong> in the Vibes panel &mdash; it surfaces deploy errors with one-click fixes.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-purple">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Apex Core</div>
+      <ol>
+        <li>In Code Builder: <strong>New File &rarr; Apex Class</strong>. Prompt <em>&ldquo;Implement <code>ConsumptionTrackerService</code> per Appendix B-1. Use <code>with sharing</code>, bulkify, and emit <code>AI_Budget_Phase_Change__e</code> on transitions.&rdquo;</em></li>
+        <li>Use <strong>&ldquo;Explain&rdquo;</strong> on any block you don&rsquo;t understand &mdash; Vibes annotates the line with plain-English commentary in the right pane.</li>
+        <li>Use the <strong>&ldquo;Generate Tests&rdquo;</strong> button (Vibes-only feature) for an instant 90&ndash;95% coverage stub; review and patch any gaps.</li>
+        <li>For <code>CircuitBreakerService</code>, ask Vibes to <em>&ldquo;Show me the Platform Cache partition setup steps&rdquo;</em> &mdash; it walks you through Setup screens with screenshots inline.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-teal">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Flows, Dashboards, Alerts</div>
+      <ol>
+        <li>Open <strong>Flow Builder &rarr; New Platform-Event-Triggered Flow</strong>. Click Vibes and prompt <em>&ldquo;Build the Phase Transition Handler per Appendix C, with decision branches for Healthy / Caution / Critical / Exceeded.&rdquo;</em> Vibes drops every element on the canvas pre-wired.</li>
+        <li>For LWC: <strong>Code Builder &rarr; New &rarr; Lightning Web Component</strong>, prompt <em>&ldquo;Generate <code>costDashboard</code> with three tiles bound to <code>getBudgetSnapshot</code>.&rdquo;</em></li>
+        <li>Use the <strong>&ldquo;Preview in Org&rdquo;</strong> button to render the LWC in a sandbox-only Lightning page without a deploy round-trip.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-green">
+      <div class="ai-phase-label">Week 5 &middot; Testing</div>
+      <ol>
+        <li>In Code Builder: select all four Apex classes &rarr; right-click &rarr; <strong>&ldquo;Vibes: Generate Test Suite&rdquo;</strong>. Coverage report opens automatically.</li>
+        <li>For UAT, prompt <em>&ldquo;Generate an Apex anonymous script that drives all four budget phases end-to-end and prints the resulting phase-change events.&rdquo;</em> Run it from the Developer Console.</li>
+        <li>Vibes can run scenario regressions against your sandbox nightly &mdash; enable <strong>&ldquo;Vibes Scheduled Validation&rdquo;</strong> and point it at the test suite.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-orange">
+      <div class="ai-phase-label">Weeks 6&ndash;8 &middot; Production Rollout</div>
+      <ol>
+        <li>Use <strong>DevOps Center</strong> with the Vibes assistant: prompt <em>&ldquo;Build a four-stage promotion pipeline with go/no-go criteria for Shadow, Pilot, Expansion, and Full.&rdquo;</em></li>
+        <li>Vibes generates the Change Bundle and CI validation steps automatically. Approve and ship.</li>
+        <li>Post-rollout, ask Vibes to <em>&ldquo;Build a Tableau&reg; / CRM Analytics dashboard story over <code>AI_Budget_Ledger__c</code> showing burn-rate trend, calibration drift, and circuit-breaker open events.&rdquo;</em></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ╔════════ TAB 3: CURSOR IDE ════════╗ -->
+  <div class="ai-panel" id="ai-panel-cursor" role="tabpanel" aria-labelledby="ai-tab-cursor">
+    <div class="ai-tool-intro">
+      <strong>IDE-First &middot; Cursor</strong>
+      Cursor is a fork of VS Code with a built-in Composer agent (multi-file edits) and Cmd-K (single-file
+      inline edit). Best for developers who already live in VS Code and want AI as a side-pane rather than
+      a terminal agent. It supports Claude, GPT-4, and Gemini behind the same UI.
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Setup &middot; ~20 minutes (one-time)</div>
+      <ol>
+        <li>Download Cursor from <a href="https://cursor.com" target="_blank" rel="noopener">cursor.com</a>; sign in (free tier is enough to try).</li>
+        <li>Install the <strong>Salesforce Extension Pack</strong> from the marketplace &mdash; Cursor inherits VS Code extensions.</li>
+        <li><strong>File &rarr; Open Folder &rarr;</strong> point at your SFDX project. Open Settings (<code>Cmd/Ctrl+,</code>) &rarr; Cursor &rarr; <strong>&ldquo;Default Model&rdquo;</strong> &rarr; pick Claude Sonnet 4.6 for this workload.</li>
+        <li>Create <code>.cursorrules</code> at the repo root and paste the Plan Outline plus the rule <em>&ldquo;Always bulkify SOQL/DML; never write Apex without a matching test class.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Weeks 1&ndash;2 &middot; Foundation &amp; Data Model</div>
+      <ol>
+        <li>Open <strong>Composer</strong> (<code>Cmd/Ctrl+I</code>). Drop <code>.cursorrules</code> and Appendix A into context with <code>@</code>-mentions, then prompt <em>&ldquo;Scaffold the four metadata files for the data model under force-app/main/default/&rdquo;</em>.</li>
+        <li>Composer shows a multi-file diff &mdash; review, accept per-file or all-at-once.</li>
+        <li>Open the integrated terminal and run <code>sf project deploy start</code>. Pipe errors back to Composer with <code>@terminal</code> for one-shot fixes.</li>
+      </ol>
+      <div class="ai-noob-tip"><strong>AI-Noob Tip</strong>Composer = multi-file. Cmd-K = one file. Chat = ask questions. If you accidentally start a long Composer run on the wrong file, click <strong>Reject All</strong>; nothing has been written to disk yet.</div>
+    </div>
+
+    <div class="ai-phase ai-phase-purple">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Apex Core</div>
+      <ol>
+        <li>For each service class: open the empty <code>.cls</code>, hit <code>Cmd/Ctrl+K</code>, and prompt <em>&ldquo;Implement per Appendix B-{n}, with sharing, bulkified.&rdquo;</em> Stay in single-file mode for tight context.</li>
+        <li>For cross-class refactors (e.g., extracting a shared <code>FlexCreditMath</code> utility), switch to Composer and add all four classes to context.</li>
+        <li>Use <strong>&ldquo;Bug Finder&rdquo;</strong> (Composer feature) on each class before moving on.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-teal">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Flows, Dashboards, Alerts</div>
+      <ol>
+        <li>Cursor doesn&rsquo;t render Flow XML graphically &mdash; prompt Composer for the XML, then open Flow Builder in your browser to visually verify.</li>
+        <li>For the LWC, Composer can scaffold <code>costDashboard.js</code>, <code>.html</code>, <code>.css</code>, <code>-meta.xml</code>, and the Jest test in one turn.</li>
+        <li>Run <code>sf project deploy start --dry-run</code> from the integrated terminal; Composer auto-fixes missing-permission errors.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-green">
+      <div class="ai-phase-label">Week 5 &middot; Testing</div>
+      <ol>
+        <li>Open Composer, attach all <code>.cls</code> files, prompt <em>&ldquo;Generate matching test classes targeting &ge;95% coverage. Use Test.startTest/stopTest around any async paths.&rdquo;</em></li>
+        <li>Run <code>sf apex run test --code-coverage</code>; pipe failure output to Composer for fix-up.</li>
+        <li>Use <strong>&ldquo;@docs Salesforce&rdquo;</strong> to pull official Apex testing patterns directly into the prompt context.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-orange">
+      <div class="ai-phase-label">Weeks 6&ndash;8 &middot; Production Rollout</div>
+      <ol>
+        <li>Composer prompt: <em>&ldquo;Generate a four-stage rollout runbook as <code>/docs/rollout.md</code>; include go/no-go gates and the <code>sf</code> commands per stage.&rdquo;</em></li>
+        <li>For Shadow Mode calibration, feed Composer the nightly drift CSV and ask for a multiplier-update XML diff.</li>
+        <li>Wire Cursor to your CI by committing a <code>.github/workflows/sf-deploy.yml</code> that Composer scaffolds in one turn.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ╔════════ TAB 4: OPENAI CODEX ════════╗ -->
+  <div class="ai-panel" id="ai-panel-codex" role="tabpanel" aria-labelledby="ai-tab-codex">
+    <div class="ai-tool-intro">
+      <strong>Cloud Agent &middot; OpenAI Codex</strong>
+      OpenAI Codex (<code>codex</code> CLI + ChatGPT cloud agent) runs tasks in an OpenAI-managed sandbox
+      VM, then opens a pull request against your branch. Best for parallel, fire-and-forget delegation:
+      kick off four Apex classes at once, walk away, come back to four PRs.
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Setup &middot; ~25 minutes (one-time)</div>
+      <ol>
+        <li>Subscribe to ChatGPT Plus or Team. In ChatGPT, open <strong>&ldquo;Codex&rdquo;</strong> from the side panel and connect your GitHub org &mdash; grant repo access to your SFDX project.</li>
+        <li>Optionally install the local CLI: <code>npm install -g @openai/codex</code>. Authenticate with your ChatGPT account.</li>
+        <li>Add an <code>AGENTS.md</code> file at the repo root with the Plan Outline plus build/test commands. Codex reads this on every task.</li>
+        <li>Configure the Codex sandbox to install Salesforce&reg; CLI on boot: add <code>npm install -g @salesforce/cli</code> to the &ldquo;Setup script&rdquo; in your project&rsquo;s Codex settings.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Weeks 1&ndash;2 &middot; Foundation &amp; Data Model</div>
+      <ol>
+        <li>In ChatGPT &rarr; Codex, click <strong>&ldquo;New Task&rdquo;</strong>. Task: <em>&ldquo;Generate the four data-model metadata files (two custom objects, one CMT, one Platform Event) per AGENTS.md Appendix A. Open a PR titled &lsquo;feat: data model&rsquo;.&rdquo;</em></li>
+        <li>While that runs, fire a parallel task: <em>&ldquo;Write the Exceeded-phase policy memo to <code>/docs/policy.md</code>; open a separate PR.&rdquo;</em></li>
+        <li>Review and merge the PRs locally; Codex never pushes to <code>main</code>.</li>
+      </ol>
+      <div class="ai-noob-tip"><strong>AI-Noob Tip</strong>Codex tasks run in parallel cloud VMs &mdash; you can launch 5 at once. The catch: each VM doesn&rsquo;t see the others&rsquo; work until you merge. Stage independent tasks (data model, policy doc, runbook) in parallel; sequence dependent ones (Apex builds on data model).</div>
+    </div>
+
+    <div class="ai-phase ai-phase-purple">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Apex Core</div>
+      <ol>
+        <li>Sequential tasks &mdash; one PR per service class, in dependency order: Consumption &rarr; Phase Engine &rarr; Circuit Breaker &rarr; Tier Router. Wait for each PR to merge before launching the next.</li>
+        <li>Per-task prompt template: <em>&ldquo;Implement <code>{Class}</code> per AGENTS.md Appendix B-{n}. Run <code>sf apex run test</code> in the sandbox before opening the PR; ensure &ge;95% coverage.&rdquo;</em></li>
+        <li>If the PR&rsquo;s test report shows &lt;95%, comment <em>&ldquo;Coverage gap on lines X&ndash;Y; add tests and update the PR.&rdquo;</em> Codex iterates in-place.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-teal">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Flows, Dashboards, Alerts</div>
+      <ol>
+        <li>Codex handles Flow XML well but can&rsquo;t preview visually &mdash; treat it as a code-gen step, then verify in Flow Builder manually.</li>
+        <li>Single-task LWC build: <em>&ldquo;Scaffold <code>costDashboard</code> LWC + Jest test, wired to <code>getBudgetSnapshot</code>. Open a PR.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-green">
+      <div class="ai-phase-label">Week 5 &middot; Testing</div>
+      <ol>
+        <li>Per-class test-generation tasks &mdash; in parallel since they don&rsquo;t conflict. Codex opens 4 PRs.</li>
+        <li>Final task: <em>&ldquo;Run the entire test suite, summarise coverage by class, list any gaps in <code>/docs/coverage-report.md</code>.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-orange">
+      <div class="ai-phase-label">Weeks 6&ndash;8 &middot; Production Rollout</div>
+      <ol>
+        <li>Single task: <em>&ldquo;Generate a four-stage rollout runbook including <code>sf</code> commands per stage. Open PR.&rdquo;</em></li>
+        <li>Recurring Codex Schedule (cloud feature): nightly &ldquo;ingest the latest <code>TenantUsageEntitlement</code> snapshot, propose multiplier updates, open a PR.&rdquo; You merge or reject.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ╔════════ TAB 5: GEMINI ════════╗ -->
+  <div class="ai-panel" id="ai-panel-gemini" role="tabpanel" aria-labelledby="ai-tab-gemini">
+    <div class="ai-tool-intro">
+      <strong>Google &middot; Gemini Code Assist + Gemini CLI</strong>
+      Gemini Code Assist is Google&rsquo;s VS Code/JetBrains extension; the Gemini CLI is a terminal agent.
+      Best fit if your team is already on Google Workspace and you want long-context (1M-token) reasoning
+      over the full Plan Outline plus all four appendices in one prompt.
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Setup &middot; ~20 minutes (one-time)</div>
+      <ol>
+        <li>Sign up for Gemini Code Assist (free for individuals at <a href="https://codeassist.google" target="_blank" rel="noopener">codeassist.google</a>; Standard/Enterprise via Google Cloud).</li>
+        <li>Install the <strong>Gemini Code Assist</strong> extension in VS Code; sign in.</li>
+        <li>Optionally install the CLI: <code>npm install -g @google/gemini-cli</code>; run <code>gemini</code> at the repo root.</li>
+        <li>Drop the entire Plan Outline (this whole document) into a <code>GEMINI.md</code> file; Gemini&rsquo;s 1M-token window can hold it all in working memory at once.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Weeks 1&ndash;2 &middot; Foundation &amp; Data Model</div>
+      <ol>
+        <li>Open the Gemini side panel in VS Code. Prompt <em>&ldquo;Read GEMINI.md. Generate the data-model metadata files and the policy memo. Output unified diffs.&rdquo;</em></li>
+        <li>Apply diffs (one click in the side panel). Run <code>sf project deploy start</code>.</li>
+        <li>Use the CLI for terminal-driven flows: <code>gemini -p &ldquo;Verify the deploy succeeded and probe each org-readiness checklist row.&rdquo;</code></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-purple">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Apex Core</div>
+      <ol>
+        <li>Because Gemini can hold the entire spec at once, prompt all four classes in a <em>single</em> turn: <em>&ldquo;Implement <code>ConsumptionTrackerService</code>, <code>BudgetPhaseEngine</code>, <code>CircuitBreakerService</code>, <code>ModelTierRouter</code> per Appendix B. Output one diff per class.&rdquo;</em></li>
+        <li>Review carefully &mdash; long-context single-turn output trades depth for breadth. Spot-check governor-limit handling on every class.</li>
+        <li>Use <strong>&ldquo;Smart Apply&rdquo;</strong> on each diff individually rather than &ldquo;Apply All&rdquo;.</li>
+      </ol>
+      <div class="ai-noob-tip"><strong>AI-Noob Tip</strong>1M-token context is tempting but brittle &mdash; if you stuff every appendix in, Gemini may produce shallow code. Prefer focused prompts (one class at a time) for production-quality output; reserve the long-context mode for cross-cutting refactors and audits.</div>
+    </div>
+
+    <div class="ai-phase ai-phase-teal">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Flows, Dashboards, Alerts</div>
+      <ol>
+        <li>Generate Flow XML with the side panel; verify visually in Flow Builder.</li>
+        <li>For the LWC: prompt the CLI <code>gemini -p &ldquo;Scaffold costDashboard LWC with three tiles and Jest tests.&rdquo;</code> &mdash; the CLI writes files directly to disk.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-green">
+      <div class="ai-phase-label">Week 5 &middot; Testing</div>
+      <ol>
+        <li>Side-panel prompt with all four <code>.cls</code> files in context: <em>&ldquo;Generate test classes targeting &ge;95% coverage; cover bulk and governor-edge cases.&rdquo;</em></li>
+        <li>Run <code>sf apex run test --code-coverage</code>; paste failure output back into the side panel for fix-ups.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-orange">
+      <div class="ai-phase-label">Weeks 6&ndash;8 &middot; Production Rollout</div>
+      <ol>
+        <li>Prompt: <em>&ldquo;Generate the rollout runbook in markdown.&rdquo;</em></li>
+        <li>If you&rsquo;re using Gemini in Google Cloud, schedule a Cloud Run job that re-runs calibration nightly, calls Gemini for multiplier recommendations, and writes them to a Doc for review.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ╔════════ TAB 6: MICROSOFT COPILOT ════════╗ -->
+  <div class="ai-panel" id="ai-panel-copilot" role="tabpanel" aria-labelledby="ai-tab-copilot">
+    <div class="ai-tool-intro">
+      <strong>Microsoft &middot; GitHub Copilot (VS Code Agent Mode)</strong>
+      GitHub Copilot in VS Code now offers an Agent Mode (multi-file edits) alongside the original
+      autocomplete. Best fit if your org is already standardised on GitHub Enterprise + Microsoft 365 and
+      you want everything to flow through a single procurement contract.
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Setup &middot; ~15 minutes (one-time)</div>
+      <ol>
+        <li>Subscribe to GitHub Copilot (Individual / Business / Enterprise). Install the <strong>GitHub Copilot</strong> + <strong>GitHub Copilot Chat</strong> extensions in VS Code.</li>
+        <li>Sign in with your GitHub account; verify the Copilot icon shows in the status bar.</li>
+        <li>Install the Salesforce&reg; Extension Pack from the marketplace.</li>
+        <li>Add <code>.github/copilot-instructions.md</code> at the repo root with the Plan Outline. Copilot Chat picks this up automatically on every prompt.</li>
+        <li>Toggle Agent Mode in the chat panel (the &ldquo;Agent&rdquo; segmented control next to the model picker).</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-blue">
+      <div class="ai-phase-label">Weeks 1&ndash;2 &middot; Foundation &amp; Data Model</div>
+      <ol>
+        <li>Open Copilot Chat in Agent mode. Prompt <em>&ldquo;Generate the four data-model metadata files per the instructions. Run <code>sf project deploy start --dry-run</code> to validate.&rdquo;</em></li>
+        <li>Approve each tool-call (file write, terminal run) when prompted. Agent Mode pauses for confirmation by default &mdash; that is the safety rail; keep it on.</li>
+        <li>For the policy memo, switch to plain Chat mode (faster, no file edits).</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-purple">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Apex Core</div>
+      <ol>
+        <li>Per class: open the empty <code>.cls</code>, switch to Agent Mode, prompt <em>&ldquo;Implement per Appendix B-{n}; with sharing; bulkified.&rdquo;</em></li>
+        <li>Use the <strong>autocomplete</strong> mode (not Agent) when you&rsquo;re adding small refinements line-by-line &mdash; it&rsquo;s faster and lower-cost than spinning up an Agent turn for a one-line fix.</li>
+        <li><strong>&ldquo;@workspace&rdquo;</strong> in chat lets you ask cross-file questions like <em>&ldquo;@workspace where do we publish AI_Budget_Phase_Change__e?&rdquo;</em></li>
+      </ol>
+      <div class="ai-noob-tip"><strong>AI-Noob Tip</strong>Copilot has three personalities: ghost-text autocomplete (silent), Chat (Q&amp;A), and Agent Mode (multi-file). The mistake noobs make is staying in autocomplete forever &mdash; switch to Chat for design questions and Agent for anything multi-file.</div>
+    </div>
+
+    <div class="ai-phase ai-phase-teal">
+      <div class="ai-phase-label">Weeks 3&ndash;4 &middot; Flows, Dashboards, Alerts</div>
+      <ol>
+        <li>Agent-Mode prompt: <em>&ldquo;Scaffold <code>costDashboard</code> LWC (js/html/css/meta.xml/Jest test) wired to <code>getBudgetSnapshot</code>.&rdquo;</em></li>
+        <li>For Flow XML, generate via Agent then verify visually in Flow Builder &mdash; XML is correct, but graphical layout sometimes needs a manual cleanup pass.</li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-green">
+      <div class="ai-phase-label">Week 5 &middot; Testing</div>
+      <ol>
+        <li>Right-click any <code>.cls</code> &rarr; <strong>&ldquo;Copilot: Generate Tests&rdquo;</strong> &mdash; native menu action, no prompt typing.</li>
+        <li>Run <code>sf apex run test --code-coverage</code>; paste output into Chat with <em>&ldquo;Fix every failure and any class below 95%.&rdquo;</em></li>
+      </ol>
+    </div>
+
+    <div class="ai-phase ai-phase-orange">
+      <div class="ai-phase-label">Weeks 6&ndash;8 &middot; Production Rollout</div>
+      <ol>
+        <li>Agent prompt: <em>&ldquo;Generate the rollout runbook and a GitHub Actions workflow that runs <code>sf project deploy validate</code> on every PR to <code>main</code>.&rdquo;</em></li>
+        <li>For ongoing calibration, configure a scheduled GitHub Action that runs the calibration script and posts results to a Teams channel via the Microsoft Copilot connector.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="callout success" style="margin-top:18px;">
+    <p><strong>Bottom line:</strong> Any of the six tools can compress the Baseline Plan from 6&ndash;8 weeks
+    of person-time to 3&ndash;4 weeks of human review-time over AI-generated artefacts. The
+    <em>quality of your prompts</em> matters more than the choice of tool &mdash; reference the
+    <a href="#implementation-plan">Plan Outline</a> and <a href="#appendix-a">Appendices A&ndash;F</a> in
+    every prompt, build one component at a time, and run the test suite after every accepted change. AI
+    accelerates execution; it does not replace the architectural decisions captured above.</p>
+  </div>
+</div>
+
+<script>
+  /* ── AI tabset switcher ──────────────────────────────────────────── */
+  (function() {
+    var section = document.getElementById('ai-implementation');
+    if (!section) return;
+    var tabs   = section.querySelectorAll('.ai-tab');
+    var panels = section.querySelectorAll('.ai-panel');
+    function activate(name) {
+      tabs.forEach(function(t) {
+        var on = t.getAttribute('data-ai-tab') === name;
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panels.forEach(function(p) {
+        p.classList.toggle('active', p.id === 'ai-panel-' + name);
+      });
+    }
+    tabs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        activate(t.getAttribute('data-ai-tab'));
+      });
+      t.addEventListener('keydown', function(e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        var arr = Array.prototype.slice.call(tabs);
+        var idx = arr.indexOf(t);
+        var next = e.key === 'ArrowRight' ? (idx + 1) % arr.length : (idx - 1 + arr.length) % arr.length;
+        arr[next].focus();
+        activate(arr[next].getAttribute('data-ai-tab'));
+      });
+    });
+  })();
+</script>
 
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ REFERENCES                                                        ║
