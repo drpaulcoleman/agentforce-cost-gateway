@@ -935,7 +935,7 @@ pre.mermaid g.node[onclick]:hover > path {
     </div>
     <div>
       <h1>Agentforce&trade; Cost Management Gateway</h1>
-      <span class="subtitle">Technical Whitepaper &middot; Implementation Guide &middot; v0.0.3 (pre-draft) &middot; last modified 2026-04-30</span>
+      <span class="subtitle">Technical Whitepaper &middot; Implementation Guide &middot; v0.0.3 (pre-draft) &middot; last modified 2026-05-06</span>
     </div>
   </div>
   <div class="doc-meta">
@@ -1061,7 +1061,7 @@ pre.mermaid g.node[onclick]:hover > path {
 
 <!-- EXEC · Hero ---------------------------------------------------------- -->
 <div class="card hero" id="exec-hero" data-exec-only data-search="hero executive overview cio business stakeholder cost savings">
-  <p class="eyebrow">Executive Summary &middot; AI Spend Governance &middot; v0.0.3 (pre-draft) &middot; last modified 2026-04-30</p>
+  <p class="eyebrow">Executive Summary &middot; AI Spend Governance &middot; v0.0.3 (pre-draft) &middot; last modified 2026-05-06</p>
   <h1>Keep Agentforce&trade; <span class="accent">Productive, Predictable, and On-Budget</span></h1>
   <p class="lede">
     A <strong>Cost Management Gateway</strong> you can deploy inside Salesforce&reg; that prevents
@@ -1763,7 +1763,7 @@ xychart-beta
      ║ SECTION 1: HERO CARD                                              ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
 <div class="card hero" id="hero" data-search="hero overview agentforce cost management gateway whitepaper">
-  <p class="eyebrow">Technical Whitepaper &mdash; Implementation Guide &mdash; v0.0.3 (pre-draft) &middot; last modified 2026-04-30</p>
+  <p class="eyebrow">Technical Whitepaper &mdash; Implementation Guide &mdash; v0.0.3 (pre-draft) &middot; last modified 2026-05-06</p>
   <h1>Agentforce&trade; <span class="accent">Cost Management Gateway</span></h1>
   <p class="lede">
     A comprehensive implementation guide for injecting <strong>budget-aware governance</strong> into
@@ -7158,10 +7158,81 @@ public class AutoCalibrator implements Schedulable {
   document.getElementById('zoom-reset').onclick = function() { setZoom(1.0); };
 
   /* ── Search ──────────────────────────────────────────────────────── */
+  /* Fine-grained index: one entry per <h3>-bounded subsection inside each
+     .card, plus one per .ai-panel (the AI tabset). Card-level dim/match
+     styling stays card-level; only the scroll target gets finer. Each h3
+     is auto-assigned an id at build time so scrollToAndHighlight can land
+     mid-card instead of always at the card top.                          */
   var searchBox   = document.getElementById('search-box');
   var searchCount = document.getElementById('search-count');
-  var searchMatches = [];
+  var searchMatches = [];   // array of { target, card, haystack }
   var searchIndex   = -1;
+  var fineIndex     = null;
+
+  function buildFineIndex() {
+    if (fineIndex) return fineIndex;
+    fineIndex = [];
+    document.querySelectorAll('.card').forEach(function(card) {
+      // Always add data-search keywords as a card-level entry (target = card).
+      var ds = (card.dataset.search || '').trim();
+      if (ds) {
+        fineIndex.push({ target: card, card: card, haystack: ds.toLowerCase() });
+      }
+      // Subsection anchors: every h3 inside the card, plus every .ai-panel
+      // (AI tabset panels are subsections that may be display:none).
+      var anchors = Array.prototype.slice.call(card.querySelectorAll('h3, .ai-panel'));
+      if (anchors.length === 0) {
+        // No subsections — index full card text against the card itself.
+        fineIndex.push({ target: card, card: card, haystack: (card.textContent || '').toLowerCase() });
+        return;
+      }
+      anchors.forEach(function(anchor, i) {
+        if (!anchor.id) anchor.id = (card.id || 'sec') + '__sub-' + i;
+        var text = anchor.textContent || '';
+        // For h3 anchors, also pull in sibling content up to the next anchor
+        // so the haystack covers the whole subsection, not just the heading.
+        if (!anchor.classList.contains('ai-panel')) {
+          var sib = anchor.nextElementSibling;
+          while (sib && anchors.indexOf(sib) === -1) {
+            text += ' ' + (sib.textContent || '');
+            sib = sib.nextElementSibling;
+          }
+        }
+        fineIndex.push({ target: anchor, card: card, haystack: text.toLowerCase() });
+      });
+    });
+    return fineIndex;
+  }
+
+  function activateAiPanelByElement(panel) {
+    // Panel id format: "ai-panel-<name>" → matching tab has data-ai-tab="<name>"
+    if (!panel || !panel.id) return;
+    var name = panel.id.replace(/^ai-panel-/, '');
+    var section = document.getElementById('ai-implementation');
+    if (!section) return;
+    var tab = section.querySelector('.ai-tab[data-ai-tab="' + name + '"]');
+    if (tab && !tab.classList.contains('active')) tab.click();
+  }
+
+  function navigateToMatch(entry) {
+    if (!entry || !entry.target) return;
+    var t = entry.target;
+    // If the target is a hidden ai-panel, activate it first.
+    if (t.classList && t.classList.contains('ai-panel') && !t.classList.contains('active')) {
+      activateAiPanelByElement(t);
+    } else {
+      // If the target lives inside an inactive ai-panel, activate that panel.
+      var p = t.parentElement;
+      while (p && p !== document.body) {
+        if (p.classList && p.classList.contains('ai-panel') && !p.classList.contains('active')) {
+          activateAiPanelByElement(p);
+          break;
+        }
+        p = p.parentElement;
+      }
+    }
+    scrollToAndHighlight(t);
+  }
 
   function runSearch(q) {
     var cards = document.querySelectorAll('.card');
@@ -7174,26 +7245,33 @@ public class AutoCalibrator implements Schedulable {
       requestAnimationFrame(updateMinimap);
       return;
     }
+    var idx = buildFineIndex();
+    var matchedCards = new Set ? new Set() : null;
+    var matchedCardList = [];   // fallback when Set isn't available
+    function noteCard(c) {
+      if (matchedCards) matchedCards.add(c);
+      else if (matchedCardList.indexOf(c) === -1) matchedCardList.push(c);
+    }
+    function isCardMatched(c) {
+      return matchedCards ? matchedCards.has(c) : matchedCardList.indexOf(c) !== -1;
+    }
+    idx.forEach(function(entry) {
+      // Skip entries whose card is hidden by the current view mode.
+      if (entry.card.offsetParent === null) return;
+      if (entry.haystack.indexOf(q) === -1) return;
+      searchMatches.push(entry);
+      noteCard(entry.card);
+    });
     cards.forEach(function(c) {
-      // Skip cards that are hidden by the current view mode —
-      // matching them would scroll the user to a blank area.
-      if (c.offsetParent === null) {
-        c.classList.remove('match', 'dim');
-        return;
-      }
-      var haystack = ((c.dataset.search || '') + ' ' + (c.textContent || '')).toLowerCase();
-      if (haystack.indexOf(q) !== -1) {
-        c.classList.remove('dim'); c.classList.add('match');
-        searchMatches.push(c);
-      } else {
-        c.classList.add('dim'); c.classList.remove('match');
-      }
+      if (c.offsetParent === null) { c.classList.remove('match', 'dim'); return; }
+      if (isCardMatched(c)) { c.classList.remove('dim'); c.classList.add('match'); }
+      else                  { c.classList.add('dim');    c.classList.remove('match'); }
     });
     if (searchMatches.length > 0) {
       searchBox.classList.add('has-results'); searchBox.classList.remove('no-results');
       searchCount.className = 'matches'; searchIndex = 0;
       searchCount.textContent = '1 / ' + searchMatches.length;
-      scrollToAndHighlight(searchMatches[0]);
+      navigateToMatch(searchMatches[0]);
     } else {
       searchBox.classList.add('no-results'); searchBox.classList.remove('has-results');
       searchCount.className = 'none'; searchCount.textContent = '0 results';
@@ -7205,7 +7283,7 @@ public class AutoCalibrator implements Schedulable {
     if (searchMatches.length === 0) return;
     searchIndex = (searchIndex + (forward ? 1 : -1) + searchMatches.length) % searchMatches.length;
     searchCount.textContent = (searchIndex + 1) + ' / ' + searchMatches.length;
-    scrollToAndHighlight(searchMatches[searchIndex]);
+    navigateToMatch(searchMatches[searchIndex]);
   }
 
   searchBox.addEventListener('input', function(e) { runSearch(e.target.value.toLowerCase().trim()); });
