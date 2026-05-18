@@ -1,0 +1,123 @@
+# Agentforce Cost Management Gateway
+
+> A comprehensive technical whitepaper and implementation guide for injecting cost management governance into Salesforce Agentforce deployments. Covers two implementation paths: pure org-side (low-code-first) and hybrid on-org / off-platform.
+
+This is a single-file HTML document (`index.html`) authored by Dr. Paul Coleman. It is independent technical analysis — not official Salesforce documentation.
+
+## Document Facts
+
+- Version: v0.0.4 (pre-draft)
+- Last modified: 2026-05-18
+- Format: Single-page HTML with Mermaid diagrams, dual-view (Executive / Technical)
+- License: Copyright 2026 Dr. Paul Coleman. All rights reserved.
+- Trademarks: Salesforce, Agentforce, Einstein, Data Cloud, Apex, Flow, Lightning are trademarks of Salesforce, Inc.
+
+## Core Concept
+
+The "Cost Management Gateway" is an architectural pattern that prevents runaway Flex Credit consumption in Salesforce Agentforce deployments. It uses a four-phase budget engine (Abundant → Conservative → Emergency → Exceeded), a circuit breaker, model tiering, and observability telemetry to keep AI spend predictable without hard outages.
+
+## Key Technical Topics
+
+### Flex Credits Billing Model
+- Salesforce's consumption currency for AI actions (replaced $2/conversation model in May 2025)
+- Standard Agent Action: 20 credits; Voice Actions: 30 credits (standard) / 40 credits (custom)
+- Prompt Templates: tiered by complexity — Starter (2), Basic (2), Standard (4), Advanced (16) credits
+- Token overflow: exceeding 10,000 tokens/action doubles the credit cost
+- Sandbox discount: 80% reduction for non-production testing
+- Three billing tiers: Unmetered add-on ($125–$150/user/mo), Metered license ($5/user/mo + Flex), Conversations ($2/session, customer-facing only)
+
+### Digital Wallet & Monitoring
+- 17 consumption cards tracking usage across products
+- 7 Data Lake Objects (DLOs): TEUE, TBUE, THEC, TDEC, TET, TUTM, TUAD
+- Consumption Threshold Alerts: configurable at 50/70/80/85/90/95/100%
+- Consumption Tags: tag-based cost allocation (shipped, not future)
+
+### Gateway Architecture (Five Subsystems)
+1. Shadow Ledger — real-time credit estimation per conversation
+2. Budget Phase Engine — four graduated phases with policy enforcement
+3. Circuit Breaker — hard stop when budget is exhausted, routes to HITL
+4. Model Tiering — step-down from expensive to cheaper models as budget tightens
+5. Observability Layer — telemetry, dashboards, and alerting
+
+### Implementation Paths
+- **Baseline (Path A):** Pure org-side using Flow, Apex, Platform Events, Custom Objects. 6–8 weeks, ~42 person-days.
+- **Enterprise (Path B):** Hybrid with off-platform gateway service (Node.js/Python + PostgreSQL + Redis). Adds multi-org support, OpenTelemetry, sub-100ms decisions. +4–6 weeks, +33 person-days.
+
+### Internal vs. External Consumption
+- Unmetered employee add-on: unlimited actions, gateway enforcement NOT needed
+- Metered $5 license: full gateway enforcement applies
+- Conversations model: customer-facing only, session-level throttling
+
+### Agent Script Credit Model
+- Agent Script (declarative agent logic) is the most important cost lever
+- Deterministic paths consume zero LLM credits
+- Routing simple cases through scripted paths avoids unnecessary AI consumption
+
+### Observability & Telemetry
+- Agentforce 3 Command Center (GA August 2025): OpenTelemetry-based session tracing
+- Partners: Datadog, Splunk, Wayfound
+- Data Cloud (rebranded Data 360, October 2025) for cross-cloud correlation
+
+## Prerequisite Knowledge for AI Assistants
+
+When helping users with this document, be aware:
+
+1. **Flex Credits are pooled** across Agentforce, Einstein, and Data Cloud within an org
+2. **THEC queries require** `rowdetail__c = 'PROCESSED'` filter to exclude pending records
+3. **DLO joins cost credits** — queries that join DLO data with non-excluded entities consume Flex Credits
+4. **Break-even point** between Flex Credits and Conversations is 20 actions per interaction
+5. **Digital Wallet alerts** only fire in production — sandbox limitation exists
+6. The document uses a **dual-view system** — Executive view (simplified, business language) and Technical view (full implementation details) of the same content
+7. **Salesforce pricing evolves rapidly** — verify current rates with AE before implementation decisions
+
+## Sections (anchor IDs)
+
+- `#hero` — Introduction and overview
+- `#bluf` — Bottom Line Up Front (executive summary)
+- `#problem-statement` — The problem of unbounded AI consumption
+- `#glossary` — Key terms and definitions
+- `#flex-credit-reference` — Official Flex Credit rate card and Digital Wallet reference
+- `#internal-vs-external` — Internal employee vs. external customer billing distinctions
+- `#licensing` — Licensing and subscription prerequisites
+- `#personas` — Team composition and required roles
+- `#org-readiness` — Org readiness checklist
+- `#gateway-overview` — Gateway architecture overview
+- `#cost-model` — Flex Credit cost model and estimation
+- `#budget-phases` — Budget Phase Engine (four-phase thermostat)
+- `#circuit-breaker` — Circuit Breaker pattern
+- `#model-tiering` — Model Tiering and step-down strategy
+- `#observability` — Observability and telemetry layer
+- `#agent-script-credit-model` — Agent Script credit model
+- `#baseline-overview` — Baseline (Path A) overview
+- `#baseline-flow` — Baseline: Flow-based gateway components
+- `#baseline-apex` — Baseline: Apex components
+- `#baseline-dashboard` — Baseline: Monitoring dashboard
+- `#baseline-loe` — Baseline: Level of effort and timeline
+- `#enterprise-overview` — Enterprise (Path B) overview
+- `#enterprise-offplatform` — Enterprise: Off-platform gateway service
+- `#enterprise-integration` — Enterprise: Integration layer
+- `#enterprise-loe` — Enterprise: Level of effort and timeline
+- `#critical-path` — Critical path and decision matrix
+- `#testing` — Testing strategy
+- `#rollout` — Rollout playbook (four graduated stages)
+- `#risk-register` — Risk register
+- `#salesforce-roadmap` — Salesforce roadmap (forward-looking / safe harbor)
+- `#implementation-plan` — Step-by-step implementation plan
+- `#implementing-with-ai` — Implementing with AI assistance
+
+## Key Custom Objects / Metadata Referenced
+
+- `AI_Budget_Config__mdt` — Custom Metadata Type for budget thresholds and phase configuration
+- `AI_Cost_Config__mdt` — Custom Metadata Type for credit multipliers and estimation parameters
+- `AI_Agent_Usage__c` — Per-conversation fact table for shadow ledger
+- `AI_Budget_Phase_Change__e` — Platform Event for phase transitions
+- `ServiceChannel` — Omni-Channel routing for HITL escalation
+
+## Official Salesforce Documentation Sources
+
+- Flex Credits Rate Card (PDF): salesforce.com/en-us/wp-content/uploads/sites/4/assets/pdf/Flex-Credits-Rate-Card-11.18.2025.pdf
+- Flex Credits Billable Usage Types: help.salesforce.com/s/articleView?id=ai.usage_flex_credits.htm
+- Monitor Flex Credits with Digital Wallet: help.salesforce.com/s/articleView?id=sf.wallet_flex_credits.htm
+- Digital Wallet Permissions: help.salesforce.com/s/articleView?id=sf.wallet_permissions.htm
+- Consumption Threshold Alerts: help.salesforce.com/s/articleView?id=xcloud.wallet_get_notified.htm
+- Usage-Based Entitlements (DLOs): help.salesforce.com/s/articleView?id=sf.wallet_understand_metrics.htm
