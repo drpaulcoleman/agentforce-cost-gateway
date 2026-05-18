@@ -935,7 +935,7 @@ pre.mermaid g.node[onclick]:hover > path {
     </div>
     <div>
       <h1>Agentforce&trade; Cost Management Gateway</h1>
-      <span class="subtitle">Technical Whitepaper &middot; Implementation Guide &middot; v0.0.3 (pre-draft) &middot; last modified 2026-05-06</span>
+      <span class="subtitle">Technical Whitepaper &middot; Implementation Guide &middot; v0.0.4 (pre-draft) &middot; last modified 2026-05-18</span>
     </div>
   </div>
   <div class="doc-meta">
@@ -1061,7 +1061,7 @@ pre.mermaid g.node[onclick]:hover > path {
 
 <!-- EXEC · Hero ---------------------------------------------------------- -->
 <div class="card hero" id="exec-hero" data-exec-only data-search="hero executive overview cio business stakeholder cost savings">
-  <p class="eyebrow">Executive Summary &middot; AI Spend Governance &middot; v0.0.3 (pre-draft) &middot; last modified 2026-05-06</p>
+  <p class="eyebrow">Executive Summary &middot; AI Spend Governance &middot; v0.0.4 (pre-draft) &middot; last modified 2026-05-18</p>
   <h1>Keep Agentforce&trade; <span class="accent">Productive, Predictable, and On-Budget</span></h1>
   <p class="lede">
     A <strong>Cost Management Gateway</strong> you can deploy inside Salesforce&reg; that prevents
@@ -1763,7 +1763,7 @@ xychart-beta
      ║ SECTION 1: HERO CARD                                              ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
 <div class="card hero" id="hero" data-search="hero overview agentforce cost management gateway whitepaper">
-  <p class="eyebrow">Technical Whitepaper &mdash; Implementation Guide &mdash; v0.0.3 (pre-draft) &middot; last modified 2026-05-06</p>
+  <p class="eyebrow">Technical Whitepaper &mdash; Implementation Guide &mdash; v0.0.4 (pre-draft) &middot; last modified 2026-05-18</p>
   <h1>Agentforce&trade; <span class="accent">Cost Management Gateway</span></h1>
   <p class="lede">
     A comprehensive implementation guide for injecting <strong>budget-aware governance</strong> into
@@ -2025,6 +2025,12 @@ xychart-beta
     noted in parentheses where they appear in existing Salesforce documentation, metadata API names,
     or Setup UI that has not yet been updated. During the transition period, Salesforce documentation
     may use either term interchangeably.</p>
+    <p><strong>Data 360 Rebrand (October 2025):</strong> As of October 14, 2025, Salesforce rebranded
+    <strong>Data Cloud</strong> to <strong>Data 360</strong>. Functionality is unchanged. Official
+    documentation may still reference &ldquo;Data Cloud&rdquo; during the transition. This whitepaper
+    uses both terms: &ldquo;Data Cloud&rdquo; in platform context (license names, Setup paths, DLO
+    access requirements) and &ldquo;Data 360&rdquo; for the reporting/analytics layer (reports, dashboards,
+    Consumption Insights). Your org&rsquo;s UI may show either label depending on release version.</p>
   </div>
 
   <table>
@@ -2045,7 +2051,7 @@ xychart-beta
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 3b: OFFICIAL FLEX CREDIT REFERENCE                        ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="flex-credit-reference" data-search="flex credits official reference rate card pricing per action token consumption digital wallet monitoring salesforce documentation">
+<div class="card" id="flex-credit-reference" data-search="flex credits official reference rate card pricing per action token consumption digital wallet monitoring salesforce documentation voice action prompt template multiplier sandbox discount token overflow starter basic standard advanced">
   <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span>Official Flex Credit Reference</div>
   <h2>Official Salesforce&reg; Flex Credit Consumption Reference</h2>
 
@@ -2107,7 +2113,8 @@ xychart-beta
 
   <h3 data-search="pricing rates dollar cost per action multiplier table">Official Flex Credit Rate Card</h3>
   <p>Source: <a href="https://www.salesforce.com/en-us/wp-content/uploads/sites/4/assets/pdf/Flex-Credits-Rate-Card-11.18.2025.pdf" target="_blank" rel="noopener">Salesforce Flex Credits Rate Card</a>
-  (revised November 18, 2025)</p>
+  (published November 18, 2025; verified still current as of April 28, 2026). Note: the Rate Card uses
+  &ldquo;Multiplier&rdquo; to denote credits consumed per unit of usage.</p>
 
   <table>
     <tr><th>Usage Type</th><th>Credits (Production)</th><th>Credits (Sandbox)</th><th>Cost / Action</th></tr>
@@ -2115,19 +2122,21 @@ xychart-beta
         <td><strong>20</strong></td><td>16 (80%)</td><td>$0.10</td></tr>
     <tr><td><strong>Agentforce Custom Action</strong><br><span style="font-size:11px; color:var(--text-muted);">Customer-built Flow/Apex actions</span></td>
         <td><strong>20</strong></td><td>16 (80%)</td><td>$0.10</td></tr>
-    <tr><td><strong>Agentforce Voice Action</strong><br><span style="font-size:11px; color:var(--text-muted);">Voice-channel agent executions</span></td>
+    <tr><td><strong>Agentforce Standard Voice Action</strong><br><span style="font-size:11px; color:var(--text-muted);">Out-of-the-box voice-channel agent executions</span></td>
         <td><strong>30</strong></td><td>24 (80%)</td><td>$0.15</td></tr>
-    <tr><td><strong>Agentforce Voice Minutes</strong><br><span style="font-size:11px; color:var(--text-muted);">Alternative voice billing (per minute)</span></td>
-        <td><strong>60 / min</strong></td><td>48 / min (80%)</td><td>$0.30 / min</td></tr>
-    <tr><td><strong>Standard Prompt</strong><br><span style="font-size:11px; color:var(--text-muted);">Prompt Template invocation (per 2,000 tokens, rounded up)</span></td>
-        <td><strong>Variable</strong></td><td>80% of production</td><td>Varies by token count</td></tr>
-    <tr><td><strong>BYOLLM (Bring Your Own LLM)</strong><br><span style="font-size:11px; color:var(--text-muted);">Actions using external model via Model Builder.
-        <a href="https://developer.salesforce.com/docs/einstein/genai/guide/supported-models.html" target="_blank" rel="noopener">Salesforce documents</a>
-        a 30% reduction in Einstein Requests for BYOLLM. Whether this carries forward to Flex Credits
-        should be verified with your Account Executive.</span></td>
-        <td><strong>20 + LLM fees</strong><br><span style="font-size:10px; color:var(--sf-orange);">Possibly 14 if 30% discount applies</span></td>
-        <td>16 + LLM fees<br><span style="font-size:10px; color:var(--sf-orange);">Possibly 11 if discount applies</span></td>
-        <td>$0.10 + provider cost<br><span style="font-size:10px; color:var(--sf-orange);">Possibly $0.07 + provider</span></td></tr>
+    <tr><td><strong>Agentforce Custom Voice Action</strong><br><span style="font-size:11px; color:var(--text-muted);">Customer-built voice-channel actions</span></td>
+        <td><strong>30</strong></td><td>24 (80%)</td><td>$0.15</td></tr>
+    <tr><td><strong>Prompt Templates (Salesforce-enabled LLMs)</strong><br><span style="font-size:11px; color:var(--text-muted);">Tiered by prompt complexity; applies to Agentforce 1 Edition + Sales/Service/Industries customers</span></td>
+        <td><strong>2 / 2 / 4 / 16</strong><br><span style="font-size:10px; color:var(--text-muted);">Starter / Basic / Standard / Advanced</span></td><td>Same (no sandbox discount listed)</td><td>$0.01&ndash;$0.08</td></tr>
+    <tr><td><strong>BYOLLM (Bring Your Own Large Language Models)</strong><br><span style="font-size:11px; color:var(--text-muted);">Actions using external model via Model Builder. Rate Card lists Starter Prompts multiplier of 2.
+        Standard Agentforce action billing (20 credits) still applies to the action execution itself; the prompt-tier
+        multiplier applies to the LLM call. Verify combined billing with your Account Executive.
+        <a href="https://developer.salesforce.com/docs/einstein/genai/guide/supported-models.html" target="_blank" rel="noopener">Supported Models Reference</a>.</span></td>
+        <td><strong>2</strong> (Starter Prompts*)<br><span style="font-size:10px; color:var(--sf-orange);">+ provider LLM fees + action credits</span></td>
+        <td>Same (no sandbox discount listed on Rate Card)</td>
+        <td>Varies by provider<br><span style="font-size:10px; color:var(--sf-orange);">Verify with AE</span></td></tr>
+    <tr><td><strong>Speech Foundations &mdash; Translation</strong><br><span style="font-size:11px; color:var(--text-muted);">Per 1M characters translated</span></td>
+        <td><strong>4,000</strong> (multiplier per 1M chars)</td><td>Same</td><td>Varies by volume</td></tr>
   </table>
 
   <div class="tech-bubble">
@@ -2135,7 +2144,7 @@ xychart-beta
     <p>&#x2022; <strong>Non-billable operations:</strong> Pure dialogue (user messages, agent reasoning turns) without
     action execution incurs <strong>zero</strong> flex credit cost. Framework operations like subagent transitions,
     variable assignments, and <code>before_reasoning:</code> hooks are free.<br>
-    &#x2022; <strong>Sandbox discount:</strong> All sandbox usage is billed at <strong>80%</strong> of production rates.<br>
+    &#x2022; <strong>Sandbox discount:</strong> Agentforce Action usage (Standard/Custom/Voice) is billed at <strong>80%</strong> of production rates in sandbox. Prompt Template and BYOLLM sandbox discounts are not explicitly listed on the Nov 2025 Rate Card &mdash; verify with your contract.<br>
     &#x2022; <strong>Credits vs. Conversations:</strong> An org must choose one billing model &mdash; Flex Credits
     or Conversations ($2/conversation) &mdash; they cannot be combined.<br>
     &#x2022; <strong>Minimum purchase:</strong> 100,000 Flex Credits for $500 ($0.005/credit).<br>
@@ -2148,20 +2157,25 @@ xychart-beta
   <p>Salesforce&reg; provides <strong>Digital Wallet</strong> &mdash; a free account management tool offering
   near real-time consumption data for Flex Credits across active contracts. Access it via
   <strong>App Launcher &rarr; Digital Wallet</strong> or <strong>Setup &rarr; Digital Wallet</strong>.
-  Requires the <strong>View Consumption</strong> user permission (assigned via profile or permission set —
-  per <a href="https://help.salesforce.com/s/articleView?id=sf.wallet_permissions.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Digital Wallet Permissions</a>;
+  Requires the <strong>View Consumption</strong> user permission (which also grants the Consumption Analytics tab),
+  or any of <strong>View Consumption Tags</strong>, <strong>Manage Consumption Tags</strong>, or <strong>Assign Consumption Tags</strong>
+  &mdash; all grant access to the Consumption Cards tab (per
+  <a href="https://help.salesforce.com/s/articleView?id=sf.wallet_permissions.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Digital Wallet Permissions</a>;
   verified 2026-04-28). The sibling <strong>View License Utilization</strong> permission grants access
   to seat-based product cards, distinct from consumption cards.</p>
 
   <h4>What Digital Wallet Tracks</h4>
   <p>Digital Wallet provides
   <a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_enabled_products_rate_cards.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">consumption cards</a>
-  for: Agentforce (Sales and Service), Data Cloud (including sandbox),
-  Einstein Requests, Einstein Personalization, Salesforce Messaging, Unified Messaging, and Tableau&reg; Unified Analytics.
+  for 17 consumption-based products including: Flex Credits (Agentforce actions), Conversations,
+  Data 360 Profiles, Data Cloud Real-time Profile, Data Services Credits, Data Storage Allocation,
+  Einstein Requests, Einstein Personalization Credits, Salesforce Message Credits (Email, Mobile App, SMS, WhatsApp),
+  Commerce GMV, MuleSoft Automation Credits 3.0, and others.
   Each card shows units consumed, remaining capacity, multipliers, and usage trends over configurable timeframes
   (7, 30, 90 days). A
   <a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_monthly_account_summary.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Monthly Account Summary</a>
-  email is sent to billing contacts on the 10th of each month.</p>
+  email is sent monthly to the primary billing contact (or another notification contact listed on the contract),
+  summarizing the previous billing window&rsquo;s consumption.</p>
 
   <h4>Consumption Threshold Alerts</h4>
   <p>Digital Wallet includes a
@@ -2202,11 +2216,20 @@ xychart-beta
   <a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_view_dlos.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">xcloud.wallet_view_dlos.htm</a>
   on 2026-04-28.</p>
 
+  <div class="callout warn">
+    <p><strong>DLO Query Cost Caveat:</strong> While storing DLO data, ingesting via data streams, using
+    Data Explorer/Query Editor, and building reports on TEUE are <strong>free</strong>, the following
+    actions <em>can</em> incur Data Cloud credits: querying DLOs via JDBC connector, running queries
+    that join Digital Wallet data with non-cost-excluded entities, using DLOs as data transform inputs,
+    or querying custom DMOs based on Digital Wallet DLOs. The Enterprise gateway path should factor
+    this into its Data Cloud credit budget if joining TEUE with custom objects.</p>
+  </div>
+
   <table>
     <tr><th>DLO</th><th>Purpose</th><th>Key Fields (verified)</th><th>Use in Gateway</th><th>Example</th></tr>
     <tr><td><strong><code><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_teue_reference.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener" style="color:var(--sf-blue-light);">TenantEnrichedUsageEvent</a></code><br><span style="font-size:11px; color:var(--text-muted);">(TEUE)</span></td>
         <td>Enriched billing events with resource-level detail and consumption tags. Salesforce-recommended DLO for custom reports. Free to query and report on (no Data Cloud cost when used via built-in Data 360 reports).</td>
-        <td><code>unitsconsumed__c</code>, <code>cardname__c</code>, <code>carddefinitiondevelopername__c</code>, <code>resourcetype__c</code>, <code>resourceidorapiname__c</code> (single combined field), <code>eventime__c</code> (sic &mdash; Salesforce&rsquo;s spelling), <code>featuredevelopername__c</code>, <code>usagetypedevelopername__c</code>, <code>usagesubtype0__c</code>/<code>1__c</code>/<code>2__c</code>, <code>entitlementorgid__c</code>, <code>usagereportingorgid__c</code>, <code>multiplier__c</code>, <code>multipliertier__c</code>, <code>usagebusinessenvtype__c</code> (sandbox vs production), <code>resourcetags__c</code>, <code>rootresourcetags__c</code>, <code>correlationidentifier__c</code></td>
+        <td><code>unitsconsumed__c</code>, <code>cardname__c</code>, <code>carddefinitiondevelopername__c</code>, <code>resourcetype__c</code>, <code>resourceidorapiname__c</code> (single combined field), <code>eventime__c</code> (sic &mdash; Salesforce&rsquo;s spelling), <code>featuredevelopername__c</code>, <code>usagetypedevelopername__c</code>, <code>usagesubtype0__c</code>/<code>1__c</code>/<code>2__c</code>, <code>entitlementorgid__c</code>, <code>usagereportingorgid__c</code>, <code>multiplier__c</code>, <code>multipliertier__c</code>, <code>usagebusinessenvtype__c</code> (sandbox vs production), <code>resourcetags__c</code>, <code>rootresourcetags__c</code>, <code>rootresourceidorapiname__c</code>, <code>rootresourcetype__c</code>, <code>correlationidentifier__c</code></td>
         <td>Primary calibration source &mdash; maps actual consumption to agents/features. <strong>Note:</strong> <code>usagebusinessenvtype__c</code> distinguishes sandbox from production at the DLO level (the threshold-alerts UI cannot, but the DLO can).</td>
         <td><a href="#appendix-f">F-1: SOQL</a></td></tr>
     <tr><td><strong><code><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_tbue_reference.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener" style="color:var(--sf-blue-light);">TenantBillingUsageEvent</a></code><br><span style="font-size:11px; color:var(--text-muted);">(TBUE)</span></td>
@@ -2215,8 +2238,8 @@ xychart-beta
         <td>Fallback only; use TEUE when available</td>
         <td>&mdash;</td></tr>
     <tr><td><strong><code><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_thec_reference.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener" style="color:var(--sf-blue-light);">TenantHourlyEntitlementConsumption</a></code><br><span style="font-size:11px; color:var(--text-muted);">(THEC) &mdash; <span class="pill live">Hourly</span></span></td>
-        <td><strong>Hourly aggregation</strong> of TBUE events. The closest thing to a continuous near-real-time signal Salesforce exposes for consumption.</td>
-        <td>Hourly rollups by usage type / entitlement</td>
+        <td><strong>Hourly aggregation</strong> of TBUE events. The closest thing to a continuous near-real-time signal Salesforce exposes for consumption. <strong>Important:</strong> filter <code>rowdetail__c = 'PROCESSED'</code> to exclude in-progress data.</td>
+        <td>Hourly rollups by usage type / entitlement; <code>rowdetail__c</code>, <code>usagehourbucket__c</code>, <code>businessenvtype__c</code></td>
         <td><strong>Continuous near-real-time burn-rate signal</strong> for the gateway&rsquo;s phase engine &mdash; better than the threshold-alerts flow which only fires at 50/70/80/85/90/95/100% boundaries.</td>
         <td><a href="#appendix-f">F-2: SOQL</a></td></tr>
     <tr><td><strong><code><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_tdec_reference.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener" style="color:var(--sf-blue-light);">TenantDailyEntitlementConsumption</a></code><br><span style="font-size:11px; color:var(--text-muted);">(TDEC) &mdash; <span class="pill live">Daily</span></span></td>
@@ -2317,7 +2340,7 @@ xychart-beta
         <td><span class="pill live">Reports / Data Cloud</span></td>
         <td>Einstein add-on + Set Up Einstein Generative AI Audit and Feedback</td></tr>
     <tr><td><strong>Monthly Account Summary</strong></td>
-        <td>Email to billing contact (10th of month)</td>
+        <td>Email to billing/notification contact (monthly)</td>
         <td>Monthly</td>
         <td><span class="pill planned">Email only</span></td>
         <td>None</td></tr>
@@ -2830,7 +2853,7 @@ xychart-beta
   <table>
     <tr><th>Conversation Type</th><th>Est. Actions</th><th>Est. Credits</th><th>Est. Cost</th><th>Observable Signals</th><th>Confidence</th></tr>
     <tr><td>Simple Q&amp;A (1&ndash;3 turns, no tools)</td><td>1&ndash;2</td><td>20&ndash;40</td><td>$0.10&ndash;$0.20</td><td>Turn count, zero tool invocations</td><td><span class="pill live">High</span></td></tr>
-    <tr><td>Standard conversation (3&ndash;8 turns, 1&ndash;2 tools)</td><td>3&ndash;6</td><td>60&ndash;120</td><td>$0.30&ndash;$0.60</td><td>Turn count, action step count in Session Tracing Data Model (STDM) trace</td><td><span class="pill live">High</span></td></tr>
+    <tr><td>Standard conversation (3&ndash;8 turns, 1&ndash;2 tools)</td><td>3&ndash;6</td><td>60&ndash;120</td><td>$0.30&ndash;$0.60</td><td>Turn count, action step count in <a href="#observability">Session Tracing Data Model (STDM)</a> trace</td><td><span class="pill live">High</span></td></tr>
     <tr><td>Complex resolution (8+ turns, 3+ tools, sub-agent)</td><td>8&ndash;20</td><td>160&ndash;400</td><td>$0.80&ndash;$2.00</td><td>Tool chain depth, delegation events, token overflow</td><td><span class="pill warning">Medium</span></td></tr>
     <tr><td>Voice conversation (standard)</td><td>3&ndash;6 voice actions</td><td>90&ndash;180</td><td>$0.45&ndash;$0.90</td><td>Voice action flags (30 credits/action vs. 20)</td><td><span class="pill live">High</span></td></tr>
     <tr><td>Token overflow (&gt;10K tokens/action)</td><td>+1 per 10K tokens</td><td>+20 per overflow</td><td>+$0.10</td><td>Token count from GenAIGatewayRequest__dlm</td><td><span class="pill live">High</span></td></tr>
@@ -3217,7 +3240,7 @@ stateDiagram-v2
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
      ║ SECTION 12: OBSERVABILITY                                         ║
      ╚══════════════════════════════════════════════════════════════════════╝ -->
-<div class="card" id="observability" data-search="observability telemetry dashboards alerts monitoring forecasting burn rate anomaly detection agentforce 3 command center opentelemetry">
+<div class="card" id="observability" data-search="observability telemetry dashboards alerts monitoring forecasting burn rate anomaly detection agentforce 3 command center opentelemetry digital wallet consumption cards TEUE THEC DLO data lake objects threshold alerts consumption tags tableau next data 360">
   <div class="breadcrumb"><a href="#hero">Home</a><span class="sep">/</span><a href="#gateway-overview">Gateway Architecture</a><span class="sep">/</span>Observability</div>
   <h2>Observability &amp; Telemetry Layer</h2>
 
@@ -3261,7 +3284,7 @@ stateDiagram-v2
         <td>Data 360 / Reports</td>
         <td>Near real-time</td></tr>
     <tr><td><strong>Consumption Analytics dashboard</strong></td>
-        <td>Tableau Next-powered. Drill down to per-agent / per-action / per-feature consumption. Cross-cuts Flex Credits and Data 360. <strong>10 free Tableau Next BU licenses included with Digital Wallet.</strong></td>
+        <td>Tableau Next-powered. Drill down to per-agent / per-action / per-feature consumption. Cross-cuts Flex Credits and Data 360. <strong>10 free Tableau Next BU licenses included with Digital Wallet.</strong> Prerequisite: install the <strong>Consumption Tagging App</strong> (requires &ldquo;Access to manage the template framework templates&rdquo; permission). Two views: Consumption Overview and Consumption Explorer.</td>
         <td>Tableau Next</td>
         <td>Near real-time</td></tr>
     <tr><td><strong>GenAI Prompts for Flex Credits report</strong></td>
@@ -3289,7 +3312,7 @@ stateDiagram-v2
         <td>Flow + notification channels</td>
         <td>Near real-time</td></tr>
     <tr><td><strong>Monthly Account Summary email</strong></td>
-        <td>Automated email to billing contacts on the 10th of each month summarizing prior-month consumption, balances, and trends.</td>
+        <td>Automated monthly email to billing/notification contacts summarizing prior billing window consumption. Not an invoice.</td>
         <td>Email</td>
         <td>Monthly</td></tr>
     <tr><td><strong>Data 360 Report Export</strong></td>
@@ -3297,7 +3320,7 @@ stateDiagram-v2
         <td>Data 360 export</td>
         <td>On-demand</td></tr>
     <tr><td><strong>Agentforce 3 Command Center</strong> (GA Aug 2025)</td>
-        <td>Real-time agent operational health: latency, error rates, escalations, conversation replays, performance dashboards. OpenTelemetry session tracing to Datadog/Splunk/Wayfound.</td>
+        <td>Real-time agent operational health: latency, error rates, escalations, interaction analysis, performance dashboards. Built on OpenTelemetry standard; named integration partners include Datadog&reg;, Splunk&reg;, Wayfound (per <a href="https://salesforcedevops.net/index.php/2025/06/23/salesforce-agentforce-3/" target="_blank" rel="noopener">SalesforceDevOps.net</a>) and any OTLP-compatible backend.</td>
         <td>Setup + OTel export</td>
         <td>Real-time</td></tr>
   </table>
@@ -3431,7 +3454,7 @@ stateDiagram-v2
         <td><span class="pill ok">✓ Subscribes to Platform Event</span></td>
         <td>OOTB notifies humans; gateway also reacts in &lt;1s.</td></tr>
     <tr><td>Monthly summary email</td>
-        <td><span class="pill ok">✓ 10th of month</span></td>
+        <td><span class="pill ok">✓ Monthly</span></td>
         <td>—</td>
         <td>Use OOTB.</td></tr>
     <tr><td>Custom report exports to BI</td>
@@ -3496,10 +3519,10 @@ stateDiagram-v2
         <td>&mdash;</td>
         <td>✓ Pre-execution</td></tr>
     <tr><td><strong>OpenTelemetry export</strong></td>
-        <td>✓ Native &mdash; ships agent signals to Datadog&reg;, Splunk&reg;, Wayfound and any OTLP-compatible backend</td>
+        <td>✓ Native &mdash; built on OpenTelemetry standard; named partners include Datadog&reg;, Splunk&reg;, Wayfound (per third-party reporting) and any OTLP-compatible backend</td>
         <td>✓ Gateway emits its own OTel; merges naturally with Command Center streams in the same observability backend</td></tr>
     <tr><td><strong>FedRAMP High authorization</strong></td>
-        <td>✓ Approved (Government Cloud Plus)</td>
+        <td>✓ Agentforce platform approved (Government Cloud Plus); Command Center inherits platform authorization</td>
         <td>Inherits from Salesforce edition + customer cloud infra (Enterprise tier)</td></tr>
   </table>
   <div class="tech-bubble">
@@ -4744,7 +4767,7 @@ gantt
         <td><span class="pill ok">Shipped</span></td>
         <td>Already integrated as the gateway&rsquo;s primary near-real-time hook (production only &mdash; not sandbox)</td></tr>
     <tr><td><strong>Aug 2025</strong></td>
-        <td>Agentforce 3 Command Center GA &mdash; OpenTelemetry session tracing for agent signals; integrations with Datadog&reg;, Splunk&reg;, Wayfound</td>
+        <td>Agentforce 3 Command Center GA &mdash; OpenTelemetry session tracing for agent signals; named partners include Datadog&reg;, Splunk&reg;, Wayfound + any OTLP backend</td>
         <td><span class="pill ok">Shipped</span></td>
         <td>Compose with, don&rsquo;t duplicate. Gateway&rsquo;s OTel emission joins Salesforce&reg;&rsquo;s native streams in the same observability backend &mdash; see <a href="#observability">Observability</a></td></tr>
     <tr><td><strong>Pre-2026 (date not stamped)</strong></td>
@@ -5545,6 +5568,20 @@ gantt
     <li><strong><a href="https://help.salesforce.com/s/articleView?id=sf.generative_ai_trust_layer.htm&language=en_US&type=5" target="_blank" rel="noopener">Einstein Trust Layer</a></strong> &mdash; Audit logs, toxicity detection, data masking for AI interactions</li>
     <li><strong><a href="https://developer.salesforce.com/docs/platform/lwc/guide/" target="_blank" rel="noopener">Lightning Web Components Developer Guide</a></strong> &mdash; LWC patterns for dashboard components</li>
     <li><strong><a href="https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/" target="_blank" rel="noopener">Salesforce CLI (<code>sf</code>)</a></strong> &mdash; Metadata deployment, org management, test execution</li>
+    <li><strong><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_about.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Digital Wallet</a></strong> &mdash; Overview, consumption cards, DLOs, threshold alerts, permissions, and reporting</li>
+    <li><strong><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_enabled_products_rate_cards.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Digital Wallet &mdash; Enabled Products</a></strong> &mdash; Official list of all consumption card names tracked by Digital Wallet</li>
+    <li><strong><a href="https://www.salesforce.com/en-us/wp-content/uploads/sites/4/assets/pdf/Flex-Credits-Rate-Card-11.18.2025.pdf" target="_blank" rel="noopener">Flex Credits Rate Card (PDF)</a></strong> &mdash; Official multiplier table; published November 18, 2025. Retrieved May 18, 2026.</li>
+    <li><strong><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_view_dlos.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Digital Wallet &mdash; Data Lake Objects</a></strong> &mdash; Seven DLOs (TEUE, TBUE, THEC, TDEC, TET, TUTM, TUAD), cost rules, data space requirements</li>
+    <li><strong><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_teue_reference.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">TenantEnrichedUsageEvent DLO Reference</a></strong> &mdash; Complete field list for the Salesforce-recommended consumption reporting DLO</li>
+    <li><strong><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_thec_reference.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">TenantHourlyEntitlementConsumption DLO Reference</a></strong> &mdash; Hourly aggregation fields; requires <code>rowdetail__c = 'PROCESSED'</code> filter</li>
+    <li><strong><a href="https://help.salesforce.com/s/articleView?id=xcloud.wallet_get_notified.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Consumption Threshold Alerts</a></strong> &mdash; Default thresholds (50/70/80/85/90/95/100%), sandbox limitation, customization options</li>
+    <li><strong><a href="https://help.salesforce.com/s/articleView?id=sf.wallet_permissions.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Digital Wallet Permissions</a></strong> &mdash; All permission names including 10 free Tableau Next BU licenses</li>
+  </ul>
+
+  <h3>Agentforce 3 Command Center</h3>
+  <ul class="bullets">
+    <li><strong><a href="https://www.salesforceben.com/salesforce-announces-agentforce-3-0-command-center-mcp-and-apps/" target="_blank" rel="noopener">Salesforce Ben &mdash; Agentforce 3 Announcement</a></strong> &mdash; Command Center GA August 2025, OpenTelemetry session tracing, FedRAMP High (platform-level). Retrieved May 18, 2026.</li>
+    <li><strong><a href="https://salesforcedevops.net/index.php/2025/06/23/salesforce-agentforce-3/" target="_blank" rel="noopener">SalesforceDevOps.net &mdash; Agentforce 3 Production Infrastructure</a></strong> &mdash; Named OTel partners (Datadog, Splunk, Wayfound), Atlas latency improvements, LLM provider details. Retrieved May 18, 2026.</li>
   </ul>
 
   <h3>Industry Patterns Applied</h3>
