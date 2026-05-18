@@ -2583,6 +2583,82 @@ xychart-beta
   <a href="https://help.salesforce.com/s/articleView?id=ai.usage_flex_credits.htm&amp;language=en_US&amp;type=5" target="_blank" rel="noopener">Flex Credits Billable Usage Types</a>
   documentation (verified 2026-04-28). The gateway&rsquo;s shadow ledger and phase-engine logic both
   assume the Flex Credits model unless explicitly configured otherwise.</p>
+
+  <h3 id="internal-vs-external" data-search="internal employee external customer unmetered add-on metered user license conversations billing tier experience cloud">Internal (Employee) vs. External (Customer) Consumption</h3>
+
+  <div class="exec-bubble">
+    <p><strong>For Business Leaders:</strong> Not all Agentforce usage meters the same way. Internal employee agents
+    can run on a flat-rate unmetered add-on that bypasses per-action billing entirely, while customer-facing
+    agents are always metered. Understanding this distinction is critical for gateway scoping &mdash; you may not
+    need budget enforcement for internal users at all.</p>
+  </div>
+
+  <p>Salesforce&reg; offers <strong>three distinct Agentforce billing tiers</strong> that differ fundamentally
+  in whether consumption is metered (and therefore subject to gateway governance):</p>
+
+  <table>
+    <tr><th>Billing Tier</th><th>Cost</th><th>Metering</th><th>Audience</th><th>Gateway Relevance</th></tr>
+    <tr><td><strong>Agentforce Unlimited Employee Add-on</strong></td>
+        <td>$125&ndash;$150/user/month</td>
+        <td><span class="pill live">Unmetered</span> &mdash; unlimited actions</td>
+        <td>Internal employees (Service, Sales, Platform users)</td>
+        <td><span class="pill planned">Exempt</span> &mdash; no credit deduction, no budget enforcement needed</td></tr>
+    <tr><td><strong>Agentforce Metered User License</strong></td>
+        <td>$5/user/month + Flex Credits per action</td>
+        <td><span class="pill warning">Metered</span> &mdash; draws from Flex pool</td>
+        <td>Any user (employee or partner) on metered plan</td>
+        <td><span class="pill live">Core target</span> &mdash; full gateway enforcement applies</td></tr>
+    <tr><td><strong>Agentforce Conversations</strong></td>
+        <td>$2/conversation (flat per session)</td>
+        <td><span class="pill warning">Metered</span> &mdash; per session, not per action</td>
+        <td>Customer-facing only (portals, Experience Cloud, messaging channels)</td>
+        <td><span class="pill live">Relevant</span> &mdash; session-level throttling; per-action gateway less impactful</td></tr>
+  </table>
+
+  <h4>Key Distinctions</h4>
+  <ul class="bullets">
+    <li><strong>Unmetered add-on users never consume Flex Credits.</strong> Their Agentforce actions &mdash; regardless
+    of volume &mdash; do not deduct from the org&rsquo;s credit pool. The gateway&rsquo;s phase engine, shadow ledger,
+    and budget thresholds are irrelevant for these users. If your deployment is <em>exclusively</em> employee-facing
+    on the unmetered SKU, the cost gateway has no billing surface to govern.</li>
+    <li><strong>The $5 metered license shares the Flex pool.</strong> Organizations that choose the metered path
+    for employees get a low base cost but every action draws from the same credit block as all other metered
+    services (Einstein&trade;, Data Cloud&trade;). This is the primary audience for the gateway&rsquo;s per-action
+    cost controls.</li>
+    <li><strong>Conversations ($2/session) is customer-facing only.</strong> It cannot be assigned to internal employees.
+    It bills per completed session regardless of action count &mdash; the gateway adds value through session-count
+    throttling and concurrency limits rather than per-action budgeting.</li>
+    <li><strong>Experience Cloud has no special rate.</strong> Customer-facing agents on Experience Cloud&trade; sites
+    consume at the same per-action Flex Credit rate as any other channel. There is no internal-vs-external
+    discount on the action level &mdash; the discount comes from choosing the unmetered SKU for employees.</li>
+  </ul>
+
+  <h4>Gateway Design Implications</h4>
+  <div class="callout">
+    <p><strong>Recommendation:</strong> Configure the gateway to <strong>identify and exempt unmetered add-on users</strong>
+    from budget enforcement. The user&rsquo;s assigned permission set license (<code>AgentforceUnlimitedPSL</code> or
+    equivalent) can be checked at the pre-action hook to bypass phase evaluation. This prevents false alerts
+    and unnecessary HITL routing for users who cannot generate billable consumption.</p>
+  </div>
+  <table>
+    <tr><th>Design Decision</th><th>Unmetered Users</th><th>Metered Users ($5 license)</th><th>Conversation Users</th></tr>
+    <tr><td>Phase engine evaluation</td><td>Skip</td><td>Full enforcement</td><td>Session-level only</td></tr>
+    <tr><td>Shadow ledger tracking</td><td>Optional (analytics only)</td><td>Required (budget enforcement)</td><td>Track session count, not actions</td></tr>
+    <tr><td>Budget threshold alerts</td><td>Do not fire</td><td>Fire per Flex pool policy</td><td>Fire on conversation count limits</td></tr>
+    <tr><td>HITL escalation on budget exceeded</td><td>Never (not applicable)</td><td>Yes &mdash; route to queue</td><td>Yes &mdash; stop new sessions</td></tr>
+    <tr><td>Digital Wallet DLO correlation</td><td>Actions not recorded in THEC</td><td>Correlates to <code>THEC</code>/<code>TEUE</code></td><td>Appears in Conversations card</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <p><strong>Mixed-mode orgs:</strong> Many organizations run <em>both</em> unmetered employee add-ons and
+    metered customer-facing agents in the same org. The gateway must differentiate at runtime &mdash;
+    check the executing user&rsquo;s license assignment, not just the agent definition. A single agent template
+    may serve both internal and external users through different channels, with only the external invocations
+    incurring billable consumption.</p>
+  </div>
+  <p style="font-size:11px; color:var(--text-muted); font-style:italic;">Source: Salesforce Agentforce pricing
+  page (<a href="https://www.salesforce.com/agentforce/pricing/" target="_blank" rel="noopener">salesforce.com/agentforce/pricing</a>,
+  verified 2026-05-18). Unmetered add-on pricing may vary by edition and negotiated agreement.</p>
 </div>
 
 <!-- ╔══════════════════════════════════════════════════════════════════════╗
@@ -2600,7 +2676,7 @@ xychart-beta
 
   <table>
     <tr><th>Component</th><th>License / SKU</th><th>Required For</th><th>Estimated Annual Cost</th></tr>
-    <tr><td><strong>Agentforce</strong></td><td>Agentforce add-on (per conversation pricing)</td><td>The AI agents being governed</td><td>~$2/conversation (volume discounts apply)</td></tr>
+    <tr><td><strong>Agentforce</strong></td><td>Agentforce add-on &mdash; three billing tiers (see <a href="#internal-vs-external">Internal vs. External</a> section)</td><td>The AI agents being governed</td><td>$5/user/mo (metered), $125&ndash;$150/user/mo (unmetered), or $2/conversation (customer-facing)</td></tr>
     <tr><td><strong>Service Cloud</strong></td><td>Service Cloud Enterprise+ or Unlimited</td><td>Agent deployment channel, Omni-Channel (<code>ServiceChannel</code>) routing for HITL escalation</td><td>$165&ndash;$330/user/month</td></tr>
     <tr><td><strong>Data Cloud</strong></td><td>Data Cloud add-on (included with some editions)</td><td>Real-time consumption telemetry, unified agent analytics, cross-cloud usage correlation</td><td>Included with Unlimited+; otherwise $65k+/year</td></tr>
     <tr><td><strong>Einstein&trade; 1 Platform</strong></td><td>Included with Enterprise+</td><td>Prompt Builder, Einstein Trust Layer audit logs, Model Builder access</td><td>Included with qualifying editions</td></tr>
